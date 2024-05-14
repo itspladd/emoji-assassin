@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Server } from 'socket.io'
 
+import setupServerSocket from "./src/socket/server.js";
+
 const PORT = 3000
 const HOST = 'localhost'
 
@@ -19,9 +21,7 @@ const io = new Server(server)
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 
-io.on('connection', socket => {
-  console.log("user connected")
-})
+io.on('connection', setupServerSocket)
 
 server.listen(3000, () => {
   console.log(`--- 🥷🧨 Emoji Assassin server up and running at ${HOST}:${PORT} 🥷🧨--- `)
