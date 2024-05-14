@@ -2,13 +2,14 @@ import { useState } from 'react'
 import './reset.css'
 import './App.css'
 
-import { getRandomAssassinEmoji, getRandomBombEmoji } from './helpers/getEmojis'
+import { getRandomFromArray } from './helpers/arrays'
+import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis'
 
 function App() {
   const [count, setCount] = useState(0)
 
-  const bombEmojiHeader = getRandomBombEmoji()
-  const assassinEmojiHeader = getRandomAssassinEmoji()
+  const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS)
+  const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS)
 
   return (
     <>
