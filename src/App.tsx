@@ -1,21 +1,30 @@
-import { useState } from 'react'
+import { useState, useMemo, ChangeEvent } from 'react';
+import { socket } from './socket/client';
+import useSocket from './hooks/useSocket';
+import { getRandomFromArray } from './helpers/arrays';
+import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
+
+import Game from './components/Game'
+import LabeledInput from './components/LabeledInput'
+
 import './reset.css'
 import './App.css'
-import { socket } from './socket/client'
-import useSocket from './hooks/useSocket'
 
-import { getRandomFromArray } from './helpers/arrays'
-import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis'
+const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
+const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
 
-function App() {
+export function App() {
   // @ts-expect-error
-  const [isConnected] = useSocket(socket)
-  const [count, setCount] = useState(0)
+  const [isConnected] = useSocket(socket);
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("")
+  const [gameId, setGameId] = useState(null);
 
-  const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS)
-  const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS)
+  const connectionString = isConnected ? "Connected" : "Disconnected";
 
-  const connectionString = isConnected ? "Connected" : "Disconnected"
+  const handleNameChange = (event:ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value)
+  }
 
   return (
     <>
@@ -30,8 +39,17 @@ function App() {
         <p>
         </p>
       </div>
+      {!gameId && (
+        <LabeledInput
+          label="Username"
+          value={name}
+          onChange={handleNameChange}
+          placeholder = {"Placeholder Name"}
+        />
+      )}
+      {gameId && <Game id={gameId} />}
     </>
-  )
+  );
 }
 
 export default App
