@@ -1,8 +1,9 @@
-import { useState, useMemo, ChangeEvent } from 'react';
+import { useState, ChangeEvent, MouseEventHandler } from 'react';
 import { socket } from './socket/client';
 import useSocket from './hooks/useSocket';
 import { getRandomFromArray } from './helpers/arrays';
 import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
+import { makeRandomName, playerNameString } from './helpers/names';
 
 import Game from './components/Game'
 import LabeledInput from './components/LabeledInput'
@@ -12,18 +13,24 @@ import './App.css'
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
+const startingName = makeRandomName();
 
 export function App() {
   // @ts-expect-error
   const [isConnected] = useSocket(socket);
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("")
-  const [gameId, setGameId] = useState(null);
+  const [name, setName] = useState(startingName)
+  const [currentRoomId, setCurrentRoomId] = useState(null)
+  const [roomIdInput, setRoomIdInput] = useState("")
 
-  const connectionString = isConnected ? "Connected" : "Disconnected";
+  const connectionString = isConnected ? "Connected" : "Disconnected"
 
-  const handleNameChange = (event:ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value)
+  const changeName:MouseEventHandler<HTMLButtonElement> = () => {
+    setName(makeRandomName())
+  }
+
+  const handleRoomInputChange = (event:ChangeEvent<HTMLInputElement>) => {
+    const newId = event.target.value
+    setRoomIdInput(newId)
   }
 
   return (
@@ -33,21 +40,22 @@ export function App() {
       <h1>{assassinEmojiHeader} {bombEmojiHeader}</h1>
       <p>{connectionString}</p>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={changeName}>
+          Change name
         </button>
         <p>
         </p>
       </div>
-      {!gameId && (
+      <h3>Username: {playerNameString(name)}</h3>
+      {!currentRoomId && (
         <LabeledInput
-          label="Username"
-          value={name}
-          onChange={handleNameChange}
-          placeholder = {"Placeholder Name"}
+          label="Join an existing room"
+          value={roomIdInput}
+          onChange={handleRoomInputChange}
+          placeholder = {"A1C2B3"}
         />
       )}
-      {gameId && <Game id={gameId} />}
+      {currentRoomId && <Game id={currentRoomId} />}
     </>
   );
 }
