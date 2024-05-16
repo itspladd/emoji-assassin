@@ -33,6 +33,11 @@ export function App() {
     setRoomIdInput(newId)
   }
 
+  const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = () => {
+    console.log("Creating a new room")
+    setCurrentRoomId
+  }
+
   return (
     <>
       <h1>Emoji Assassin</h1>
@@ -48,12 +53,17 @@ export function App() {
       </div>
       <h3>Username: {playerNameString(name)}</h3>
       {!currentRoomId && (
-        <LabeledInput
-          label="Join an existing room"
-          value={roomIdInput}
-          onChange={handleRoomInputChange}
-          placeholder = {"A1C2B3"}
-        />
+        <>
+          <button onClick={handleNewGameClick}>
+            Start a new game
+          </button>
+          <LabeledInput
+            label="Join an existing room"
+            value={roomIdInput}
+            onChange={handleRoomInputChange}
+            placeholder = {"A1C2B3"}
+          />
+        </>
       )}
       {currentRoomId && <Game id={currentRoomId} />}
     </>
