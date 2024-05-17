@@ -4,6 +4,7 @@ import useSocket from './hooks/useSocket';
 import { getRandomFromArray } from './helpers/arrays';
 import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
 import { makeRandomName, playerNameString } from './helpers/names';
+import axios from 'axios';
 
 import Game from './components/Game'
 import LabeledInput from './components/LabeledInput'
@@ -33,9 +34,10 @@ export function App() {
     setRoomIdInput(newId)
   }
 
-  const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = () => {
+  const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
-    setCurrentRoomId
+    const result = await axios.post('/rooms')
+    console.log(result)
   }
 
   return (

@@ -5,6 +5,7 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io'
 
 import setupServerSocket from "./src/socket/server.js";
+import setupApi from "./src/api.js";
 
 const PORT = 3000
 const HOST = 'localhost'
@@ -13,12 +14,7 @@ const app = express();
 const server = createServer(app)
 const io = new Server(server)
 
-// Example route handler 
-//app.get("/message", (_, res) => res.send("Hello from express!"));
-
-app.post("/rooms", () => {
-
-})
+setupApi(app)
 
 io.on('connection', setupServerSocket)
 
