@@ -14,6 +14,13 @@ const app = express();
 const server = createServer(app)
 const io = new Server(server)
 
+// Logging middleware
+app.use((req, _, next) => {
+  console.debug(`${req.method} ${req.path}`)
+  
+  next()
+})
+
 setupApi(app)
 
 io.on('connection', setupServerSocket)
