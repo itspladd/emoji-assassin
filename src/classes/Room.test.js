@@ -22,7 +22,7 @@ describe("Room class", () => {
     })
   })
 
-  describe("Instanced methods", () => {
+  describe.todo("Instanced methods", () => {
 
   })
 })
