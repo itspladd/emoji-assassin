@@ -121,5 +121,14 @@ describe("RoomManager singleton", () => {
         })
       })
     })
+
+    describe("makeUniqueRoom", () => {
+      it("returns multiple unique Rooms without hanging", () => {
+        const uniqueRooms = [1,2,3,4,5].map(RoomManager.makeUniqueRoom)
+
+        uniqueRooms.forEach(RoomManager.addRoom)
+        expect(Object.keys(RoomManager.getAllActiveRooms())).toHaveLength(5)
+      })
+    })
   })
 })
