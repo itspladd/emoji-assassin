@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import Room from "./classes/Room";
+import { RoomManager } from "./classes/RoomManager";
 
 export default function setupApi(app:Express) {
   // Example route handler 
@@ -9,9 +9,9 @@ export default function setupApi(app:Express) {
    * Creates a new Room and returns the Room info
    */
   app.post("/rooms", (_, res) => {
-    const id = Room.makeId()
-    const room = new Room(id)
     console.debug("Creating a new room")
-    res.json({room:"beans"})
+    const newRoom = RoomManager.makeUniqueRoom()
+    RoomManager.addRoom(newRoom)
+    res.json({newRoom})
   })
 }
