@@ -5,6 +5,7 @@ type RoomList = Record<string, Room>
 export interface RoomManager {
   addRoom: (room:Room) => void,
   removeRoom: (id:string) => void,
+  getRoom: (id:string) => Room,
   makeUniqueRoom: () => Room,
   getAllActiveRooms: () => RoomList,
   resetAllActiveRooms: () => void
@@ -125,9 +126,14 @@ const RoomManagerFactory = function ():RoomManager {
     }
   }
 
+  function getRoom(id:string) {
+    return _activeRooms[id]
+  }
+
   return {
     addRoom,
     removeRoom,
+    getRoom,
     makeUniqueRoom,
     getAllActiveRooms,
     resetAllActiveRooms,
