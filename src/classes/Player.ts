@@ -2,7 +2,6 @@ import type { PlayerName } from "@customTypes/players"
 import type { Server, Socket } from "socket.io"
 import { makeRandomName, playerNameString } from "../helpers/names"
 import { SOCKET_EVENTS } from "../socket/socketEvents"
-import { createLogger } from "vite"
 
 export class Player {
   _id: string
