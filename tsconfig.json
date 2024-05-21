@@ -19,7 +19,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Paths */
+    "paths": {
+      "@customTypes/*": ["./src/types/*"]
+    }
   },
   "include": ["src", "vite.config.ts", "server.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

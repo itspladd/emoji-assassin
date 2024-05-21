@@ -1,5 +1,5 @@
 import type { Socket } from 'socket.io';
-import type { PlayerName } from '../types/players';
+import type { PlayerName } from '@customTypes/players';
 
 import { useState, useEffect } from 'react'
 
