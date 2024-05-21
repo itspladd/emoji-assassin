@@ -11,6 +11,7 @@ import LabeledInput from './components/LabeledInput'
 import './reset.css'
 import './App.css'
 import GameRoom from './components/GameRoom';
+import { SOCKET_EVENTS } from './socket/events';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
@@ -42,7 +43,7 @@ export function App() {
       console.error("Error: no newRoomId received. Response object: ", response)
     }
     console.log("id: ", roomId)
-    socket.emit('join', roomId)
+    socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId)
     setCurrentRoomId(roomId)
   }
 
@@ -74,7 +75,10 @@ export function App() {
       )}
         
         
-      {currentRoomId && <GameRoom />}
+      {currentRoomId && <GameRoom
+        roomId={currentRoomId}
+        playerName={name}
+      />}
     </div>
   );
 }

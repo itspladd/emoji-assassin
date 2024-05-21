@@ -1,11 +1,25 @@
-export default function GameRoom() {
+import { playerNameString, type PlayerName } from "../helpers/names";
+
+interface GameRoomProps {
+  roomId: string;
+  playerName: PlayerName;
+}
+
+export default function GameRoom({
+  roomId,
+  playerName
+} : GameRoomProps) {
+
+  const playerNames = [
+    playerName
+  ]
+
   return (
     <div>
-      <h2>Game Room</h2>
+      <h2>Room {roomId}</h2>
       <div>
         <h3>Players</h3>
-        <ul>
-          <li>Player Name</li>
+        <ul>{playerNames.map(name => <li>{playerNameString(name)}</li>)}
         </ul>
       </div>
       <div>
