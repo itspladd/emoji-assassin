@@ -31,7 +31,9 @@ export default function useSocket(socket:Socket):SocketState {
     }
 
     function addPlayer(player:ClientPlayerInfo) {
-      setPlayersInRoom({...playersInRoom, [player.id]:player})
+      console.log("current:", playersInRoom)
+      console.log("new:", {...playersInRoom, [player.id]:player})
+      setPlayersInRoom((prev) => ({...prev, [player.id]:player}))
     }
 
     function removePlayer(id:string) {

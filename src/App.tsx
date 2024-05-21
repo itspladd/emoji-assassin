@@ -44,13 +44,28 @@ export function App() {
     const response:{data: {newRoomId:string}} = await axios.post('/rooms')
     const roomId = response?.data?.newRoomId
     if (!roomId) {
-      console.error("Error: no newRoomId received. Response object: ", response)
-      return
+      return console.error("Error: no newRoomId received. Response object: ", response)
     }
     console.log("id: ", roomId)
     socket.connect()
     socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId)
     setCurrentRoomId(roomId)
+  }
+
+  const handleJoinRoomSubmit:MouseEventHandler<HTMLButtonElement> = async () => {
+    const idToJoin = roomIdInput
+    const response:{data: {roomIdValid:boolean}} = await axios.get(`/rooms/${idToJoin}`)
+    const roomIdValid = response?.data?.roomIdValid
+
+    if (typeof roomIdValid !== "boolean") {
+      return console.error(`GET /rooms/${idToJoin} failed. Response object:`, response)
+    }
+    if (roomIdValid === false) {
+      return console.debug(`Invalid ID`)
+    }
+
+    socket.connect()
+    socket.emit(SOCKET_EVENTS.JOIN_ROOM, idToJoin)
   }
 
   const currentPlayer:ClientPlayerInfo | null = socket.id ? playersInRoom[socket.id] : null
@@ -73,12 +88,16 @@ export function App() {
             <button onClick={handleNewGameClick}>
               Start a new game
             </button>
-            <LabeledInput
-              label="Join an existing room"
-              value={roomIdInput}
-              onChange={handleRoomInputChange}
-              placeholder = {"A1C2B3"}
-            />
+            <div>
+              <button onClick={handleJoinRoomSubmit}>Join existing room</button>
+              <LabeledInput
+                label="Room ID"
+                value={roomIdInput}
+                onChange={handleRoomInputChange}
+                placeholder = {"A1C2B3"}
+              />
+            </div>
+
         </div>
       )}
         
