@@ -1,4 +1,6 @@
-import { playerNameString, type PlayerName } from "../helpers/names";
+import { type PlayerName } from "../types/players";
+
+import { playerNameString } from "../helpers/names";
 
 interface GameRoomProps {
   roomId: string;

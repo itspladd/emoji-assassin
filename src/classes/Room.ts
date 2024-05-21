@@ -1,5 +1,7 @@
 import { getRandomFromArray } from "../helpers/arrays";
 
+import { socket } from "../socket/client";
+
 /**
  * Room Class
  * 

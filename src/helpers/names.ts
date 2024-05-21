@@ -1,18 +1,14 @@
+import type {
+  PlayerName,
+  Article
+} from '../types/players'
+
 import { 
   USERNAME_ADJECTIVES,
   USERNAME_NOUNS
 } from '../constants/names'
 
 import { getRandomFromArray } from './arrays'
-
-export type Article = 'a' | 'an'
-
-export interface PlayerName {
-  adjective: string,
-  noun: string,
-  adjectiveArticle: Article,
-  nounArticle: Article
-}
 
 export function makeRandomName():PlayerName {
   const adjective = getRandomFromArray(USERNAME_ADJECTIVES)
