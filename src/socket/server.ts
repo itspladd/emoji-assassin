@@ -16,6 +16,9 @@ export default function setupServerSocket(io:Server) {
  * @param io 
  */
 function setupServerEvents(socket:Socket, io:Server) {
+  socket.on('connect', () => {
+    console.log("user connected:", socket.id)
+  })
   // Built-in events
   socket.on('disconnect', () => {
     console.log("user disconnected:", socket.id)
@@ -34,6 +37,11 @@ function setupServerMiddleware(io:Server) {
   });
   
   io.of("/").adapter.on("join-room", (room, id) => {
-    console.log(`socket ${id} has joined room ${room}`);
+    let message = "ROOM JOIN"
+    if (room === id) {
+      message += ` (SELF)`
+    }
+    message += `: socket ${id} has joined room ${room}`
+    console.log(message)
   });
 }
