@@ -6,4 +6,8 @@ export default function setupServerSocket(socket:Socket) {
   socket.on('disconnect', () => {
     console.log("user disconnected:", socket.id)
   })
+
+  socket.on('join', roomId => {
+    socket.join(roomId)
+  })
 }

@@ -37,12 +37,13 @@ export function App() {
   const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
     const response:{data: {newRoomId:string}} = await axios.post('/rooms')
-
-    if (!response?.data?.newRoomId) {
+    const roomId = response?.data?.newRoomId
+    if (!roomId) {
       console.error("Error: no newRoomId received. Response object: ", response)
     }
-    console.log("id: ", response.data.newRoomId)
-    setCurrentRoomId(response.data.newRoomId)
+    console.log("id: ", roomId)
+    socket.emit('join', roomId)
+    setCurrentRoomId(roomId)
   }
 
   return (
