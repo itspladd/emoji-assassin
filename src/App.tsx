@@ -6,21 +6,21 @@ import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
 import { makeRandomName, playerNameString } from './helpers/names';
 import axios from 'axios';
 
-import Game from './components/Game'
 import LabeledInput from './components/LabeledInput'
 
 import './reset.css'
 import './App.css'
+import GameRoom from './components/GameRoom';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
 const startingName = makeRandomName();
 
 export function App() {
-  // @ts-expect-error
+  // @ts-expect-error Some annoying Socket type mismatch that isn't super important right now
   const [isConnected] = useSocket(socket);
   const [name, setName] = useState(startingName)
-  const [currentRoomId, setCurrentRoomId] = useState(null)
+  const [currentRoomId, setCurrentRoomId] = useState<null | string>(null)
   const [roomIdInput, setRoomIdInput] = useState("")
 
   const connectionString = isConnected ? "Connected" : "Disconnected"
@@ -36,39 +36,45 @@ export function App() {
 
   const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
-    const result = await axios.post('/rooms')
-    console.log(result)
+    const response:{data: {newRoomId:string}} = await axios.post('/rooms')
+
+    if (!response?.data?.newRoomId) {
+      console.error("Error: no newRoomId received. Response object: ", response)
+    }
+    console.log("id: ", response.data.newRoomId)
+    setCurrentRoomId(response.data.newRoomId)
   }
 
   return (
-    <>
-      <h1>Emoji Assassin</h1>
-
-      <h1>{assassinEmojiHeader} {bombEmojiHeader}</h1>
-      <p>{connectionString}</p>
-      <div className="card">
-        <button onClick={changeName}>
-          Change name
-        </button>
-        <p>
-        </p>
-      </div>
-      <h3>Username: {playerNameString(name)}</h3>
+    <div>
       {!currentRoomId && (
-        <>
-          <button onClick={handleNewGameClick}>
-            Start a new game
-          </button>
-          <LabeledInput
-            label="Join an existing room"
-            value={roomIdInput}
-            onChange={handleRoomInputChange}
-            placeholder = {"A1C2B3"}
-          />
-        </>
+        <div className="home-screen">
+          <h1>Emoji Assassin</h1>
+    
+          <h1>{assassinEmojiHeader} {bombEmojiHeader}</h1>
+          <p>{connectionString}</p>
+          <div className="card">
+            <button onClick={changeName}>
+              Change name
+            </button>
+          </div>
+          <h3>Username: {playerNameString(name)}</h3>
+          <h2>{currentRoomId}</h2>
+            <button onClick={handleNewGameClick}>
+              Start a new game
+            </button>
+            <LabeledInput
+              label="Join an existing room"
+              value={roomIdInput}
+              onChange={handleRoomInputChange}
+              placeholder = {"A1C2B3"}
+            />
+        </div>
       )}
-      {currentRoomId && <Game id={currentRoomId} />}
-    </>
+        
+        
+      {currentRoomId && <GameRoom />}
+    </div>
   );
 }
 

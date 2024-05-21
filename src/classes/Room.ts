@@ -1,5 +1,10 @@
 import { getRandomFromArray } from "../helpers/arrays";
 
+/**
+ * Room Class
+ * 
+ * The Room class represents a lobby where a Game takes place.
+ */
 export default class Room {
 
   /******** Static properties and methods ********/

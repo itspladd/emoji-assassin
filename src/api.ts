@@ -12,6 +12,6 @@ export default function setupApi(app:Express) {
     console.debug("Creating a new room")
     const newRoom = RoomManager.makeUniqueRoom()
     RoomManager.addRoom(newRoom)
-    res.json({newRoom})
+    res.json({newRoomId: newRoom.id})
   })
 }
