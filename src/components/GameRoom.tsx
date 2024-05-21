@@ -1,27 +1,38 @@
-import { type PlayerName } from "../types/players";
+import type { PlayerName } from "@customTypes/players";
+import type { EventLogItem } from "@customTypes/events";
 
 import { playerNameString } from "../helpers/names";
+import { PlayerList } from "../hooks/useSocket";
 
 interface GameRoomProps {
   roomId: string;
-  playerName: PlayerName;
+  playersInRoom: PlayerList;
+  eventLog: EventLogItem[];
 }
 
 export default function GameRoom({
   roomId,
-  playerName
+  playersInRoom,
+  eventLog
 } : GameRoomProps) {
 
-  const playerNames = [
-    playerName
-  ]
+  const playerNames = Object.values(playersInRoom)
+    .map(({ name, id }) => (
+      <li key={id}>
+        {playerNameString(name)}
+      </li>
+    ))
 
   return (
     <div>
       <h2>Room {roomId}</h2>
       <div>
         <h3>Players</h3>
-        <ul>{playerNames.map(name => <li>{playerNameString(name)}</li>)}
+        <ul>{playerNames}
+        </ul>
+        <h3>Event Log</h3>
+        <ul>
+
         </ul>
       </div>
       <div>

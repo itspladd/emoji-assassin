@@ -1,15 +1,21 @@
 import type { Socket, Server } from "socket.io"
 
-import { SOCKET_EVENTS } from "./events"
+import { SOCKET_EVENTS } from "./socketEvents"
+import { RoomManager } from "../classes/RoomManager"
 
 export default function setupServerSocket(io:Server) {
   setupServerMiddleware(io)
   
   // When a new socket connects, populate all of the events
-  io.on('connection', setupServerEvents)
+  io.on('connection', (socket) => setupServerEvents(socket, io))
 }
 
-function setupServerEvents(socket:Socket) {
+/**
+ * Configures all of the server-side listeners for a given socket.
+ * @param socket 
+ * @param io 
+ */
+function setupServerEvents(socket:Socket, io:Server) {
   // Built-in events
   socket.on('disconnect', () => {
     console.log("user disconnected:", socket.id)
@@ -17,7 +23,8 @@ function setupServerEvents(socket:Socket) {
 
   // Custom named events
   socket.on(SOCKET_EVENTS.JOIN_ROOM, roomId => {
-    socket.join(roomId)
+    const room = RoomManager.getRoom(roomId)
+    room.addPlayer(socket)
   })
 }
 

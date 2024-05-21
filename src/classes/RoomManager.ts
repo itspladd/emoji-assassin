@@ -1,3 +1,4 @@
+import type { Server } from "socket.io";
 import Room from "./Room";
 
 type RoomList = Record<string, Room>
@@ -6,7 +7,7 @@ export interface RoomManager {
   addRoom: (room:Room) => void,
   removeRoom: (id:string) => void,
   getRoom: (id:string) => Room,
-  makeUniqueRoom: () => Room,
+  makeUniqueRoom: (io:Server) => Room,
   getAllActiveRooms: () => RoomList,
   resetAllActiveRooms: () => void
 }
@@ -73,7 +74,7 @@ const RoomManagerFactory = function ():RoomManager {
     return {..._activeRooms}
   }
 
-  function makeUniqueRoom():Room {
+  function makeUniqueRoom(io:Server):Room {
     let newRoomId = Room.makeId()
 
     while(!_roomIdIsUnique(newRoomId, _activeRooms)) {
@@ -81,7 +82,7 @@ const RoomManagerFactory = function ():RoomManager {
     }
 
     console.debug(`Creating new Room: ${newRoomId}`)
-    return new Room(newRoomId)
+    return new Room(newRoomId, io)
   }
 
   /**

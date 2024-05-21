@@ -21,7 +21,7 @@ app.use((req, _, next) => {
   next()
 })
 
-setupApi(app)
+setupApi(app, io)
 
 setupServerSocket(io)
 

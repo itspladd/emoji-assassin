@@ -1,30 +1,43 @@
 import type { Socket } from 'socket.io';
-import type { PlayerName } from '@customTypes/players';
+import type { ClientPlayerInfo, PlayerName } from '@customTypes/players';
+import type { EventLogItem } from '@customTypes/events';
 
 import { useState, useEffect } from 'react'
 
 import { playerNameString } from '../helpers/names';
-import { SOCKET_EVENTS } from '../socket/events';
+import { SOCKET_EVENTS } from '../socket/socketEvents';
 
-export default function useSocket(socket:Socket) {
+export type PlayerList = Record<string, ClientPlayerInfo>
+
+export interface SocketState {
+  isConnected: boolean,
+  eventLog: EventLogItem[],
+  playersInRoom: PlayerList
+}
+
+export default function useSocket(socket:Socket):SocketState {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [eventLog, setEventLog] = useState<string[]>([])
-  const [playersInRoom, setPlayersInRoom] = useState<PlayerName[]>([])
+  const [eventLog, setEventLog] = useState<EventLogItem[]>([])
+  const [playersInRoom, setPlayersInRoom] = useState<PlayerList>({})
 
   useEffect(() => {
+
     /** Add a socket event to the local event log */
-    function logEvent(event:string) {
-      console.debug(event)
-      setEventLog([...eventLog, event])
+    function logEvent(message:string) {
+      const timestampDate = new Date()
+      const timestamp = timestampDate.toLocaleString()
+      console.debug(timestamp, message)
+      setEventLog([...eventLog, {timestamp, message}])
     }
 
-    function addPlayer(name:PlayerName) {
-      setPlayersInRoom([...playersInRoom, name])
+    function addPlayer(player:ClientPlayerInfo) {
+      setPlayersInRoom({...playersInRoom, [player.id]:player})
     }
 
-    function removePlayer(name:PlayerName) {
-      const leavingPlayer = playerNameString(name)
-
+    function removePlayer(id:string) {
+      const currentPlayers = {...playersInRoom}
+      delete currentPlayers[id]
+      setPlayersInRoom({...currentPlayers})
     }
 
     function onConnect() {
@@ -38,14 +51,26 @@ export default function useSocket(socket:Socket) {
     }
 
     /** Add the new player to the local list of players */
-    function onPlayerJoined(name:PlayerName) {
-      logEvent(`${playerNameString(name)} joined the room`)
-      addPlayer(name)
+    function onPlayerJoined(player:ClientPlayerInfo) {
+      logEvent(`${playerNameString(player.name)} (ID ${player.id}) joined the room`)
+      addPlayer(player)
     }
 
-    function onPlayerLeft(name:PlayerName) {
-      logEvent(`${playerNameString(name)} left the room`)
-      addPlayer(name)
+    function onPlayerLeft(id:string) {
+      const { name } = playersInRoom[id]
+      
+      logEvent(`${playerNameString(name)} (ID ${id}) left the room`)
+      removePlayer(id)
+    }
+
+    function onPlayerNameChange(id: string, name:PlayerName) {
+      const currentPlayers = {...playersInRoom}
+      const prevName = currentPlayers[id].name
+      logEvent(`${id} changed name from ${playerNameString(prevName)} to ${playerNameString(name)}`)
+
+      currentPlayers[id].name = name
+
+      setPlayersInRoom({...currentPlayers, [id]: {id, name}})
     }
 
     socket.on('connect', onConnect);
@@ -53,6 +78,7 @@ export default function useSocket(socket:Socket) {
 
     socket.on(SOCKET_EVENTS.PLAYER_JOINED, onPlayerJoined)
     socket.on(SOCKET_EVENTS.PLAYER_LEFT, onPlayerLeft)
+    socket.on(SOCKET_EVENTS.PLAYER_NAME_CHANGED, onPlayerNameChange)
 
     return () => {
       socket.off('connect', onConnect);
@@ -60,7 +86,9 @@ export default function useSocket(socket:Socket) {
     };
   }, []);
 
-  return [
-    isConnected
-  ]
+  return {
+    isConnected,
+    eventLog,
+    playersInRoom,
+  }
 }

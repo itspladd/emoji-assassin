@@ -1,9 +1,11 @@
+import type { ClientPlayerInfo } from '@customTypes/players';
+
 import { useState, ChangeEvent, MouseEventHandler } from 'react';
 import { socket } from './socket/client';
 import useSocket from './hooks/useSocket';
 import { getRandomFromArray } from './helpers/arrays';
 import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
-import { makeRandomName, playerNameString } from './helpers/names';
+import { playerNameString } from './helpers/names';
 import axios from 'axios';
 
 import LabeledInput from './components/LabeledInput'
@@ -11,23 +13,25 @@ import LabeledInput from './components/LabeledInput'
 import './reset.css'
 import './App.css'
 import GameRoom from './components/GameRoom';
-import { SOCKET_EVENTS } from './socket/events';
+import { SOCKET_EVENTS } from './socket/socketEvents';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
-const startingName = makeRandomName();
 
 export function App() {
+  const {
+    isConnected,
+    eventLog,
+    playersInRoom
   // @ts-expect-error Some annoying Socket type mismatch that isn't super important right now
-  const [isConnected] = useSocket(socket);
-  const [name, setName] = useState(startingName)
+  } = useSocket(socket);
   const [currentRoomId, setCurrentRoomId] = useState<null | string>(null)
   const [roomIdInput, setRoomIdInput] = useState("")
 
   const connectionString = isConnected ? "Connected" : "Disconnected"
 
   const changeName:MouseEventHandler<HTMLButtonElement> = () => {
-    setName(makeRandomName())
+    socket.emit(SOCKET_EVENTS.CHANGE_NAME)
   }
 
   const handleRoomInputChange = (event:ChangeEvent<HTMLInputElement>) => {
@@ -41,11 +45,15 @@ export function App() {
     const roomId = response?.data?.newRoomId
     if (!roomId) {
       console.error("Error: no newRoomId received. Response object: ", response)
+      return
     }
     console.log("id: ", roomId)
+    socket.connect()
     socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId)
     setCurrentRoomId(roomId)
   }
+
+  const currentPlayer:ClientPlayerInfo | null = socket.id ? playersInRoom[socket.id] : null
 
   return (
     <div>
@@ -60,7 +68,7 @@ export function App() {
               Change name
             </button>
           </div>
-          <h3>Username: {playerNameString(name)}</h3>
+          <h3>Username: {currentPlayer ? playerNameString(currentPlayer.name) : "..."}</h3>
           <h2>{currentRoomId}</h2>
             <button onClick={handleNewGameClick}>
               Start a new game
@@ -77,7 +85,8 @@ export function App() {
         
       {currentRoomId && <GameRoom
         roomId={currentRoomId}
-        playerName={name}
+        eventLog={eventLog}
+        playersInRoom={playersInRoom}
       />}
     </div>
   );

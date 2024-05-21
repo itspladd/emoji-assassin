@@ -6,3 +6,8 @@ export interface PlayerName {
   adjectiveArticle: Article,
   nounArticle: Article
 }
+
+export interface ClientPlayerInfo {
+  name: PlayerName,
+  id: string
+}

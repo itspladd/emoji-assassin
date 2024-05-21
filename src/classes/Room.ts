@@ -1,6 +1,7 @@
+import type { Server, Socket } from "socket.io";
+import { Player } from "./Player";
 import { getRandomFromArray } from "../helpers/arrays";
-
-import { socket } from "../socket/client";
+import { SOCKET_EVENTS } from "../socket/socketEvents";
 
 /**
  * Room Class
@@ -67,12 +68,27 @@ export default class Room {
   
   /******** Instance properties and methods ********/
   _id: string;
+  _io: Server;
+  _players: Record<string, Player>
 
-  constructor(id:string) {
+  constructor(id:string, io:Server) {
     this._id = id
+    this._io = io
+    this._players = {}
   }
 
   get id() {
     return this._id
+  }
+
+  addPlayer(socket:Socket) {
+    socket.join(this.id)
+    const newPlayer = new Player(socket, this._io)
+    this._players[socket.id] = newPlayer
+    this.broadcast("PLAYER_JOINED", { id: socket.id, name: newPlayer.name })
+  }
+
+  broadcast(event:keyof typeof SOCKET_EVENTS, ...args:any[]) {
+    this._io.to(this.id).emit(SOCKET_EVENTS[event], ...args)
   }
 }
