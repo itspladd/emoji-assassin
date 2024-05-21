@@ -6,6 +6,14 @@ export default function setupApi(app:Express, io:Server) {
   // Example route handler 
   //app.get("/message", (_, res) => res.send("Hello from express!"));
 
+  /** GET /rooms/:id 
+   * Returns whether that room exists on the server or not
+  */
+  app.get("/rooms/:id", (req, res) => {
+    const { id } = req.params
+    res.send({ roomIdValid: RoomManager.roomExists(id) })
+  })
+
   /** POST /rooms
    * Creates a new Room and returns the Room info
    */
