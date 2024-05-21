@@ -45,6 +45,10 @@ export function playerNameString({
   adjectiveArticle,
   adjective,
   noun
-} : PlayerName):string {
-  return `${adjectiveArticle} ${adjective} ${noun}`
+} : PlayerName, capitalize = true):string {
+  let articleString:string = adjectiveArticle
+  if (capitalize) {
+    articleString = adjectiveArticle.replace('a', 'A')
+  }
+  return `${articleString} ${adjective} ${noun}`
 }
