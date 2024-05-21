@@ -1,4 +1,3 @@
-import type { PlayerName } from "@customTypes/players";
 import type { EventLogItem } from "@customTypes/events";
 
 import { playerNameString } from "../helpers/names";
@@ -23,6 +22,14 @@ export default function GameRoom({
       </li>
     ))
 
+  const eventLogItems = eventLog.map(({ message, timestamp }) => {
+    return (
+      <li key={timestamp}>
+        {timestamp}: {message}
+      </li>
+    )
+  })
+
   return (
     <div>
       <h2>Room {roomId}</h2>
@@ -32,7 +39,7 @@ export default function GameRoom({
         </ul>
         <h3>Event Log</h3>
         <ul>
-
+          {eventLogItems}
         </ul>
       </div>
       <div>
