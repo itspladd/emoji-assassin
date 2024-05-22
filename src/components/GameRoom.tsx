@@ -1,21 +1,24 @@
-import type { EventLogItem } from "@customTypes/events";
+import type { AppState, ReducerActionPayload, StateActions } from "@customTypes/stateManagement";
+import type { Dispatch } from "react";
 
 import { playerNameString } from "../helpers/names";
-import { PlayerList } from "../hooks/useSocket";
 
 interface GameRoomProps {
-  roomId: string;
-  playersInRoom: PlayerList;
-  eventLog: EventLogItem[];
+  state: AppState;
+  actions: StateActions;
 }
 
 export default function GameRoom({
-  roomId,
-  playersInRoom,
-  eventLog
+  state,
+  actions
 } : GameRoomProps) {
+  console.log("rendering GameRoom")
+  const {
+    room,
+    eventLog
+  } = state
 
-  const playerNames = Object.values(playersInRoom)
+  const playerNames = Object.values(room.playersInRoom)
     .map(({ name, id }) => (
       <li key={id}>
         {playerNameString(name)}
@@ -32,7 +35,7 @@ export default function GameRoom({
 
   return (
     <div>
-      <h2>Room {roomId}</h2>
+      <h2>Room {room.roomId}</h2>
       <div>
         <h3>Players</h3>
         <ul>{playerNames}

@@ -1,34 +1,43 @@
-import type { ClientPlayerInfo } from '@customTypes/players';
 
 import { useState, ChangeEvent, MouseEventHandler } from 'react';
-import { socket } from './socket/client';
-import useSocket from './hooks/useSocket';
-import { getRandomFromArray } from './helpers/arrays';
-import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
-import { playerNameString } from './helpers/names';
 import axios from 'axios';
+import { getRandomFromArray } from './helpers/arrays';
+
+import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
 
 import LabeledInput from './components/LabeledInput'
+import GameRoom from './components/GameRoom';
+
+import { SOCKET_EVENTS } from './socket/socketEvents';
 
 import './reset.css'
 import './App.css'
-import GameRoom from './components/GameRoom';
-import { SOCKET_EVENTS } from './socket/socketEvents';
+
+import useStateManager from './hooks/useStateManager';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
 
 export function App() {
-  const {
+  const {state, actions} = useStateManager()
+/*   const {
     isConnected,
     eventLog,
     playersInRoom
   // @ts-expect-error Some annoying Socket type mismatch that isn't super important right now
-  } = useSocket(socket);
-  const [currentRoomId, setCurrentRoomId] = useState<null | string>(null)
+  } = useSocket(socket); */
   const [roomIdInput, setRoomIdInput] = useState("")
 
-  const connectionString = isConnected ? "Connected" : "Disconnected"
+  const { 
+    socketInstance: socket,
+    connected
+  } = state.socket 
+
+  const {
+    roomId
+  } = state.room
+  
+  const connectionString = connected ? "Connected" : "Disconnected"
 
   const changeName:MouseEventHandler<HTMLButtonElement> = () => {
     socket.emit(SOCKET_EVENTS.CHANGE_NAME)
@@ -49,7 +58,7 @@ export function App() {
     console.log("id: ", roomId)
     socket.connect()
     socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId)
-    setCurrentRoomId(roomId)
+    actions.room.joinRoom(roomId)
   }
 
   const handleJoinRoomSubmit:MouseEventHandler<HTMLButtonElement> = async () => {
@@ -66,13 +75,13 @@ export function App() {
 
     socket.connect()
     socket.emit(SOCKET_EVENTS.JOIN_ROOM, idToJoin)
+    actions.room.joinRoom(idToJoin)
   }
 
-  const currentPlayer:ClientPlayerInfo | null = socket.id ? playersInRoom[socket.id] : null
 
   return (
     <div>
-      {!currentRoomId && (
+      {!roomId && (
         <div className="home-screen">
           <h1>Emoji Assassin</h1>
     
@@ -83,29 +92,26 @@ export function App() {
               Change name
             </button>
           </div>
-          <h3>Username: {currentPlayer ? playerNameString(currentPlayer.name) : "..."}</h3>
-          <h2>{currentRoomId}</h2>
-            <button onClick={handleNewGameClick}>
-              Start a new game
-            </button>
-            <div>
-              <button onClick={handleJoinRoomSubmit}>Join existing room</button>
-              <LabeledInput
-                label="Room ID"
-                value={roomIdInput}
-                onChange={handleRoomInputChange}
-                placeholder = {"A1C2B3"}
-              />
-            </div>
+          <button onClick={handleNewGameClick}>
+            Start a new game
+          </button>
+          <div>
+            <button onClick={handleJoinRoomSubmit}>Join existing room</button>
+            <LabeledInput
+              label="Room ID"
+              value={roomIdInput}
+              onChange={handleRoomInputChange}
+              placeholder = {"A1C2B3"}
+            />
+          </div>
 
         </div>
       )}
         
         
-      {currentRoomId && <GameRoom
-        roomId={currentRoomId}
-        eventLog={eventLog}
-        playersInRoom={playersInRoom}
+      {roomId && <GameRoom
+        state={state}
+        actions={actions}
       />}
     </div>
   );
