@@ -31,7 +31,7 @@ function _roomIdIsValid(id:string):boolean {
   }
 
   for (let char of Array.from(id)) {
-    if (!Room.RoomIdCharacters.includes(char.toLowerCase())) {
+    if (!Room.RoomIdCharacters.includes(char.toUpperCase())) {
       return false
     }
   }

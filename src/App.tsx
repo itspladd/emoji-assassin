@@ -44,7 +44,7 @@ export function App() {
   }
 
   const handleRoomInputChange = (event:ChangeEvent<HTMLInputElement>) => {
-    const newId = event.target.value
+    const newId = event.target.value.toUpperCase()
     setRoomIdInput(newId)
   }
 
