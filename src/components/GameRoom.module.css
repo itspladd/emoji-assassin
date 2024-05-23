@@ -32,11 +32,10 @@
   flex-basis: 60%;
 
   #board {
-    padding: 10px 20px;
+    padding: 1rem;
     display:grid;
     grid-template-columns: repeat(5, 1fr);
     grid-auto-rows: minmax(20px, auto);
-    margin:auto
   }
 
   .tile {
