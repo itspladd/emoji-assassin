@@ -1,6 +1,8 @@
 import type { AppState, ReducerActionPayload, StateActions } from "@customTypes/stateManagement";
 import type { Dispatch } from "react";
 
+import styles from './GameRoom.module.css'
+
 import { playerNameString } from "../helpers/names";
 
 interface GameRoomProps {
@@ -28,29 +30,64 @@ export default function GameRoom({
   const eventLogItems = eventLog.map(({ message, timestamp }) => {
     return (
       <li key={timestamp}>
-        {timestamp}: {message}
+        {message}
+      </li>
+    )
+  })
+
+  const testEmojis = [
+    "❤️🍿🧂🥓🥞",
+    "🕳️🎃🎁🎡🛒",
+    "🎩🏀🎰🎮🪀",
+    "🎷🪕🎻🪵🪜",
+    "🪃⚰️💾🎥📺",
+  ]
+
+  const gameTiles = testEmojis.map((row:string, i:number) => {
+    return (
+      <li>
+        {Array.from(row).map((emoji, k) => {
+          return (
+            <span key={`${i}${k}`}>
+              {emoji}
+            </span>
+          )
+        })}
       </li>
     )
   })
 
   return (
-    <div>
-      <h2>Room {room.roomId}</h2>
-      <div>
-        <h3>Players</h3>
-        <ul>{playerNames}
-        </ul>
+    <main id={styles["game-room-wrapper"]}>
+      <header>
+        <h2>Room ID: {room.roomId}</h2>
+
+      </header>
+      <section>
+        <section id={styles["info-section"]}>
+          <div id={styles["player-list"]}>
+            <h3>Players</h3>
+            <ul>{playerNames}</ul>
+          </div>
+
+          <div>
+            <p>Player controls</p>
+          </div>
+        </section>
+
+      </section>
+
+      <section id={styles["game-board"]}>
+        <p>Game board</p>
+        {gameTiles}
+      </section>
+
+      <section id={styles["event-log"]}>
         <h3>Event Log</h3>
         <ul>
           {eventLogItems}
         </ul>
-      </div>
-      <div>
-        <p>Game board</p>
-      </div>
-      <div>
-        <p>Player controls</p>
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

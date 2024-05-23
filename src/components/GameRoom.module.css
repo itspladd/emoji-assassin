@@ -1,0 +1,40 @@
+#game-room-wrapper {
+  background-color: aliceblue;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  * {
+    outline: 0px solid red;
+  }
+
+  header {
+    background-color: rgb(150, 206, 255);
+  }
+
+  main {
+    display: flex;
+    flex-direction: row;
+  
+    height: 100%;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+}
+
+
+
+#game-board {
+  flex-basis: 60%;
+}
+
+#sidebar {
+  flex-basis: 40%;
+
+
+}
+
