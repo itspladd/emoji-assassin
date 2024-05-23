@@ -5,6 +5,8 @@
   flex-direction: column;
   text-align: left;
 
+
+  /* Debug outline for all elements */
   * {
     outline: 1px solid red;
   }
@@ -25,8 +27,6 @@
     padding: 0;
   }
 }
-
-
 
 #game-board-section {
   flex-basis: 60%;
