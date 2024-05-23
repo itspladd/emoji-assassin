@@ -21,7 +21,7 @@ export const EventLogDispatchFunctions:ReducerDispatchFunctionList<EventLogState
 export const createEventLogActions = (dispatch: Dispatch<ReducerActionPayload>):EventLogActions => {
   const log = (message:string) => {
     const timestampDate = new Date()
-    const timestamp = timestampDate.toLocaleString()
+    const timestamp = timestampDate.toISOString()
   
     dispatch({ type:'add_event_to_log', data: { event: { timestamp, message }}})
   }
