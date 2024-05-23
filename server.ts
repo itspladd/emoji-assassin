@@ -16,7 +16,10 @@ const io = new Server(server)
 
 // Logging middleware
 app.use((req, _, next) => {
-  console.debug(`${req.method} ${req.path}`)
+  const pathsToExclude = /\/@|\/src|\/node_modules/gmi
+  if (!req.path.match(pathsToExclude)) {
+    console.debug(`${req.method} ${req.path}`)
+  }
   
   next()
 })
