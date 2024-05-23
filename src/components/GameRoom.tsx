@@ -1,18 +1,15 @@
-import type { AppState, ReducerActionPayload, StateActions } from "@customTypes/stateManagement";
-import type { Dispatch } from "react";
-
-import styles from './GameRoom.module.css'
+import type { AppState, StateActions } from "@customTypes/stateManagement";
 
 import { playerNameString } from "../helpers/names";
 
+import styles from './GameRoom.module.css'
+
 interface GameRoomProps {
   state: AppState;
-  actions: StateActions;
 }
 
 export default function GameRoom({
-  state,
-  actions
+  state
 } : GameRoomProps) {
   console.log("rendering GameRoom")
   const {
@@ -36,24 +33,25 @@ export default function GameRoom({
   })
 
   const testEmojis = [
-    "❤️🍿🧂🥓🥞",
-    "🕳️🎃🎁🎡🛒",
-    "🎩🏀🎰🎮🪀",
-    "🎷🪕🎻🪵🪜",
-    "🪃⚰️💾🎥📺",
+    "❤️", "🍿", "🧂", "🥓", "🥞",
+    "🕳️", "🎃", "🎁", "🎡", "🛒",
+    "🎩", "🏀", "🎰", "🎮", "🪀",
+    "🎷", "🪕", "🎻", "🪵", "🪜",
+    "🪃", "⚰️", "💾", "🎥", "📺",
   ]
 
-  const gameTiles = testEmojis.map((row:string, i:number) => {
+  const gameTiles = testEmojis.map((emoji:string, i:number) => {
+    const row = Math.floor(i/5)
+    const col = i % 5
+
     return (
-      <li>
-        {Array.from(row).map((emoji, k) => {
-          return (
-            <span key={`${i}${k}`}>
-              {emoji}
-            </span>
-          )
-        })}
-      </li>
+      <span
+        key={`${row}${col}`}
+        id={`${row}${col}`}
+        className={styles["tile"]}
+      >
+        {emoji}
+      </span>
     )
   })
 
@@ -64,7 +62,9 @@ export default function GameRoom({
 
       </header>
       <section>
+
         <section id={styles["info-section"]}>
+
           <div id={styles["player-list"]}>
             <h3>Players</h3>
             <ul>{playerNames}</ul>
@@ -73,13 +73,16 @@ export default function GameRoom({
           <div>
             <p>Player controls</p>
           </div>
+
         </section>
 
       </section>
 
-      <section id={styles["game-board"]}>
-        <p>Game board</p>
-        {gameTiles}
+      <section id={styles["game-board-section"]}>
+        <div id={styles["board"]}>
+          {gameTiles}
+        </div>
+
       </section>
 
       <section id={styles["event-log"]}>
