@@ -6,6 +6,15 @@ export default function setupApi(app:Express, io:Server) {
   // Example route handler 
   //app.get("/message", (_, res) => res.send("Hello from express!"));
 
+  app.get("/rooms", (_, res) => {
+    const activeRooms = RoomManager.getAllActiveRooms()
+
+    // Remove data the behaves badly with JSON
+    // (the _io property causes a circular structure)
+    const list = Object.values(activeRooms).map(room => ({ ...room, _io: undefined}))
+    res.json(...list)
+  })
+
   /** GET /rooms/:id 
    * Returns whether that room exists on the server or not
   */
