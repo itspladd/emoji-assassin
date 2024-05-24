@@ -1,6 +1,8 @@
 import type { AppState, StateActions } from "@customTypes/stateManagement";
+import type { MouseEventHandler } from "react";
 
 import { playerNameString } from "../helpers/names";
+import { SOCKET_EVENTS } from "../socket/socketEvents";
 
 import styles from './GameRoom.module.css'
 
@@ -55,6 +57,10 @@ export default function GameRoom({
     )
   })
 
+  const changeName:MouseEventHandler<HTMLButtonElement> = () => {
+    state.socket.socketInstance.emit(SOCKET_EVENTS.CHANGE_NAME)
+  }
+
   return (
     <main id={styles["game-room-wrapper"]}>
       <header>
@@ -72,6 +78,9 @@ export default function GameRoom({
 
           <div>
             <p>Player controls</p>
+            <button onClick={changeName}>
+              Change name
+            </button>
           </div>
 
         </section>

@@ -39,9 +39,7 @@ export function App() {
   
   const connectionString = connected ? "Connected" : "Disconnected"
 
-  const changeName:MouseEventHandler<HTMLButtonElement> = () => {
-    socket.emit(SOCKET_EVENTS.CHANGE_NAME)
-  }
+
 
   const handleRoomInputChange = (event:ChangeEvent<HTMLInputElement>) => {
     const newId = event.target.value.toUpperCase()
@@ -87,11 +85,7 @@ export function App() {
     
           <h1>{assassinEmojiHeader} {bombEmojiHeader}</h1>
           <p>{connectionString}</p>
-          <div className="card">
-            <button onClick={changeName}>
-              Change name
-            </button>
-          </div>
+
           <button onClick={handleNewGameClick}>
             Start a new game
           </button>
@@ -111,7 +105,6 @@ export function App() {
         
       {roomId && <GameRoom
         state={state}
-        actions={actions}
       />}
     </div>
   );
