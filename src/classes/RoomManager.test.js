@@ -7,30 +7,6 @@ import Room from './Room'
 
 describe("RoomManager singleton", () => {
 
-  let io, serverSocket, clientSocket;
-
-  beforeAll(() => {
-    return new Promise((resolve, reject) => {
-      const httpServer = createServer();
-      io = new Server(httpServer);
-      httpServer.listen(() => {
-        const port = (httpServer.address()).port;
-        clientSocket = ioc(`http://localhost:${port}`);
-        io.on("connection", (socket) => {
-          console.log("connect happened")
-          serverSocket = socket;
-          resolve();
-        });
-      });
-    })
-
-  });
-
-  afterAll(() => {
-    io.close();
-    clientSocket.disconnect();
-  });
-
   it("exists", () => {
       expect(RoomManager).toBeDefined()
   })
@@ -100,9 +76,9 @@ describe("RoomManager singleton", () => {
     describe("addRoom", () => {
       it("throws an error if given invalid parameters, a Room with a bad ID, or an already-tracked Room", () => {
         const bad1 = () => RoomManager.addRoom()
-        const bad2 = () => RoomManager.addRoom(new Room("-abc12"))
-        const good = () => RoomManager.addRoom(new Room("abc123"))
-        const repeated = () => RoomManager.addRoom(new Room("abc123"))
+        const bad2 = () => RoomManager.addRoom(new Room("-abc12", io))
+        const good = () => RoomManager.addRoom(new Room("abc123", io))
+        const repeated = () => RoomManager.addRoom(new Room("abc123", io))
 
         expect(bad1).toThrow(/addRoom/)
         expect(bad2).toThrow(/addRoom/)
@@ -110,8 +86,8 @@ describe("RoomManager singleton", () => {
         expect(repeated).toThrow(/abc123/)
       })
       it("adds the input Room to the _activeRooms list", () => {
-        const newRoom = new Room("abc123")
-        const newRoom2 = new Room("123abc")
+        const newRoom = new Room("abc123", io)
+        const newRoom2 = new Room("123abc", io)
 
         RoomManager.addRoom(newRoom)
         expect(RoomManager.getAllActiveRooms()).toEqual({ abc123: newRoom })
@@ -126,16 +102,16 @@ describe("RoomManager singleton", () => {
 
     describe("removeRoom", () => {
       it("removes the input ID from the tracked room list", () => {
-        RoomManager.addRoom(new Room("abc123"))
+        RoomManager.addRoom(new Room("abc123", io))
         RoomManager.removeRoom("abc123")
 
         expect(RoomManager.getAllActiveRooms()).toEqual({})
       })
       it("does not affect other rooms in the list", () => {
         const rooms = [
-          new Room("abc123"),
-          new Room("abc456"),
-          new Room("abc789")
+          new Room("abc123", io),
+          new Room("abc456", io),
+          new Room("abc789", io)
         ]
 
         rooms.forEach(RoomManager.addRoom)
@@ -151,7 +127,7 @@ describe("RoomManager singleton", () => {
 
     describe("makeUniqueRoom", () => {
       it("returns multiple unique Rooms without hanging", () => {
-        const uniqueRooms = [1,2,3,4,5].map(RoomManager.makeUniqueRoom)
+        const uniqueRooms = [1,2,3,4,5].map(() => RoomManager.makeUniqueRoom(io))
 
         uniqueRooms.forEach(RoomManager.addRoom)
         expect(Object.keys(RoomManager.getAllActiveRooms())).toHaveLength(5)
