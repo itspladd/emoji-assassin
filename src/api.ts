@@ -1,8 +1,8 @@
 import type { Express } from "express";
-import type { Server } from "socket.io";
+import type { CustomServer } from "@customTypes/socket";
 import { RoomManager } from "./classes/RoomManager";
 
-export default function setupApi(app:Express, io:Server) {
+export default function setupApi(app:Express, io:CustomServer) {
   // Example route handler 
   //app.get("/message", (_, res) => res.send("Hello from express!"));
 

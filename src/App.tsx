@@ -8,8 +8,6 @@ import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
 import LabeledInput from './components/LabeledInput'
 import GameRoom from './components/GameRoom';
 
-import { SOCKET_EVENTS } from './socket/socketEvents';
-
 import './reset.css'
 import './App.css'
 
@@ -55,7 +53,7 @@ export function App() {
     }
     console.log("id: ", roomId)
     socket.connect()
-    socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId)
+    socket.emit("joinRoom", roomId)
     actions.room.joinRoom(roomId)
   }
 
@@ -72,7 +70,7 @@ export function App() {
     }
 
     socket.connect()
-    socket.emit(SOCKET_EVENTS.JOIN_ROOM, idToJoin)
+    socket.emit("joinRoom", idToJoin)
     actions.room.joinRoom(idToJoin)
   }
 
@@ -105,6 +103,7 @@ export function App() {
         
       {roomId && <GameRoom
         state={state}
+        actions={actions}
       />}
     </div>
   );

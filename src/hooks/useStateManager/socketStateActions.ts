@@ -1,8 +1,8 @@
-import type { SocketActions, SocketStateDispatchType } from "@customTypes/socket";
+import type { Dispatch } from "react";
+import type { SocketStateActions, SocketStateDispatchType } from "@customTypes/socket";
 import type { AppState, ReducerActionPayload, ReducerDispatchFunctionList } from "@customTypes/stateManagement";
 
 import { stateChangeError } from "../../helpers/logging";
-import type { Dispatch } from "react";
 
 const set_connection_status = (state:AppState, data?: { newStatus?: boolean }) => {
   if (typeof data?.newStatus !== 'boolean') {
@@ -23,7 +23,7 @@ export const SocketStateDispatchFunctions:ReducerDispatchFunctionList<SocketStat
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
-export const createSocketActions = (dispatch: Dispatch<ReducerActionPayload>):SocketActions => {
+export const createSocketActions = (dispatch: Dispatch<ReducerActionPayload>):SocketStateActions => {
   const connect = () => {
     dispatch({ type: 'set_connection_status', data: { newStatus: true }})
   }

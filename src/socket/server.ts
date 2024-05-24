@@ -1,9 +1,7 @@
-import type { Socket, Server } from "socket.io"
-
-import { SOCKET_EVENTS } from "./socketEvents"
+import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
 import { RoomManager } from "../classes/RoomManager"
 
-export default function setupServerSocket(io:Server) {
+export default function setupServerSocket(io:CustomServer) {
   setupServerMiddleware(io)
   
   // When a new socket connects, populate all of the events
@@ -15,23 +13,22 @@ export default function setupServerSocket(io:Server) {
  * @param socket 
  * @param io 
  */
-function setupServerEvents(socket:Socket, io:Server) {
+function setupServerEvents(socket:CustomServerSocket, io:CustomServer) {
   socket.on('connect', () => {
     console.log("user connected:", socket.id)
   })
-  // Built-in events
+
   socket.on('disconnect', () => {
     console.log("user disconnected:", socket.id)
   })
-
-  // Custom named events
-  socket.on(SOCKET_EVENTS.JOIN_ROOM, roomId => {
+  
+  socket.on("joinRoom", roomId => {
     const room = RoomManager.getRoom(roomId)
     room.addPlayer(socket)
   })
 }
 
-function setupServerMiddleware(io:Server) {
+function setupServerMiddleware(io:CustomServer) {
   io.of("/").adapter.on("create-room", (room) => {
     console.log(`room ${room} was created`);
   });

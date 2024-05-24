@@ -1,4 +1,4 @@
-import type { Server } from "socket.io";
+import type { CustomServer } from "@customTypes/socket";
 import Room from "./Room";
 
 type RoomList = Record<string, Room>
@@ -8,7 +8,7 @@ export interface RoomManager {
   removeRoom: (id:string) => void,
   roomExists: (id:string) => boolean,
   getRoom: (id:string) => Room,
-  makeUniqueRoom: (io:Server) => Room,
+  makeUniqueRoom: (io:CustomServer) => Room,
   getAllActiveRooms: () => RoomList,
   resetAllActiveRooms: () => void
 }
@@ -75,7 +75,7 @@ const RoomManagerFactory = function ():RoomManager {
     return {..._activeRooms}
   }
 
-  function makeUniqueRoom(io:Server):Room {
+  function makeUniqueRoom(io:CustomServer):Room {
     let newRoomId = Room.makeId()
 
     while(!_roomIdIsUnique(newRoomId, _activeRooms)) {

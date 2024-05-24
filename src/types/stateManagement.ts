@@ -1,4 +1,4 @@
-import type { SocketActions, SocketState, SocketStateDispatchType } from "./socket"
+import type { SocketStateActions, SocketState, SocketStateDispatchType } from "./socket"
 import type { RoomActions, RoomState, RoomStateDispatchType } from "./rooms"
 import type { EventLogActions, EventLogItem, EventLogStateActionType } from "./events"
 
@@ -27,5 +27,5 @@ export interface ReducerActionPayload {
 export interface StateActions {
   room: RoomActions,
   eventLog: EventLogActions,
-  socket: SocketActions
+  socket: SocketStateActions
 }

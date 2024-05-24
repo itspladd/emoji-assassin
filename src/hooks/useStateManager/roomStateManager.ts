@@ -1,9 +1,9 @@
 import type { ClientPlayerInfo } from "@customTypes/players";
 import type { RoomActions, RoomStateDispatchType } from "@customTypes/rooms";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
+import type { Dispatch } from "react";
 
 import { stateChangeError } from "../../helpers/logging";
-import type { Dispatch } from "react";
 
 const set_room_id = (state:AppState, data?: { roomId?: string | null}) => {
   if (!data?.roomId && data?.roomId !== null && typeof data?.roomId !== "string") {

@@ -1,7 +1,4 @@
-import { expect, describe, it, afterEach, beforeAll, afterAll } from 'vitest'
-import { createServer } from 'node:http';
-import { Server, Socket as ServerSocket } from "socket.io";
-import { io as ioc, Socket as ClientSocket } from "socket.io-client";
+import { expect, describe, it, afterEach } from 'vitest'
 import { TestableRoomManager, RoomManager } from "./RoomManager"
 import Room from './Room'
 

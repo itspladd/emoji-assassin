@@ -1,7 +1,8 @@
-import type { Server, Socket } from "socket.io";
+import type { CustomServer, CustomServerSocket } from "@customTypes/socket";
+
 import { Player } from "./Player";
 import { getRandomFromArray } from "../helpers/arrays";
-import { SOCKET_EVENTS } from "../socket/socketEvents";
+import { playerNameString } from "../helpers/names";
 
 /**
  * Room Class
@@ -67,21 +68,12 @@ export default class Room {
 
   
   /******** Instance properties and methods ********/
-  _id: string;
-  _io: Server;
   _createdAt: Date;
+  _id: string;
+  _io: CustomServer;
   _players: Record<string, Player>
 
-  constructor(id:string, io:Server) {
-    if (!id || typeof id !== "string") {
-      throw new Error(`Attempted to create a room with bad id param: '${JSON.stringify(id)}'`)
-    }
-    if (!io) {
-      throw new Error(`Attempted to create a room with no io param: '${JSON.stringify(io)}'`)
-    }
-    if (io.constructor.name !== "Server") {
-      throw new Error(`Attempted to create a room with the wrong kind of io param. Expected 'Server', got ${io.constructor.name}`)
-    }
+  constructor(id:string, io:CustomServer) {
     this._createdAt = new Date()
     this._id = id
     this._io = io
@@ -92,15 +84,11 @@ export default class Room {
     return this._id
   }
 
-  addPlayer(socket:Socket) {
+  addPlayer(socket:CustomServerSocket) {
     socket.join(this.id)
-    const newPlayer = new Player(socket, this._io)
+    const newPlayer = new Player(socket, this._io, this._id)
     this._players[socket.id] = newPlayer
-    this.broadcast("PLAYER_JOINED", { id: socket.id, name: newPlayer.name })
-  }
-
-  // Convenience function to send an event to all sockets in this room.
-  broadcast(event:keyof typeof SOCKET_EVENTS, ...args:any[]) {
-    this._io.to(this.id).emit(SOCKET_EVENTS[event], ...args)
+    this._io.to(this.id).emit("playerJoined", { id: socket.id, name: newPlayer.name})
+    console.debug(`Created Player ${newPlayer._id} in room ${this._id} with name ${playerNameString(newPlayer.name)}`)
   }
 }

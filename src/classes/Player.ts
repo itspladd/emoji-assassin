@@ -1,25 +1,28 @@
+import type { CustomServer, CustomServerSocket } from "@customTypes/socket"
 import type { PlayerName } from "@customTypes/players"
-import type { Server, Socket } from "socket.io"
-import { makeRandomName, playerNameString } from "../helpers/names"
-import { SOCKET_EVENTS } from "../socket/socketEvents"
+import { makeRandomName } from "../helpers/names"
+
 
 export class Player {
   _id: string
   _name: PlayerName
-  _roomId: string
+  _socket: CustomServerSocket
 
-  constructor(socket:Socket, io:Server) {
+  constructor(
+    socket:CustomServerSocket,
+    io: CustomServer,
+    roomId: string
+  ) {
     this._id = socket.id
+    this._socket = socket
     this._name = makeRandomName()
-    this._roomId = socket.id
 
-    socket.on(SOCKET_EVENTS.CHANGE_NAME, () => {
+    socket.on("changeName", () => {
       console.debug(`${this._id} requested name change`)
       this.name = makeRandomName()
 
-      io.to(this._roomId).emit(SOCKET_EVENTS.PLAYER_NAME_CHANGED, this._id, this.name)
+      io.to(roomId).emit("playerChangedName", this._id, this.name)
     })
-    console.debug(`Created Player ${this._id} in room ${this._roomId} with name ${playerNameString(this.name)}`)
   }
 
   get name() {

@@ -2,16 +2,17 @@ import type { AppState, StateActions } from "@customTypes/stateManagement";
 import type { MouseEventHandler } from "react";
 
 import { playerNameString } from "../helpers/names";
-import { SOCKET_EVENTS } from "../socket/socketEvents";
 
 import styles from './GameRoom.module.css'
 
 interface GameRoomProps {
   state: AppState;
+  actions: StateActions;
 }
 
 export default function GameRoom({
-  state
+  state,
+  actions
 } : GameRoomProps) {
   console.log("rendering GameRoom")
   const {
@@ -57,8 +58,13 @@ export default function GameRoom({
     )
   })
 
-  const changeName:MouseEventHandler<HTMLButtonElement> = () => {
-    state.socket.socketInstance.emit(SOCKET_EVENTS.CHANGE_NAME)
+  const changeName:MouseEventHandler<HTMLButtonElement> = async () => {
+    try {
+      const response = await state.socket.socketInstance.timeout(1000)
+        .emitWithAck("changeName")
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
