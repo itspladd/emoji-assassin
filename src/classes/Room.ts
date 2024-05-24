@@ -69,9 +69,20 @@ export default class Room {
   /******** Instance properties and methods ********/
   _id: string;
   _io: Server;
+  _createdAt: Date;
   _players: Record<string, Player>
 
   constructor(id:string, io:Server) {
+    if (!id || typeof id !== "string") {
+      throw new Error(`Attempted to create a room with bad id param: '${JSON.stringify(id)}'`)
+    }
+    if (!io) {
+      throw new Error(`Attempted to create a room with no io param: '${JSON.stringify(io)}'`)
+    }
+    if (io.constructor.name !== "Server") {
+      throw new Error(`Attempted to create a room with the wrong kind of io param. Expected 'Server', got ${io.constructor.name}`)
+    }
+    this._createdAt = new Date()
     this._id = id
     this._io = io
     this._players = {}

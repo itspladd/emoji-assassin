@@ -1,8 +1,35 @@
-import { expect, test, describe, it, afterEach } from 'vitest'
+import { expect, describe, it, afterEach, beforeAll, afterAll } from 'vitest'
+import { createServer } from 'node:http';
+import { Server, Socket as ServerSocket } from "socket.io";
+import { io as ioc, Socket as ClientSocket } from "socket.io-client";
 import { TestableRoomManager, RoomManager } from "./RoomManager"
 import Room from './Room'
 
 describe("RoomManager singleton", () => {
+
+  let io, serverSocket, clientSocket;
+
+  beforeAll(() => {
+    return new Promise((resolve, reject) => {
+      const httpServer = createServer();
+      io = new Server(httpServer);
+      httpServer.listen(() => {
+        const port = (httpServer.address()).port;
+        clientSocket = ioc(`http://localhost:${port}`);
+        io.on("connection", (socket) => {
+          console.log("connect happened")
+          serverSocket = socket;
+          resolve();
+        });
+      });
+    })
+
+  });
+
+  afterAll(() => {
+    io.close();
+    clientSocket.disconnect();
+  });
 
   it("exists", () => {
       expect(RoomManager).toBeDefined()
@@ -54,8 +81,8 @@ describe("RoomManager singleton", () => {
       })
       it("returns true if the input room ID is not tracked in the input list yet, and false otherwise", () => {
         const testList = {}
-        const testRoom1 = new Room("ABC123")
-        const testRoom2 = new Room("ABC123")
+        const testRoom1 = new Room("ABC123", io)
+        const testRoom2 = new Room("ABC123", io)
         expect(TestableRoomManager._roomIdIsUnique(testRoom1.id, testList)).toBe(true)
 
         testList[testRoom1.id] = testRoom1
