@@ -28,8 +28,6 @@ Each Round is an individual instance of the game. At the beginning of a Round, a
 
 All non-Assassin players are shown one safe emoji. This emoji is different for every Player.
 
-The Assassin 
-
 A player is randomly selected to have the first turn.
 
 On their turn, a Player may either:
@@ -38,7 +36,7 @@ On their turn, a Player may either:
 
 On their turn, an Assassin cannot guess. They can only "Pass" their turn by allowing the timer to run out.
 
-After every player has taken a turn, there is a voting round where everyone can vote on who they think the Assassin is. A majority vote eliminates that player from the current match.
+After every player has taken a turn, there is a voting round where everyone can vote on who they think the Assassin is. A majority vote eliminates that player from the current Round.
 
 If a Player selects the Bomb, they are eliminated from the current match. The Assassin selects a new Bomb and all players are shown a new safe emoji.
 
