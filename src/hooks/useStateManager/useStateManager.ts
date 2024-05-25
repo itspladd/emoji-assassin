@@ -27,7 +27,6 @@ const initialState:AppState = {
  * @returns 
  */
 export default function useStateManager():StateManagerReturn {
-  console.log("running hook")
   const [state, dispatch] = useReducer(reducer, initialState)
   
   const actions = {

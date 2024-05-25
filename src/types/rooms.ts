@@ -1,13 +1,14 @@
-import type { ClientPlayerInfo, PlayerList } from "./players";
+import type { ClientPlayerInfo, ClientPlayerList } from "./players";
 
 /** Client-side state management types */
 export interface RoomState {
   roomId: string | null,
-  playersInRoom: PlayerList,
+  playersInRoom: ClientPlayerList,
 }
 
 export type RoomStateDispatchType =
-  "set_room_id"
+  "set_room_state" 
+  |"set_room_id"
   | "add_player"
   | "remove_player"
   | "edit_player"
@@ -18,7 +19,8 @@ export interface RoomActions {
   addPlayer: (player:ClientPlayerInfo) => void,
   removePlayer: (id:string) => void,
   editPlayer: (id:string, newData:Partial<ClientPlayerInfo>) => void,
-  changeName: () => void
+  changeName: () => void,
+  setRoomState: (room:RoomState) => void
 }
 /** Server-side types */
 

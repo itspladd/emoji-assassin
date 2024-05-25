@@ -3,6 +3,8 @@ import type { CustomServer, CustomServerSocket } from "@customTypes/socket";
 import { Player } from "./Player";
 import { getRandomFromArray } from "../helpers/arrays";
 import { playerNameString } from "../helpers/names";
+import { RoomState } from "@customTypes/rooms";
+import { ClientPlayerList } from "@customTypes/players";
 
 /**
  * Room Class
@@ -84,11 +86,39 @@ export default class Room {
     return this._id
   }
 
+  get clientRoomState():RoomState {
+    const playersInRoom = this.clientPlayerList
+
+    return {
+      roomId: this.id,
+      playersInRoom
+    }
+  }
+
+  get clientPlayerList() {
+    const results:ClientPlayerList = {}
+
+    Object.keys(this._players).forEach(id => {
+      results[id] = this._players[id].clientState
+    })
+
+    return results
+  }
+
   addPlayer(socket:CustomServerSocket) {
-    socket.join(this.id)
+    // Instantiate the player and add it to the room's tracker
     const newPlayer = new Player(socket, this._io, this._id)
     this._players[socket.id] = newPlayer
-    this._io.to(this.id).emit("playerJoined", { id: socket.id, name: newPlayer.name})
+
+    // Tell the socket to join the room channel
+    socket.join(this.id)
+
+    // Tell everyone else in the room that this player joined
+    socket.to(this.id).emit("playerJoined", { id: socket.id, name: newPlayer.name})
+
+    // Tell the joining player to update their client state
+    this._io.to(socket.id).emit("syncRoomState", this.clientRoomState)
+
     console.debug(`Created Player ${newPlayer._id} in room ${this._id} with name ${playerNameString(newPlayer.name)}`)
   }
 }

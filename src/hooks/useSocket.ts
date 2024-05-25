@@ -1,9 +1,10 @@
 
-import type { CustomClientSocket } from '@customTypes/socket';
+import type { CustomClientSocket, ServerToClientEvents } from '@customTypes/socket';
 import type { StateActions } from '@customTypes/stateManagement';
 import type { ClientPlayerInfo, PlayerName } from '@customTypes/players';
 import { useEffect } from 'react';
 import { playerNameString } from '../helpers/names';
+import { RoomState } from '@customTypes/rooms';
 
 /**
  * Initializes the client socket connection and hooks it up to the state management system.
@@ -11,11 +12,17 @@ import { playerNameString } from '../helpers/names';
  * @param dispatch 
  */
 export default function useSocket(socket: CustomClientSocket, actions:StateActions) {
+  // Tracker to prevent creating extra handlers
+  let socketInitDone = false
 
+  // Extract log function for convenience
   const { log } = actions.eventLog
 
   useEffect(() => {
-    console.debug('useSocket: useEffect fired')
+    console.debug('useSocket: useEffect firing. Init value:', socketInitDone)
+    if (socketInitDone) {
+      return
+    }
   
     function onConnect() {
       log(`${socket.id} (you) connected`)
@@ -42,19 +49,36 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.room.editPlayer(id, { name })
     }
 
-    socket.on('connect', onConnect)
-    socket.on('disconnect', onDisconnect)
+    function onSyncRoomState(room:RoomState) {
+      log(`Syncing room state...`)
+      actions.room.setRoomState(room)
+    }
 
-    socket.on("playerJoined", onPlayerJoined)
-    socket.on("playerLeft", onPlayerLeft)
-    socket.on("playerChangedName", onPlayerNameChange)
+    const eventHandlerMap:ServerToClientEvents = {
+      connect: onConnect,
+      disconnect: onDisconnect,
+      playerJoined: onPlayerJoined,
+      playerLeft: onPlayerLeft,
+      playerChangedName: onPlayerNameChange,
+      syncRoomState: onSyncRoomState,
+    }
 
+    // Init event listeners
+    const keys = Object.keys(eventHandlerMap) as Array<keyof typeof eventHandlerMap>
+    keys.forEach((e) => {
+      socket.on(e, eventHandlerMap[e])
+    })
+
+    // Set tracker to indicate that we've created the listeners
+    socketInitDone = true
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off("playerJoined", onPlayerJoined)
-      socket.off("playerLeft", onPlayerLeft)
-      socket.off("playerChangedName", onPlayerNameChange)
+      // Clean up event listeners
+      keys.forEach(e => {
+        socket.off(e, eventHandlerMap[e])
+      })
+
+      // Reset the tracker
+      socketInitDone = false
     };
-  }, [])
+  }, [socketInitDone])
 }

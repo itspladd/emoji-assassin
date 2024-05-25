@@ -4,12 +4,12 @@ import type { MouseEventHandler } from "react";
 import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
-import { PlayerList } from "@customTypes/players";
+import { ClientPlayerList } from "@customTypes/players";
 import { EventLogItem } from "@customTypes/events";
 
 interface GameRoomProps {
   roomId: string,
-  allPlayers: PlayerList,
+  allPlayers: ClientPlayerList,
   eventLog: EventLogItem[],
   changeName: () => void
 }

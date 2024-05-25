@@ -1,5 +1,5 @@
 import type { CustomServer, CustomServerSocket } from "@customTypes/socket"
-import type { PlayerName } from "@customTypes/players"
+import type { ClientPlayerInfo, PlayerName } from "@customTypes/players"
 import { makeRandomName } from "../helpers/names"
 
 
@@ -25,11 +25,22 @@ export class Player {
     })
   }
 
+  get id() {
+    return this._id
+  }
+
   get name() {
     return this._name
   }
 
   set name(name:PlayerName) {
     this._name = name
+  }
+
+  get clientState():ClientPlayerInfo {
+    return {
+      name: this.name,
+      id: this._id
+    }
   }
 }

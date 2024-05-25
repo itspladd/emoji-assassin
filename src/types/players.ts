@@ -16,4 +16,4 @@ export interface ClientPlayerInfo {
   id: string
 }
 
-export type PlayerList = Record<string, ClientPlayerInfo>
+export type ClientPlayerList = Record<string, ClientPlayerInfo>

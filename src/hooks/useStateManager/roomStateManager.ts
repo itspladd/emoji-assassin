@@ -1,10 +1,23 @@
 import type { ClientPlayerInfo } from "@customTypes/players";
-import type { RoomActions, RoomStateDispatchType } from "@customTypes/rooms";
+import type { RoomActions, RoomState, RoomStateDispatchType } from "@customTypes/rooms";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
 import type { Dispatch } from "react";
 
 import { stateChangeError } from "../../helpers/logging";
 import { CustomClientSocket } from "@customTypes/socket";
+
+const set_room_state = (state:AppState, data?: { room?:RoomState }) => {
+  if (!data?.room) {
+    return stateChangeError("Attempted to set room data with invalid data", state, data)
+  }
+  
+  return {
+    ...state,
+    room: {
+      ...data.room
+    }
+  }
+}
 
 const set_room_id = (state:AppState, data?: { roomId?: string | null}) => {
   if (!data?.roomId && data?.roomId !== null && typeof data?.roomId !== "string") {
@@ -94,7 +107,8 @@ export const RoomStateDispatchFunctions:ReducerDispatchFunctionList<RoomStateDis
   set_room_id,
   add_player,
   remove_player,
-  edit_player
+  edit_player,
+  set_room_state
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
@@ -102,14 +116,19 @@ export const createRoomActions = (
   dispatch: Dispatch<ReducerActionPayload>,
   socket: CustomClientSocket
 ) : RoomActions => {
-  const leaveRoom = () => {
-    dispatch({type: 'set_room_id', data: {roomId: null}})
+
+  const setRoomState = (room:RoomState) => {
+    dispatch({type: 'set_room_state', data: {room}})
   }
-  
+
   const joinRoom = (roomId: string) => {
     if (!socket.connected) socket.connect()
     socket.emit("joinRoom", roomId)
     dispatch({type: 'set_room_id', data: {roomId}})
+  }
+
+  const leaveRoom = () => {
+    dispatch({type: 'set_room_id', data: {roomId: null}})
   }
 
   const addPlayer = (player: ClientPlayerInfo) => {
@@ -125,13 +144,8 @@ export const createRoomActions = (
   }
 
   const changeName = async () => {
-    try {
-      const response = await socket.timeout(1000).emitWithAck("changeName")
-    } catch (err) {
-      console.log(err)
-    }
+    socket.emit("changeName")
   }
-    
 
   return {
     leaveRoom,
@@ -139,7 +153,8 @@ export const createRoomActions = (
     addPlayer,
     removePlayer,
     editPlayer,
-    changeName
+    changeName,
+    setRoomState
   }
 }
 
