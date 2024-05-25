@@ -144,6 +144,7 @@ export const createRoomActions = (
   }
 
   const changeName = async () => {
+    // The player's name doesn't change locally until the socket broadcasts the change to all players
     socket.emit("changeName")
   }
 
