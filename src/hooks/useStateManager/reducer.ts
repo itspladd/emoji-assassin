@@ -1,8 +1,8 @@
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload, ReducerDispatchType } from "@customTypes/stateManagement";
 
 import { RoomStateDispatchFunctions } from "./roomStateManager";
-import { SocketStateDispatchFunctions } from "./socketStateActions";
-import { EventLogDispatchFunctions } from "./eventLogStateActions";
+import { SocketStateDispatchFunctions } from "./socketStateManager";
+import { EventLogDispatchFunctions } from "./eventLogStateManager";
 
 const reducerActions:ReducerDispatchFunctionList<ReducerDispatchType> = {
   ...RoomStateDispatchFunctions,

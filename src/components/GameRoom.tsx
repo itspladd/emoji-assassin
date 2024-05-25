@@ -1,26 +1,28 @@
-import type { AppState, StateActions } from "@customTypes/stateManagement";
+import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
 import type { MouseEventHandler } from "react";
 
 import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
+import { PlayerList } from "@customTypes/players";
+import { EventLogItem } from "@customTypes/events";
 
 interface GameRoomProps {
-  state: AppState;
-  actions: StateActions;
+  roomId: string,
+  allPlayers: PlayerList,
+  eventLog: EventLogItem[],
+  changeName: () => void
 }
 
 export default function GameRoom({
-  state,
-  actions
+  roomId,
+  allPlayers,
+  eventLog,
+  changeName
 } : GameRoomProps) {
   console.log("rendering GameRoom")
-  const {
-    room,
-    eventLog
-  } = state
 
-  const playerNames = Object.values(room.playersInRoom)
+  const playerNames = Object.values(allPlayers)
     .map(({ name, id }) => (
       <li key={id}>
         {playerNameString(name)}
@@ -58,19 +60,10 @@ export default function GameRoom({
     )
   })
 
-  const changeName:MouseEventHandler<HTMLButtonElement> = async () => {
-    try {
-      const response = await state.socket.socketInstance.timeout(1000)
-        .emitWithAck("changeName")
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
   return (
     <main id={styles["game-room-wrapper"]}>
       <header>
-        <h2>Room ID: {room.roomId}</h2>
+        <h2>Room ID: {roomId}</h2>
 
       </header>
       <section>

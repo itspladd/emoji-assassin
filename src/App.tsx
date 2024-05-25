@@ -1,48 +1,30 @@
 
-import { useState, ChangeEvent, MouseEventHandler } from 'react';
+import { MouseEventHandler } from 'react';
 import axios from 'axios';
 import { getRandomFromArray } from './helpers/arrays';
 
 import { BOMB_EMOJIS, ASSASSIN_EMOJIS } from './constants/emojis';
 
-import LabeledInput from './components/LabeledInput'
 import GameRoom from './components/GameRoom';
 
 import './reset.css'
 import './App.css'
 
 import useStateManager from './hooks/useStateManager';
+import JoinRoomInput from './components/JoinRoomInput';
+import useSocket from './hooks/useSocket';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
 
 export function App() {
-  const {state, actions} = useStateManager()
-/*   const {
-    isConnected,
-    eventLog,
-    playersInRoom
-  // @ts-expect-error Some annoying Socket type mismatch that isn't super important right now
-  } = useSocket(socket); */
-  const [roomIdInput, setRoomIdInput] = useState("")
+  console.log("rendering App")
+  const {actions, accessors} = useStateManager()
+  useSocket(accessors.socket(), actions)
 
-  const { 
-    socketInstance: socket,
-    connected
-  } = state.socket 
-
-  const {
-    roomId
-  } = state.room
+  const roomId = accessors.roomId()
   
-  const connectionString = connected ? "Connected" : "Disconnected"
-
-
-
-  const handleRoomInputChange = (event:ChangeEvent<HTMLInputElement>) => {
-    const newId = event.target.value.toUpperCase()
-    setRoomIdInput(newId)
-  }
+  const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
 
   const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
@@ -51,29 +33,9 @@ export function App() {
     if (!roomId) {
       return console.error("Error: no newRoomId received. Response object: ", response)
     }
-    console.log("id: ", roomId)
-    socket.connect()
-    socket.emit("joinRoom", roomId)
+
     actions.room.joinRoom(roomId)
   }
-
-  const handleJoinRoomSubmit:MouseEventHandler<HTMLButtonElement> = async () => {
-    const idToJoin = roomIdInput
-    const response:{data: {roomIdValid:boolean}} = await axios.get(`/rooms/${idToJoin}`)
-    const roomIdValid = response?.data?.roomIdValid
-
-    if (typeof roomIdValid !== "boolean") {
-      return console.error(`GET /rooms/${idToJoin} failed. Response object:`, response)
-    }
-    if (roomIdValid === false) {
-      return console.debug(`Invalid ID`)
-    }
-
-    socket.connect()
-    socket.emit("joinRoom", idToJoin)
-    actions.room.joinRoom(idToJoin)
-  }
-
 
   return (
     <div>
@@ -87,23 +49,16 @@ export function App() {
           <button onClick={handleNewGameClick}>
             Start a new game
           </button>
-          <div>
-            <button onClick={handleJoinRoomSubmit}>Join existing room</button>
-            <LabeledInput
-              label="Room ID"
-              value={roomIdInput}
-              onChange={handleRoomInputChange}
-              placeholder = {"A1C2B3"}
-            />
-          </div>
 
+          <JoinRoomInput joinRoomAction={actions.room.joinRoom} />
         </div>
       )}
-        
-        
+
       {roomId && <GameRoom
-        state={state}
-        actions={actions}
+        roomId={roomId}
+        allPlayers={accessors.allPlayers()}
+        eventLog={accessors.eventLog()}
+        changeName={actions.room.changeName}
       />}
     </div>
   );

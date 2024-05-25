@@ -4,6 +4,7 @@ import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from
 import type { Dispatch } from "react";
 
 import { stateChangeError } from "../../helpers/logging";
+import { CustomClientSocket } from "@customTypes/socket";
 
 const set_room_id = (state:AppState, data?: { roomId?: string | null}) => {
   if (!data?.roomId && data?.roomId !== null && typeof data?.roomId !== "string") {
@@ -97,12 +98,17 @@ export const RoomStateDispatchFunctions:ReducerDispatchFunctionList<RoomStateDis
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
-export const createRoomActions = (dispatch: Dispatch<ReducerActionPayload>):RoomActions => {
+export const createRoomActions = (
+  dispatch: Dispatch<ReducerActionPayload>,
+  socket: CustomClientSocket
+) : RoomActions => {
   const leaveRoom = () => {
     dispatch({type: 'set_room_id', data: {roomId: null}})
   }
   
   const joinRoom = (roomId: string) => {
+    if (!socket.connected) socket.connect()
+    socket.emit("joinRoom", roomId)
     dispatch({type: 'set_room_id', data: {roomId}})
   }
 
@@ -118,12 +124,22 @@ export const createRoomActions = (dispatch: Dispatch<ReducerActionPayload>):Room
     dispatch({type: 'edit_player', data: { playerId, newPlayerData}})
   }
 
+  const changeName = async () => {
+    try {
+      const response = await socket.timeout(1000).emitWithAck("changeName")
+    } catch (err) {
+      console.log(err)
+    }
+  }
+    
+
   return {
     leaveRoom,
     joinRoom,
     addPlayer,
     removePlayer,
-    editPlayer
+    editPlayer,
+    changeName
   }
 }
 

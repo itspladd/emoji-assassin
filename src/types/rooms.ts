@@ -17,7 +17,8 @@ export interface RoomActions {
   joinRoom: (id:string) => void,
   addPlayer: (player:ClientPlayerInfo) => void,
   removePlayer: (id:string) => void,
-  editPlayer: (id:string, newData:Partial<ClientPlayerInfo>) => void
+  editPlayer: (id:string, newData:Partial<ClientPlayerInfo>) => void,
+  changeName: () => void
 }
 /** Server-side types */
 
