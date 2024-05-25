@@ -1,13 +1,15 @@
 import type { SocketStateActions, SocketState, SocketStateDispatchType } from "./socket"
 import type { RoomActions, RoomState, RoomStateDispatchType } from "./rooms"
-import type { EventLogActions, EventLogItem, EventLogStateActionType } from "./events"
+import type { EventLogActions, EventLogItem, EventLogStateDispatchType } from "./events"
+import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType } from "./game"
 import { ClientPlayerInfo } from "./players"
 
 /** All types here should be client-side only. */
 export type ReducerDispatchType = 
   SocketStateDispatchType |
   RoomStateDispatchType |
-  EventLogStateActionType
+  EventLogStateDispatchType |
+  ClientGameStateDispatchType
 
 type ReducerDispatchFunction = (state:AppState, data?:Record<string, any>) => AppState
 
@@ -17,7 +19,8 @@ export type ReducerDispatchFunctionList<DispatchType> = Record<Extract<DispatchT
 export interface AppState {
   socket: SocketState,
   room: RoomState,
-  eventLog: EventLogItem[]
+  eventLog: EventLogItem[],
+  game: ClientGameState
 }
 
 export interface ReducerActionPayload {
@@ -28,7 +31,8 @@ export interface ReducerActionPayload {
 export interface StateActions {
   room: RoomActions,
   eventLog: EventLogActions,
-  socket: SocketStateActions
+  socket: SocketStateActions,
+  game: ClientGameStateActions
 }
 
 export interface StateAccessors {
@@ -38,6 +42,7 @@ export interface StateAccessors {
   socketConnected: () => SocketState['connected'];
   socket: () => SocketState['socketInstance'];
   eventLog: () => AppState['eventLog'];
+  tiles: () => ClientGameState['tiles']
 }
 
 export type StateManagerReturn = {

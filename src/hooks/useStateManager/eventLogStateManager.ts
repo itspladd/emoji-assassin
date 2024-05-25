@@ -1,4 +1,4 @@
-import type { EventLogActions, EventLogItem, EventLogStateActionType } from "@customTypes/events";
+import type { EventLogActions, EventLogItem, EventLogStateDispatchType } from "@customTypes/events";
 import type { AppState, ReducerActionPayload, ReducerDispatchFunctionList } from "@customTypes/stateManagement";
 import { stateChangeError } from "../../helpers/logging";
 import type { Dispatch } from "react";
@@ -14,7 +14,7 @@ const add_event_to_log = (state: AppState, data?: { event?:EventLogItem }) => {
   }
 }
 
-export const EventLogDispatchFunctions:ReducerDispatchFunctionList<EventLogStateActionType> = {
+export const EventLogDispatchFunctions:ReducerDispatchFunctionList<EventLogStateDispatchType> = {
   add_event_to_log
 }
 

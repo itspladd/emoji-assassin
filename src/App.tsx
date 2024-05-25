@@ -59,6 +59,7 @@ export function App() {
         allPlayers={accessors.allPlayers()}
         eventLog={accessors.eventLog()}
         changeName={actions.room.changeName}
+        tiles={accessors.tiles()}
       />}
     </div>
   );

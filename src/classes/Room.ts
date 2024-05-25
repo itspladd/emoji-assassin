@@ -5,6 +5,7 @@ import { getRandomFromArray } from "../helpers/arrays";
 import { playerNameString } from "../helpers/names";
 import { RoomState } from "@customTypes/rooms";
 import { ClientPlayerList } from "@customTypes/players";
+import Game from "./Game";
 
 /**
  * Room Class
@@ -74,12 +75,15 @@ export default class Room {
   _id: string;
   _io: CustomServer;
   _players: Record<string, Player>
+  _game: Game;
 
   constructor(id:string, io:CustomServer) {
     this._createdAt = new Date()
     this._id = id
     this._io = io
     this._players = {}
+
+    this._game = new Game()
   }
 
   get id() {
@@ -117,7 +121,7 @@ export default class Room {
     socket.to(this.id).emit("playerJoined", { id: socket.id, name: newPlayer.name})
 
     // Tell the joining player to update their client state
-    this._io.to(socket.id).emit("syncRoomState", this.clientRoomState)
+    this._io.to(socket.id).emit("syncRoomAndGameState", this.clientRoomState, this._game.clientGameState)
 
     console.debug(`Created Player ${newPlayer._id} in room ${this._id} with name ${playerNameString(newPlayer.name)}`)
   }

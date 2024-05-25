@@ -2,6 +2,7 @@ import type { Socket as ServerSocket, Server } from "socket.io";
 import type { Socket as ClientSocket } from "socket.io-client"
 import type { ClientPlayerInfo, PlayerName } from "./players";
 import type { RoomState } from "./rooms";
+import { ClientGameState } from "./game";
 
 /** Socket.IO event maps */
 export interface ClientToServerEvents {
@@ -16,7 +17,7 @@ export interface ServerToClientEvents {
   playerJoined: (player:ClientPlayerInfo) => void;
   playerLeft: (playerId:string) => void;
   playerChangedName: (playerId:string, name:PlayerName) => void,
-  syncRoomState: (room:RoomState) => void
+  syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void
 }
 
 export type CustomServer = Server<ClientToServerEvents, ServerToClientEvents>

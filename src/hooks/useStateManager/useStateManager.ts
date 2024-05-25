@@ -7,6 +7,7 @@ import { socket } from '../../socket/client';
 import { createRoomActions } from "./roomStateManager";
 import { createSocketActions } from "./socketStateManager";
 import { createEventLogActions } from "./eventLogStateManager";
+import { createGameActions } from "./gameStateManager";
 
 const initialState:AppState = {
   socket: {
@@ -17,7 +18,10 @@ const initialState:AppState = {
     roomId: null,
     playersInRoom: {},
   },
-  eventLog: []
+  eventLog: [],
+  game: {
+    tiles: []
+  }
 }
 
 /**
@@ -32,7 +36,8 @@ export default function useStateManager():StateManagerReturn {
   const actions = {
     room: createRoomActions(dispatch, socket),
     socket: createSocketActions(dispatch, socket),
-    eventLog: createEventLogActions(dispatch)
+    eventLog: createEventLogActions(dispatch),
+    game: createGameActions(dispatch, socket)
   }
   
   const accessors = {
@@ -41,7 +46,8 @@ export default function useStateManager():StateManagerReturn {
     player: (id: string) => state.room.playersInRoom[id] ?? null,
     socketConnected: () => state.socket.connected,
     socket: () => state.socket.socketInstance,
-    eventLog: () => state.eventLog
+    eventLog: () => state.eventLog,
+    tiles: () => state.game.tiles
   }
 
   return {

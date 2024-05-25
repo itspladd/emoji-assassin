@@ -1,16 +1,16 @@
-import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
-import type { MouseEventHandler } from "react";
+import type { ClientPlayerList } from "@customTypes/players";
+import type { EventLogItem } from "@customTypes/events";
+import type { GameTile } from "@customTypes/game";
 
 import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
-import { ClientPlayerList } from "@customTypes/players";
-import { EventLogItem } from "@customTypes/events";
 
 interface GameRoomProps {
   roomId: string,
   allPlayers: ClientPlayerList,
   eventLog: EventLogItem[],
+  tiles: GameTile[],
   changeName: () => void
 }
 
@@ -18,6 +18,7 @@ export default function GameRoom({
   roomId,
   allPlayers,
   eventLog,
+  tiles,
   changeName
 } : GameRoomProps) {
   console.log("rendering GameRoom")
@@ -37,25 +38,20 @@ export default function GameRoom({
     )
   })
 
-  const testEmojis = [
-    "❤️", "🍿", "🧂", "🥓", "🥞",
-    "🕳️", "🎃", "🎁", "🎡", "🛒",
-    "🎩", "🏀", "🎰", "🎮", "🪀",
-    "🎷", "🪕", "🎻", "🪵", "🪜",
-    "🪃", "⚰️", "💾", "🎥", "📺",
-  ]
-
-  const gameTiles = testEmojis.map((emoji:string, i:number) => {
-    const row = Math.floor(i/5)
-    const col = i % 5
+  const gameTiles = tiles.map(tile => {
+    const {
+      row,
+      column,
+      image
+    } = tile
 
     return (
       <span
-        key={`${row}${col}`}
-        id={`${row}${col}`}
+        key={`${row}${column}`}
+        id={`${row}${column}`}
         className={styles["tile"]}
       >
-        {emoji}
+        {image}
       </span>
     )
   })

@@ -6,7 +6,7 @@ export interface EventLogItem {
 
 
 /** Client-side state management types */
-export type EventLogStateActionType =
+export type EventLogStateDispatchType =
   "add_event_to_log"
 
 export interface EventLogActions {

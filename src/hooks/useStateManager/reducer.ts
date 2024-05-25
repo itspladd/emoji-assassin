@@ -3,11 +3,13 @@ import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload, Reduc
 import { RoomStateDispatchFunctions } from "./roomStateManager";
 import { SocketStateDispatchFunctions } from "./socketStateManager";
 import { EventLogDispatchFunctions } from "./eventLogStateManager";
+import { GameStateDispatchFunctions } from "./gameStateManager"
 
 const reducerActions:ReducerDispatchFunctionList<ReducerDispatchType> = {
   ...RoomStateDispatchFunctions,
   ...SocketStateDispatchFunctions,
-  ...EventLogDispatchFunctions
+  ...EventLogDispatchFunctions,
+  ...GameStateDispatchFunctions
 }
 
 export default function reducer(state:AppState, action:ReducerActionPayload) {

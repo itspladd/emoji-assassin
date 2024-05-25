@@ -5,6 +5,7 @@ import type { ClientPlayerInfo, PlayerName } from '@customTypes/players';
 import { useEffect } from 'react';
 import { playerNameString } from '../helpers/names';
 import { RoomState } from '@customTypes/rooms';
+import { ClientGameState } from '@customTypes/game';
 
 /**
  * Initializes the client socket connection and hooks it up to the state management system.
@@ -49,9 +50,10 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.room.editPlayer(id, { name })
     }
 
-    function onSyncRoomState(room:RoomState) {
-      log(`Syncing room state...`)
+    function onSyncRoomAndGameState(room:RoomState, game:ClientGameState) {
+      log(`Syncing room and game state...`)
       actions.room.setRoomState(room)
+      actions.game.setGameState(game)
     }
 
     const eventHandlerMap:ServerToClientEvents = {
@@ -60,7 +62,7 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerJoined: onPlayerJoined,
       playerLeft: onPlayerLeft,
       playerChangedName: onPlayerNameChange,
-      syncRoomState: onSyncRoomState,
+      syncRoomAndGameState: onSyncRoomAndGameState,
     }
 
     // Init event listeners
