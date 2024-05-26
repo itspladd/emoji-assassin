@@ -6,6 +6,12 @@ export default function setupApi(app:Express, io:CustomServer) {
   // Example route handler 
   //app.get("/message", (_, res) => res.send("Hello from express!"));
 
+  app.get("/sockets", async (_, res) => {
+    const sockets = await io.fetchSockets()
+    const ids = sockets.map(socket => socket.id)
+    res.json(ids)
+  })
+
   app.get("/rooms", (_, res) => {
     const activeRooms = RoomManager.getAllActiveRooms()
 
