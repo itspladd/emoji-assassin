@@ -5,6 +5,7 @@ import type { GameTile } from "@customTypes/game";
 import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
+import EventLog from "./EventLog";
 
 interface GameRoomProps {
   roomId: string,
@@ -30,13 +31,7 @@ export default function GameRoom({
       </li>
     ))
 
-  const eventLogItems = eventLog.map(({ message, timestamp }) => {
-    return (
-      <li key={timestamp}>
-        {message}
-      </li>
-    )
-  })
+
 
   const gameTiles = tiles.map(tile => {
     const {
@@ -62,23 +57,19 @@ export default function GameRoom({
         <h2>Room ID: {roomId}</h2>
 
       </header>
-      <section>
+      <section id={styles["info-section"]}>
 
-        <section id={styles["info-section"]}>
+        <div id={styles["player-list"]}>
+          <h3>Players</h3>
+          <ul>{playerNames}</ul>
+        </div>
 
-          <div id={styles["player-list"]}>
-            <h3>Players</h3>
-            <ul>{playerNames}</ul>
-          </div>
-
-          <div>
-            <p>Player controls</p>
-            <button onClick={changeName}>
-              Change name
-            </button>
-          </div>
-
-        </section>
+        <div>
+          <p>Player controls</p>
+          <button onClick={changeName}>
+            Change name
+          </button>
+        </div>
 
       </section>
 
@@ -89,12 +80,7 @@ export default function GameRoom({
 
       </section>
 
-      <section id={styles["event-log"]}>
-        <h3>Event Log</h3>
-        <ul>
-          {eventLogItems}
-        </ul>
-      </section>
+      <EventLog events={eventLog} />
     </main>
   )
 }

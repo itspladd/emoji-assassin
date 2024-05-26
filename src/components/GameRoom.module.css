@@ -29,7 +29,6 @@
 }
 
 #game-board-section {
-  flex-basis: 60%;
 
   #board {
     padding: 1rem;
@@ -47,8 +46,8 @@
   }
 }
 
-#sidebar {
-  flex-basis: 40%;
+#info-section {
+  flex-basis: 30%;
 
 
 }
