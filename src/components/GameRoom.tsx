@@ -26,8 +26,9 @@ export default function GameRoom({
 
   const playerNames = Object.values(allPlayers)
     .map(({ name, id, color }) => (
-      <li key={id}>
-        {playerNameString(name)}: {color}
+      <li key={id} className={styles["player-name"]}>
+        <span className={styles["color-square"] + " " + styles[color]}></span>
+        <span className={styles["name"]}>{playerNameString(name)}</span>
       </li>
     ))
 
@@ -59,13 +60,13 @@ export default function GameRoom({
       </header>
       <section id={styles["info-section"]}>
 
-        <div id={styles["player-list"]}>
+        <div>
           <h3>Players</h3>
-          <ul>{playerNames}</ul>
+          <ul id={styles["player-list"]}>{playerNames}</ul>
         </div>
 
         <div>
-          <p>Player controls</p>
+          <h3>Player controls</h3>
           <button onClick={changeName}>
             Change name
           </button>
