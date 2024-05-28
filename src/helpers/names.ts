@@ -37,7 +37,7 @@ export function getArticle(word:string):Article {
 /**
  * Helper function for basic name display that gets reused a lot
  */
-export function playerNameString({
+export function playerNameStringWithArticle({
   adjectiveArticle,
   adjective,
   noun
@@ -47,4 +47,14 @@ export function playerNameString({
     articleString = adjectiveArticle.replace('a', 'A')
   }
   return `${articleString} ${adjective} ${noun}`
+}
+
+/**
+ * Helper function for basic name display that gets reused a lot
+ */
+export function playerNameString({
+  adjective,
+  noun
+} : PlayerName, capitalize = true):string {
+  return `${adjective} ${noun}`
 }
