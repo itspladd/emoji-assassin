@@ -8,12 +8,27 @@ export interface PlayerName {
   nounArticle: Article
 }
 
+export type PlayerColorKey = 
+  "red"
+  |"green"
+  |"blue"
+  |"cyan"
+  |"yellow"
+  |"purple"
+  |"black"
+  |"white"
+
+export type PlayerColorValue = string
+
+export type PlayerColor = Record<PlayerColorKey, PlayerColorValue>
+
 /** Server-side types */
 
 /** Client-side types */
 export interface ClientPlayerInfo {
   name: PlayerName,
-  id: string
+  id: string,
+  color: string
 }
 
 export type ClientPlayerList = Record<string, ClientPlayerInfo>

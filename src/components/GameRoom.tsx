@@ -25,9 +25,9 @@ export default function GameRoom({
   console.log("rendering GameRoom")
 
   const playerNames = Object.values(allPlayers)
-    .map(({ name, id }) => (
+    .map(({ name, id, color }) => (
       <li key={id}>
-        {playerNameString(name)}
+        {playerNameString(name)}: {color}
       </li>
     ))
 
