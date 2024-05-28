@@ -1,4 +1,4 @@
-import { type ChangeEvent, type MouseEventHandler, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import LabeledInput from "./LabeledInput";
 import axios from "axios";
 
@@ -16,7 +16,7 @@ export default function JoinRoomInput ({
     setRoomIdInput(newId)
   }
 
-  const handleJoinRoomSubmit:MouseEventHandler<HTMLButtonElement> = async () => {
+  const handleJoinRoomSubmit = async () => {
     const idToJoin = roomIdInput
     const response:{data: {roomIdValid:boolean}} = await axios.get(`/rooms/${idToJoin}`)
     const roomIdValid = response?.data?.roomIdValid
@@ -38,6 +38,7 @@ export default function JoinRoomInput ({
         label="Room ID"
         value={roomIdInput}
         onChange={handleRoomInputChange}
+        onSubmit={handleJoinRoomSubmit}
         placeholder = {"A1C2B3"}
       />
     </div>
