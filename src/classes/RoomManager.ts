@@ -3,7 +3,7 @@ import Room from "./Room";
 
 type RoomList = Record<string, Room>
 
-export interface RoomManager {
+interface RoomManagerInterface {
   addRoom: (room:Room) => void,
   removeRoom: (id:string) => void,
   roomExists: (id:string) => boolean,
@@ -61,9 +61,9 @@ function _roomIdIsUnique(id:string, activeRooms:RoomList):boolean {
 
 /**
  * Creates the context for a RoomManager object and returns a RoomManager interface
- * @returns {RoomManager} The room manager object
+ * @returns {RoomManagerInterface} The room manager object
  */
-const RoomManagerFactory = function ():RoomManager {
+const RoomManagerFactory = function ():RoomManagerInterface {
   
   const _activeRooms:RoomList = {}
 
