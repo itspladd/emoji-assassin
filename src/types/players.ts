@@ -22,13 +22,20 @@ export type PlayerColorValue = string
 
 export type PlayerColor = Record<PlayerColorKey, PlayerColorValue>
 
+export type PlayerRole = "defuser" | "assassin"
+
 /** Server-side types */
 
 /** Client-side types */
 export interface ClientPlayerInfo {
   name: PlayerName,
   id: string,
-  color: string
+  color: string,
+  isReady: boolean
+}
+
+export interface ClientSelfInfo extends ClientPlayerInfo {
+  role: PlayerRole
 }
 
 export type ClientPlayerList = Record<string, ClientPlayerInfo>

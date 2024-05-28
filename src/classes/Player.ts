@@ -9,6 +9,7 @@ export default class Player {
   _name: PlayerName
   _socket: CustomServerSocket
   _color: PlayerColorKey
+  _isReady: boolean
 
   constructor(
     socket:CustomServerSocket,
@@ -20,7 +21,7 @@ export default class Player {
     this._socket = socket
     this._name = makeRandomName()
     this._color = colorKey
-
+    this._isReady = false
   }
 
   get id() {
@@ -43,11 +44,25 @@ export default class Player {
     this._color = color
   } 
 
+  get isReady() {
+    return this._isReady
+  }
+
+  set isReady(newVal:boolean) {
+    this._isReady = newVal
+  }
+
+  toggleReady():boolean {
+    this._isReady = !this._isReady
+    return this._isReady
+  }
+
   get clientState():ClientPlayerInfo {
     return {
       name: this.name,
       id: this._id,
-      color: this.color
+      color: this.color,
+      isReady: this.isReady
     }
   }
 
