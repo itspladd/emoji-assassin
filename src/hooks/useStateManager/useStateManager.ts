@@ -43,6 +43,7 @@ export default function useStateManager():StateManagerReturn {
   const accessors = {
     roomId: () => state.room.roomId,
     allPlayers: () => state.room.playersInRoom,
+    localPlayer: () => state.room.playersInRoom[state.socket.socketInstance.id || ""],
     player: (id: string) => state.room.playersInRoom[id] ?? null,
     socketConnected: () => state.socket.connected,
     socket: () => state.socket.socketInstance,

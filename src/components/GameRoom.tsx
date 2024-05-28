@@ -6,28 +6,29 @@ import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
 import EventLog from "./EventLog";
+import { StateAccessors, StateActions } from "@customTypes/stateManagement";
 
 interface GameRoomProps {
-  roomId: string,
-  allPlayers: ClientPlayerList,
-  eventLog: EventLogItem[],
-  tiles: GameTile[],
-  changeName: () => void
+  actions:StateActions,
+  accessors:StateAccessors
 }
 
 export default function GameRoom({
-  roomId,
-  allPlayers,
-  eventLog,
-  tiles,
-  changeName
+  actions,
+  accessors
 } : GameRoomProps) {
   console.log("rendering GameRoom")
 
+  const roomId = accessors.roomId()
+  const allPlayers = accessors.allPlayers()
+  const localPlayer = accessors.localPlayer()
+  const tiles = accessors.tiles()
+  const eventLog = accessors.eventLog()
+
   const playerNames = Object.values(allPlayers)
-    .map(({ name, id, color }) => (
+    .map(({ name, id, color, isReady }) => (
       <li key={id} className={styles["player-name"]}>
-        <span className={styles["color-square"] + " " + styles[color]}></span>
+        <span className={styles["color-square"] + " " + styles[color]}>{isReady ? "Y" : "N"}</span>
         <span className={styles["name"]}>{playerNameString(name)}</span>
       </li>
     ))
@@ -67,8 +68,11 @@ export default function GameRoom({
 
         <div>
           <h3>Player controls</h3>
-          <button onClick={changeName}>
+          <button onClick={actions.room.changeName}>
             Change name
+          </button>
+          <button onClick={actions.room.toggleReady}>
+            Ready!
           </button>
         </div>
 

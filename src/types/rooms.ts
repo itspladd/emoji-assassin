@@ -20,6 +20,7 @@ export interface RoomActions {
   removePlayer: (id:string) => void,
   editPlayer: (id:string, newData:Partial<ClientPlayerInfo>) => void,
   changeName: () => void,
+  toggleReady: () => void,
   setRoomState: (room:RoomState) => void
 }
 /** Server-side types */

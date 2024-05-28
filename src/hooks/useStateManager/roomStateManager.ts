@@ -117,14 +117,30 @@ export const createRoomActions = (
   socket: CustomClientSocket
 ) : RoomActions => {
 
-  const setRoomState = (room:RoomState) => {
-    dispatch({type: 'set_room_state', data: {room}})
-  }
+  // Actions that cause a socket event to be emitted from the client
 
+  /** 
+   * Occurs after the server has confirmed that the player can join (via API req)
+   * Sets the local state and tells the room to add this socket to its player list
+   */
   const joinRoom = (roomId: string) => {
     if (!socket.connected) socket.connect()
     socket.emit("joinRoom", roomId)
-    dispatch({type: 'set_room_id', data: {roomId}})
+  }
+
+  const changeName = async () => {
+    // The player's name doesn't change locally until the socket broadcasts the change to all players
+    socket.emit("changeName")
+  }
+
+  const toggleReady = async () => {
+    socket.emit("toggleReady")
+  }
+
+  // Actions that purely change the client-side state
+
+  const setRoomState = (room:RoomState) => {
+    dispatch({type: 'set_room_state', data: {room}})
   }
 
   const leaveRoom = () => {
@@ -143,11 +159,6 @@ export const createRoomActions = (
     dispatch({type: 'edit_player', data: { playerId, newPlayerData}})
   }
 
-  const changeName = async () => {
-    // The player's name doesn't change locally until the socket broadcasts the change to all players
-    socket.emit("changeName")
-  }
-
   return {
     leaveRoom,
     joinRoom,
@@ -155,7 +166,8 @@ export const createRoomActions = (
     removePlayer,
     editPlayer,
     changeName,
-    setRoomState
+    setRoomState,
+    toggleReady
   }
 }
 

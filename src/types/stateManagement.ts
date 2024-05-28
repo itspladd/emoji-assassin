@@ -38,11 +38,12 @@ export interface StateActions {
 export interface StateAccessors {
   roomId: () => RoomState['roomId'];
   allPlayers: () => RoomState['playersInRoom'];
+  localPlayer: () => RoomState['playersInRoom'][string]
   player: (id: string) => ClientPlayerInfo | null;
   socketConnected: () => SocketState['connected'];
   socket: () => SocketState['socketInstance'];
   eventLog: () => AppState['eventLog'];
-  tiles: () => ClientGameState['tiles']
+  tiles: () => ClientGameState['tiles'];
 }
 
 export type StateManagerReturn = {

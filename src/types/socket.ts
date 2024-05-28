@@ -9,6 +9,7 @@ export interface ClientToServerEvents {
   connect: () => void;
   joinRoom: (id:string) => void;
   changeName: () => void;
+  toggleReady: () => void
 }
 
 export interface ServerToClientEvents {
@@ -16,8 +17,9 @@ export interface ServerToClientEvents {
   disconnect: () => void;
   playerJoined: (player:ClientPlayerInfo) => void;
   playerLeft: (playerId:string) => void;
-  playerChangedName: (playerId:string, name:PlayerName) => void,
-  syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void
+  playerChangedName: (playerId:string, name:PlayerName) => void;
+  syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void;
+  playerToggledReady: (playerId: string, readyState: boolean) => void
 }
 
 export type CustomServer = Server<ClientToServerEvents, ServerToClientEvents>

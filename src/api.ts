@@ -21,14 +21,6 @@ export default function setupApi(app:Express, io:CustomServer) {
     res.json(...list)
   })
 
-  /** GET /rooms/:id 
-   * Returns whether that room exists on the server or not
-  */
-  app.get("/rooms/:id", (req, res) => {
-    const { id } = req.params
-    res.send({ roomIdValid: RoomManager.roomExists(id) })
-  })
-
   /** POST /rooms
    * Creates a new Room and returns the Room info
    */
@@ -37,5 +29,19 @@ export default function setupApi(app:Express, io:CustomServer) {
     const newRoom = RoomManager.makeUniqueRoom(io)
     RoomManager.addRoom(newRoom)
     res.json({newRoomId: newRoom.id})
+  })
+
+  /** GET /rooms/:id 
+   * Returns whether that room exists on the server or not
+  */
+  app.get("/rooms/:id", (req, res) => {
+    const { id } = req.params
+    
+    // Check if room exists
+    const roomIdExists = RoomManager.roomExists(id)
+
+    // TODO: Check if players can currently join that room
+
+    res.send({ roomIdValid: RoomManager.roomExists(id) })
   })
 }

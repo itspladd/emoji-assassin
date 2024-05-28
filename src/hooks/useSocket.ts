@@ -50,11 +50,16 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.room.editPlayer(id, { name })
     }
 
+    function onPlayerToggledReady(id: string, isReady:boolean) {
+      actions.room.editPlayer(id, { isReady })
+    }
+
     function onSyncRoomAndGameState(room:RoomState, game:ClientGameState) {
       log(`Syncing room and game state...`)
       actions.room.setRoomState(room)
       actions.game.setGameState(game)
     }
+
 
     const eventHandlerMap:ServerToClientEvents = {
       connect: onConnect,
@@ -63,6 +68,7 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerLeft: onPlayerLeft,
       playerChangedName: onPlayerNameChange,
       syncRoomAndGameState: onSyncRoomAndGameState,
+      playerToggledReady: onPlayerToggledReady
     }
 
     // Init event listeners

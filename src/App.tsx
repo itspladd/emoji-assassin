@@ -55,11 +55,8 @@ export function App() {
       )}
 
       {roomId && <GameRoom
-        roomId={roomId}
-        allPlayers={accessors.allPlayers()}
-        eventLog={accessors.eventLog()}
-        changeName={actions.room.changeName}
-        tiles={accessors.tiles()}
+        actions={actions}
+        accessors={accessors}
       />}
     </div>
   );

@@ -182,6 +182,13 @@ export default class Room {
       this._io.to(this._id).emit("playerChangedName", player._id, player.name)
     })
 
+    socket.on("toggleReady", () => {
+      console.debug(`${player.id} toggled ready stat`)
+      player.toggleReady()
+
+      this._io.to(this._id).emit("playerToggledReady", player._id, player.isReady)
+    })
+
     // Tell the socket to join the room channel
     socket.join(this.id)
 
