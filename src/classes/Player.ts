@@ -57,6 +57,9 @@ export default class Player {
     return this._isReady
   }
 
+  /**
+   * Returns an object representing the client-side app state for this Player.
+   */
   get clientState():ClientPlayerInfo {
     return {
       name: this.name,
@@ -67,8 +70,7 @@ export default class Player {
   }
 
   /**
-   * Sets the player's name to a unique name, given a list of names that are taken already
-   * @param takenNames 
+   * Sets the player's name to a random name
    */
   setRandomName():void {
     this.name = makeRandomName()

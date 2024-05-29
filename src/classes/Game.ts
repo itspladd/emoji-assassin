@@ -1,8 +1,12 @@
-import { ClientGameState, GameStatus, GameTile } from "@customTypes/game"
+import type { ClientGameState, GameStatus, GameTile } from "@customTypes/game"
+import type { PlayerList } from "@customTypes/players"
+
 import { getRandomTileEmojis } from "../helpers/emojis"
 
 export default class Game {
 
+  static MIN_PLAYERS = 4
+  static MAX_PLAYERS = 10
   static NUM_TILES = 25
 
   static makeTiles():GameTile[] {
@@ -34,5 +38,23 @@ export default class Game {
     return {
       tiles: this.tiles
     }
+  }
+
+  /**
+   * Returns true if the game could begin with the input player data.
+   */
+  gameCanBegin(players:PlayerList):boolean {
+    const playerDataArr = Object.values(players)
+
+    const enoughPlayers = playerDataArr.length >= Game.MIN_PLAYERS
+    const tooManyPlayers = playerDataArr.length > Game.MAX_PLAYERS
+    
+    if (!enoughPlayers || tooManyPlayers) {
+      return false
+    }
+
+    const allPlayersReady = playerDataArr.filter(player => !player.isReady).length === 0
+
+    return allPlayersReady
   }
 }

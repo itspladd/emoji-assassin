@@ -1,5 +1,9 @@
 import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
+import type Room from "../classes/Room"
+import type Player from "../classes/Player"
+
 import { RoomManager } from "../classes/RoomManager"
+import { playerNameString } from "../helpers/names"
 
 export default function setupServerSocket(io:CustomServer) {
   setupServerMiddleware(io)
@@ -24,7 +28,40 @@ function setupServerEvents(socket:CustomServerSocket, io:CustomServer) {
   
   socket.on("joinRoom", roomId => {
     const room = RoomManager.getRoom(roomId)
-    room.addPlayer(socket)
+    const player = room.initNewPlayer(socket)
+    setupRoomEvents(socket, io, room, player)
+
+    // Tell the socket to join the room channel
+    socket.join(room.id)
+
+    // Tell everyone else in the room that this player joined
+    socket.to(room.id).emit("playerJoined", player.clientState)
+
+    // Tell the joining player to update their client state
+    io.to(socket.id).emit("syncRoomAndGameState", room.clientRoomState, room._game.clientGameState)
+
+    console.debug(`Created Player ${player._id} in room ${room._id} with name ${playerNameString(player.name)}`)
+  })
+}
+
+function setupRoomEvents(socket:CustomServerSocket, io:CustomServer, room:Room, player:Player) {
+  socket.on("changeName", () => {
+    console.debug(`${player.id} requested name change`)
+    room.setUniquePlayerName(player.id, true)
+
+    io.to(room.id).emit("playerChangedName", player._id, player.name)
+  })
+
+  socket.on("toggleReady", () => {
+    console.debug(`${player.id} toggled ready stat`)
+    player.toggleReady()
+    
+    const gameCanBegin = room._game.gameCanBegin(room._players)
+
+    if (!gameCanBegin) {
+      io.to(room.id).emit("playerToggledReady", player._id, player.isReady)
+      return 
+    }
   })
 }
 

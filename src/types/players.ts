@@ -1,3 +1,5 @@
+import type Player from "../classes/Player"
+
 /** Shared types */
 export type Article = 'a' | 'an'
 
@@ -25,6 +27,7 @@ export type PlayerColor = Record<PlayerColorKey, PlayerColorValue>
 export type PlayerRole = "defuser" | "assassin"
 
 /** Server-side types */
+export type PlayerList = Record<string, Player>
 
 /** Client-side types */
 export interface ClientPlayerInfo {

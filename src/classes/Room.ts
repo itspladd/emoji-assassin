@@ -2,7 +2,6 @@ import type { CustomServer, CustomServerSocket } from "@customTypes/socket";
 
 import Player from "./Player";
 import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays";
-import { playerNameString } from "../helpers/names";
 import { RoomState } from "@customTypes/rooms";
 import { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
 import { playerColors } from "../constants/colors"
@@ -16,7 +15,6 @@ import Game from "./Game";
 export default class Room {
 
   /******** Static properties and methods ********/
-
   static RoomIdCharacters = [
     "0",
     "1",
@@ -69,7 +67,6 @@ export default class Room {
 
     return newId
   }
-
   
   /******** Instance properties and methods ********/
   _createdAt: Date;
@@ -128,6 +125,24 @@ export default class Room {
     return colorKey
   }
 
+  /**
+   * Returns true if new players can join the room, false otherwise.
+   */
+  get acceptingNewPlayers():[result: boolean, reason: string | null] {
+    if (this.roomIsFull) {
+      return [false, "Room full"]
+    }
+
+    return [true, null]
+  }
+
+  /**
+   * Returns true if the room is at its maximum player capacity, false otherwise.
+   */
+  get roomIsFull():boolean {
+    return Object.keys(this._players).length >= Game.MAX_PLAYERS
+  }
+
   makeColorAvailable(color:PlayerColorKey) {
     this._availableColors.push(color)
   }
@@ -142,8 +157,12 @@ export default class Room {
     this.makeColorAvailable(oldColor)
   }
 
+  /**
+   * Given a player ID, checks to make sure that player's name is unique in this room.
+   * @param id 
+   * @returns 
+   */
   playerNameIsUnique(id:string):boolean {
-    console.log("checking uniqueness")
     const playerName = this._players[id].name
     const otherPlayers = {...this._players }
     delete otherPlayers[id]
@@ -154,6 +173,11 @@ export default class Room {
       }).length === 0
   }
 
+  /**
+   * Given a player ID, sets a unique random name for that player.
+   * @param playerId The ID of the player to check.
+   * @param forceChangeCurrentName If true, the player will get a new unique name even if their current name is unique.
+   */
   setUniquePlayerName(playerId:string, forceChangeCurrentName?:boolean) {
     const player = this._players[playerId]
     forceChangeCurrentName && player.setRandomName()
@@ -170,34 +194,5 @@ export default class Room {
     this.setUniquePlayerName(newPlayer.id)
 
     return newPlayer
-  }
-
-  addPlayer(socket:CustomServerSocket) {
-    const player = this.initNewPlayer(socket)
-
-    socket.on("changeName", () => {
-      console.debug(`${player.id} requested name change`)
-      this.setUniquePlayerName(player.id, true)
-
-      this._io.to(this._id).emit("playerChangedName", player._id, player.name)
-    })
-
-    socket.on("toggleReady", () => {
-      console.debug(`${player.id} toggled ready stat`)
-      player.toggleReady()
-
-      this._io.to(this._id).emit("playerToggledReady", player._id, player.isReady)
-    })
-
-    // Tell the socket to join the room channel
-    socket.join(this.id)
-
-    // Tell everyone else in the room that this player joined
-    socket.to(this.id).emit("playerJoined", player.clientState)
-
-    // Tell the joining player to update their client state
-    this._io.to(socket.id).emit("syncRoomAndGameState", this.clientRoomState, this._game.clientGameState)
-
-    console.debug(`Created Player ${player._id} in room ${this._id} with name ${playerNameString(player.name)}`)
   }
 }
