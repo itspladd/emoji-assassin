@@ -13,6 +13,8 @@
 
   header {
     background-color: rgb(150, 206, 255);
+    display: flex;
+    justify-content: space-between;
   }
 
   main {

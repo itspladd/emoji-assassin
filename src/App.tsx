@@ -24,7 +24,6 @@ export function App() {
 
   const roomId = accessors.roomId()
   
-  const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
 
   const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
@@ -56,7 +55,6 @@ export function App() {
           <h1>Emoji Assassin</h1>
     
           <h1>{assassinEmojiHeader} {bombEmojiHeader}</h1>
-          <p>{connectionString}</p>
 
           <button onClick={handleNewGameClick}>
             Start a new game

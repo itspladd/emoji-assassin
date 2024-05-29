@@ -24,6 +24,7 @@ export default function GameRoom({
   const localPlayer = accessors.localPlayer()
   const tiles = accessors.tiles()
   const eventLog = accessors.eventLog()
+  const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
 
   const playerNames = Object.values(allPlayers)
     .map(({ name, id, color, isReady }) => (
@@ -57,7 +58,7 @@ export default function GameRoom({
     <main id={styles["game-room-wrapper"]}>
       <header>
         <h2>Room ID: {roomId}</h2>
-
+        <span>{connectionString}</span>
       </header>
       <section id={styles["info-section"]}>
 
