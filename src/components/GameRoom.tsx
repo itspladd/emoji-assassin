@@ -1,7 +1,3 @@
-import type { ClientPlayerList } from "@customTypes/players";
-import type { EventLogItem } from "@customTypes/events";
-import type { GameTile } from "@customTypes/game";
-
 import { playerNameString } from "../helpers/names";
 
 import styles from './GameRoom.module.css'
