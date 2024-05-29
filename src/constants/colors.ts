@@ -8,5 +8,5 @@ export const playerColors:PlayerColor = {
   yellow: "#FFFF00",
   purple: "#FF00FF",
   black: "#000000",
-  white: "#FF5733"
+  white: "#F0EAD6"
 }

@@ -1,8 +1,10 @@
+import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
 import { playerNameString } from "../helpers/names";
 
-import styles from './GameRoom.module.css'
 import EventLog from "./EventLog";
-import { StateAccessors, StateActions } from "@customTypes/stateManagement";
+import PlayerControls from "./PlayerControls";
+
+import styles from './GameRoom.module.css'
 
 interface GameRoomProps {
   actions:StateActions,
@@ -23,14 +25,16 @@ export default function GameRoom({
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
 
   const playerNames = Object.values(allPlayers)
-    .map(({ name, id, color, isReady }) => (
-      <li key={id} className={styles["player-name"]}>
-        <span className={styles["color-square"] + " " + styles[color]}>{isReady ? "Y" : "N"}</span>
-        <span className={styles["name"]}>{playerNameString(name)}</span>
-      </li>
-    ))
-
-
+    .map(({ name, id, color, isReady }) => {
+      const isClientPlayerString = (id === localPlayer.id) ? " (me)" : ""
+      const completePlayerNameString = playerNameString(name) + isClientPlayerString
+      return (
+        <li key={id} className={styles["player-name"]}>
+          <span className={styles["color-square"] + " " + styles[color]}>{isReady ? "Y" : "N"}</span>
+          <span className={styles["name"]}>{completePlayerNameString}</span>
+        </li>
+      )
+    })
 
   const gameTiles = tiles.map(tile => {
     const {
@@ -63,15 +67,10 @@ export default function GameRoom({
           <ul id={styles["player-list"]}>{playerNames}</ul>
         </div>
 
-        <div>
-          <h3>Player controls</h3>
-          <button onClick={actions.room.changeName}>
-            Change name
-          </button>
-          <button onClick={actions.room.toggleReady}>
-            Ready!
-          </button>
-        </div>
+        <PlayerControls
+          changeName={actions.room.changeName}
+          toggleReady={actions.room.toggleReady}
+        />
 
       </section>
 
