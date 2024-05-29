@@ -37,6 +37,18 @@ export function App() {
     actions.room.joinRoom(roomId)
   }
 
+  const handleDebugRoomClick = async () => {
+    console.log("Joining debug room")
+    const response:{data: {debugRoomId:string}} = await axios.get('/rooms/debug')
+    const debugRoomId = response?.data?.debugRoomId
+
+    if (!debugRoomId) {
+      return console.error("Error: no debug room ID received. Response object: ", response)
+    }
+
+    actions.room.joinRoom(debugRoomId)
+  }
+
   return (
     <div>
       {!roomId && (
@@ -48,6 +60,10 @@ export function App() {
 
           <button onClick={handleNewGameClick}>
             Start a new game
+          </button>
+
+          <button onClick={handleDebugRoomClick}>
+            Join debug room
           </button>
 
           <JoinRoomInput joinRoomAction={actions.room.joinRoom} />
