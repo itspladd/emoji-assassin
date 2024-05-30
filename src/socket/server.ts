@@ -6,7 +6,7 @@ import { RoomManager } from "../classes/RoomManager"
 import { playerNameString } from "../helpers/names"
 
 export default function setupServerSocket(io:CustomServer) {
-  setupServerMiddleware(io)
+  setupRoomMonitorMiddleware(io)
   
   // When a new socket connects, populate all of the events
   io.on('connection', (socket) => setupServerEvents(socket, io))
@@ -18,9 +18,7 @@ export default function setupServerSocket(io:CustomServer) {
  * @param io 
  */
 function setupServerEvents(socket:CustomServerSocket, io:CustomServer) {
-  socket.on('connect', () => {
-    console.log("user connected:", socket.id)
-  })
+  console.debug("USER CONNECTION:", socket.id)
 
   socket.on('disconnecting', () => {
     socket.rooms.forEach(roomId => {
@@ -94,22 +92,35 @@ function setupRoomEvents(socket:CustomServerSocket, io:CustomServer, room:Room, 
       return 
     }
 
-    io.to(room.id).emit("gameStart", room._game.clientGameState)
     room._game.initNewGame(room._players)
+    io.to(room.id).emit("gameStart", room._game.clientGameState)
   })
 }
 
-function setupServerMiddleware(io:CustomServer) {
+/**
+ * Handlers for room-related events
+ * (These are socket.io rooms, not necessarily game Rooms)
+ * @param io 
+ */
+function setupRoomMonitorMiddleware(io:CustomServer) {
   io.of("/").adapter.on("create-room", (room) => {
-    console.log(`room ${room} was created`);
+    console.debug(`room ${room} was created`);
   });
   
+  io.of("/").adapter.on("delete-room", (room) => {
+    console.debug(`room ${room} was deleted`);
+  });
+
+  io.of("/").adapter.on("leave-room", (room, id) => {
+    console.debug(`Socket ${id} left room ${room}`);
+  });
+
   io.of("/").adapter.on("join-room", (room, id) => {
     let message = "ROOM JOIN"
     if (room === id) {
       message += ` (SELF)`
     }
     message += `: socket ${id} has joined room ${room}`
-    console.log(message)
+    console.debug(message)
   });
 }
