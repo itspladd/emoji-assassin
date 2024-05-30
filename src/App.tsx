@@ -50,6 +50,8 @@ export function App() {
   }
 
   useEffect(() => {
+    // This will fire twice in dev mode due to the strict mode setting,
+    // but the server prevents the same socket from joining a room multiple times
     if (import.meta.env.DEV) {
       joinDebugRoom()
     }
