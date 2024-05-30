@@ -23,14 +23,22 @@ export default function GameRoom({
   const tiles = accessors.tiles()
   const eventLog = accessors.eventLog()
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
+  const gameStarted = accessors.gameStarted()
 
   const playerNames = Object.values(allPlayers)
     .map(({ name, id, color, isReady }) => {
       const isClientPlayerString = (id === localPlayer.id) ? " (me)" : ""
       const completePlayerNameString = playerNameString(name) + isClientPlayerString
+
+      // TODO: show connection status here once player leave/rejoin is implemented
+      let playerIndicator = 
+        gameStarted ? "" :
+        isReady ? "Y" :
+        "N"
+      
       return (
         <li key={id} className={styles["player-name"]}>
-          <span className={styles["color-square"] + " " + styles[color]}>{isReady ? "Y" : "N"}</span>
+          <span className={styles["color-square"] + " " + styles[color]}>{playerIndicator}</span>
           <span className={styles["name"]}>{completePlayerNameString}</span>
         </li>
       )
@@ -66,6 +74,8 @@ export default function GameRoom({
           <h3>Players</h3>
           <ul id={styles["player-list"]}>{playerNames}</ul>
         </div>
+
+        <p>{gameStarted ? "Game Running" : "Waiting for everyone to be ready..."}</p>
 
         <PlayerControls
           changeName={actions.room.changeName}
