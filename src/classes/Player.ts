@@ -1,5 +1,5 @@
-import type { CustomServer, CustomServerSocket } from "@customTypes/socket"
-import type { ClientPlayerInfo, PlayerColorKey, PlayerName } from "@customTypes/players"
+import type { CustomServerSocket } from "@customTypes/socket"
+import type { ClientPlayerInfo, PlayerColorKey, PlayerName, PlayerRole } from "@customTypes/players"
 import { makeRandomName } from "../helpers/names"
 
 
@@ -10,11 +10,11 @@ export default class Player {
   _socket: CustomServerSocket
   _color: PlayerColorKey
   _isReady: boolean
+  _role: PlayerRole
+  score: number
 
   constructor(
     socket:CustomServerSocket,
-    io: CustomServer,
-    roomId: string,
     colorKey: PlayerColorKey
   ) {
     this._id = socket.id
@@ -22,6 +22,8 @@ export default class Player {
     this._name = makeRandomName()
     this._color = colorKey
     this._isReady = false
+    this._role = null
+    this.score = 0
   }
 
   get id() {
@@ -50,6 +52,18 @@ export default class Player {
 
   set isReady(newVal:boolean) {
     this._isReady = newVal
+  }
+
+  get isAssassin() {
+    return this._role === "assassin"
+  }
+  
+  get isInnocent() {
+    return this._role !== "assassin"
+  }
+
+  set role(newRole:PlayerRole) {
+    this._role = newRole
   }
 
   toggleReady():boolean {

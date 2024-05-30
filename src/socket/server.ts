@@ -22,12 +22,28 @@ function setupServerEvents(socket:CustomServerSocket, io:CustomServer) {
     console.log("user connected:", socket.id)
   })
 
+  socket.on('disconnecting', () => {
+    socket.rooms.forEach(roomId => {
+      const room = RoomManager.getRoom(roomId)
+      if (room) {
+        room.removePlayer(socket.id)
+        socket.to(roomId).emit("playerLeft", socket.id)
+      }
+    })
+  })
+
   socket.on('disconnect', () => {
     console.log("user disconnected:", socket.id)
   })
   
   socket.on("joinRoom", roomId => {
     const room = RoomManager.getRoom(roomId)
+
+    if (room.hasPlayer(socket.id)) {
+      console.debug(`Prevented player ${socket.id} from joining room ${room.id} twice`)
+      return
+    }
+
     const player = room.initNewPlayer(socket)
     setupRoomEvents(socket, io, room, player)
 
@@ -44,7 +60,17 @@ function setupServerEvents(socket:CustomServerSocket, io:CustomServer) {
   })
 }
 
+/**
+ * Configures the Room-specific event listeners for a socket.
+ * @param socket
+ * @param io 
+ * @param room 
+ * @param player 
+ */
 function setupRoomEvents(socket:CustomServerSocket, io:CustomServer, room:Room, player:Player) {
+  /**
+   * Event fired when a player clicks the "change name" button
+   */
   socket.on("changeName", () => {
     console.debug(`${player.id} requested name change`)
     room.setUniquePlayerName(player.id, true)
@@ -52,16 +78,24 @@ function setupRoomEvents(socket:CustomServerSocket, io:CustomServer, room:Room, 
     io.to(room.id).emit("playerChangedName", player._id, player.name)
   })
 
+  /**
+   * Event fired when a player clicks the "ready" or "unready" button
+   */
   socket.on("toggleReady", () => {
-    console.debug(`${player.id} toggled ready stat`)
+    console.debug(`${player.id} toggled ready state`)
     player.toggleReady()
     
+    // Check if game should start or not
     const gameCanBegin = room._game.gameCanBegin(room._players)
 
+    // If game shouldn't start, just notify the room about this player's new ready status
     if (!gameCanBegin) {
       io.to(room.id).emit("playerToggledReady", player._id, player.isReady)
       return 
     }
+
+    io.to(room.id).emit("gameStart", room._game.clientGameState)
+    room._game.initNewGame(room._players)
   })
 }
 

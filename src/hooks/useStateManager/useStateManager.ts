@@ -20,7 +20,8 @@ const initialState:AppState = {
   },
   eventLog: [],
   game: {
-    tiles: []
+    tiles: [],
+    status: "notStarted"
   }
 }
 

@@ -60,6 +60,10 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.game.setGameState(game)
     }
 
+    function onGameStart(game:ClientGameState) {
+      actions.game.setGameState(game)
+    }
+
 
     const eventHandlerMap:ServerToClientEvents = {
       connect: onConnect,
@@ -68,7 +72,8 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerLeft: onPlayerLeft,
       playerChangedName: onPlayerNameChange,
       syncRoomAndGameState: onSyncRoomAndGameState,
-      playerToggledReady: onPlayerToggledReady
+      playerToggledReady: onPlayerToggledReady,
+      gameStart: onGameStart
     }
 
     // Init event listeners

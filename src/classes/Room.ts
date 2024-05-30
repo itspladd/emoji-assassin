@@ -143,6 +143,10 @@ export default class Room {
     return Object.keys(this._players).length >= Game.MAX_PLAYERS
   }
 
+  hasPlayer(id:string):boolean {
+    return !!this._players[id]
+  }
+
   makeColorAvailable(color:PlayerColorKey) {
     this._availableColors.push(color)
   }
@@ -188,11 +192,24 @@ export default class Room {
 
   initNewPlayer(socket:CustomServerSocket):Player {
     // Instantiate the player and add it to the room's tracker
-    const newPlayer = new Player(socket, this._io, this._id, this.randomAvailableColor)
+    const newPlayer = new Player(socket, this.randomAvailableColor)
     this._players[socket.id] = newPlayer
 
     this.setUniquePlayerName(newPlayer.id)
 
     return newPlayer
+  }
+
+  removePlayer(id:string) {
+    console.log('removing player', id)
+    const player = this._players[id]
+
+    if (!player) {
+      console.debug('player not found')
+      return
+    }
+
+    this.makeColorAvailable(player.color)
+    delete this._players[player.id]
   }
 }
