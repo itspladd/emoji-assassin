@@ -24,7 +24,7 @@ export type PlayerColorValue = string
 
 export type PlayerColor = Record<PlayerColorKey, PlayerColorValue>
 
-export type PlayerRole = "defuser" | "assassin"
+export type PlayerRole = "innocent" | "assassin" | null
 
 /** Server-side types */
 export type PlayerList = Record<string, Player>
