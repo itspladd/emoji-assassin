@@ -8,6 +8,7 @@ import { createRoomActions } from "./roomStateManager";
 import { createSocketActions } from "./socketStateManager";
 import { createEventLogActions } from "./eventLogStateManager";
 import { createGameActions } from "./gameStateManager";
+import { createDebugActions } from "./debugActions";
 
 const initialState:AppState = {
   socket: {
@@ -35,6 +36,7 @@ export default function useStateManager():StateManagerReturn {
   const [state, dispatch] = useReducer(reducer, initialState)
   
   const actions = {
+    debug: createDebugActions(dispatch, socket),
     room: createRoomActions(dispatch, socket),
     socket: createSocketActions(dispatch, socket),
     eventLog: createEventLogActions(dispatch),
@@ -49,7 +51,8 @@ export default function useStateManager():StateManagerReturn {
     socketConnected: () => state.socket.connected,
     socket: () => state.socket.socketInstance,
     eventLog: () => state.eventLog,
-    tiles: () => state.game.tiles
+    tiles: () => state.game.tiles,
+    gameStarted: () => state.game.status !== "notStarted"
   }
 
   return {

@@ -5,11 +5,15 @@ import type { RoomState } from "./rooms";
 import { ClientGameState } from "./game";
 
 /** Socket.IO event maps */
-export interface ClientToServerEvents {
+interface ClientToServerDebugEvents {
+  debug_readyAll: (roomId: string) => void;
+}
+
+export interface ClientToServerEvents extends ClientToServerDebugEvents {
   connect: () => void;
-  joinRoom: (id:string) => void;
+  joinRoom: (roomId:string) => void;
   changeName: () => void;
-  toggleReady: () => void
+  toggleReady: () => void;
 }
 
 export interface ServerToClientEvents {

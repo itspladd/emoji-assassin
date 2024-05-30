@@ -31,7 +31,7 @@ export default function setupApi(app:Express, io:CustomServer) {
     res.json({newRoomId: newRoom.id})
   })
 
-  /**
+  /***************************************
    * GET /rooms/debug
    * Returns the ID of the debugging room
    */
@@ -44,6 +44,7 @@ export default function setupApi(app:Express, io:CustomServer) {
   app.get("/rooms/debug", (_, res) => {
     res.send({ debugRoomId: debugRoom.id })
   })
+  /****************************************/
 
   /** GET /rooms/:id 
    * Returns whether that room exists on the server or not
