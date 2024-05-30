@@ -11,12 +11,13 @@ export interface GameTile {
 }
 
 export interface ClientGameState {
-  tiles: GameTile[]
+  tiles: GameTile[],
+  status: GameStatus
 }
 
 export interface ClientGameStateActions {
   setTiles: (tiles: GameTile[]) => void,
-  setGameState: (game:ClientGameState) => void
+  setGameState: (game:ClientGameState) => void,
 }
 
 export type ClientGameStateDispatchType = 
