@@ -1,5 +1,5 @@
 
-import { MouseEventHandler } from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import axios from 'axios';
 import { getRandomFromArray } from './helpers/arrays';
 
@@ -24,7 +24,6 @@ export function App() {
 
   const roomId = accessors.roomId()
   
-
   const handleNewGameClick:MouseEventHandler<HTMLButtonElement> = async () => {
     console.log("Creating a new room")
     const response:{data: {newRoomId:string}} = await axios.post('/rooms')
@@ -36,7 +35,9 @@ export function App() {
     actions.room.joinRoom(roomId)
   }
 
-  const handleDebugRoomClick = async () => {
+  /** DEV LOGIC ONLY *****************************************/
+  /** Auto-join a debug game room when the component renders */
+  const joinDebugRoom = async () => {
     console.log("Joining debug room")
     const response:{data: {debugRoomId:string}} = await axios.get('/rooms/debug')
     const debugRoomId = response?.data?.debugRoomId
@@ -47,6 +48,14 @@ export function App() {
 
     actions.room.joinRoom(debugRoomId)
   }
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      joinDebugRoom()
+    }
+
+  }, [])
+  /** END ***************************************************/
 
   return (
     <div>
@@ -60,7 +69,7 @@ export function App() {
             Start a new game
           </button>
 
-          <button onClick={handleDebugRoomClick}>
+          <button onClick={joinDebugRoom}>
             Join debug room
           </button>
 
