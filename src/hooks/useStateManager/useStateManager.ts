@@ -40,7 +40,7 @@ export default function useStateManager():StateManagerReturn {
     room: createRoomActions(dispatch, socket),
     socket: createSocketActions(dispatch, socket),
     eventLog: createEventLogActions(dispatch),
-    game: createGameActions(dispatch, socket)
+    game: createGameActions(dispatch, socket),
   }
   
   const accessors = {

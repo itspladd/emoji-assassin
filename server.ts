@@ -4,7 +4,7 @@ import ViteExpress from "vite-express";
 import { createServer } from 'node:http';
 import { Server } from 'socket.io'
 
-import setupServerSocket from "./src/socket/server.js";
+import setupServerSocket from "./src/socket/server/server.js";
 import setupApi from "./src/api.js";
 
 const PORT = 3000

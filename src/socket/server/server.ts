@@ -1,9 +1,9 @@
 import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
-import type Room from "../classes/Room"
-import type Player from "../classes/Player"
+import type Room from "../../classes/Room"
+import type Player from "../../classes/Player"
 
-import { RoomManager } from "../classes/RoomManager"
-import { playerNameString } from "../helpers/names"
+import { RoomManager } from "../../classes/RoomManager"
+import { playerNameString } from "../../helpers/names"
 
 export default function setupServerSocket(io:CustomServer) {
   setupRoomMonitorMiddleware(io)

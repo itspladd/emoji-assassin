@@ -9,4 +9,8 @@ export function createDebugActions(
   const readyAll = (roomId: string) => {
     socket.emit("debug_readyAll", roomId)
   }
+
+  return {
+    readyAll
+  }
 }
