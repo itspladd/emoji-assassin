@@ -21,8 +21,9 @@ export default function GameRoom({
   console.log("rendering GameRoom")
 
   const allPlayers = accessors.allPlayers()
-  const localPlayer = accessors.localPlayer()
   const currentPlayer = accessors.currentPlayer()
+  const myRole = accessors.myRole()
+  const myId = accessors.socket().id
   
   const tiles = accessors.tiles()
   const eventLog = accessors.eventLog()
@@ -43,7 +44,7 @@ export default function GameRoom({
         <PlayerName 
           player={player}
           isCurrentPlayer={player.id === currentPlayer?.id}
-          isLocalPlayer={player.id === localPlayer.id}
+          isLocalPlayer={player.id === myId}
           gameRunning={gameRunning}
         />
       )
@@ -89,6 +90,8 @@ export default function GameRoom({
           gameStatus={gameStatus}
           changeName={actions.room.changeName}
           toggleReady={actions.room.toggleReady}
+          localPlayerRole={myRole}
+          isLocalPlayerTurn={myId === currentPlayer?.id}
         />
 
       </section>

@@ -1,6 +1,6 @@
 import type { Dispatch } from "react";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
-import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameTile } from "@customTypes/game";
+import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameTile, PublicClientGameState } from "@customTypes/game";
 import type { CustomClientSocket } from "@customTypes/socket";
 
 import { stateChangeError } from "../../helpers/logging";
@@ -70,7 +70,7 @@ export const createGameActions = (
     dispatch({type: 'set_tiles', data: {tiles}})
   }
 
-  const setGameState = (game:ClientGameState) => {
+  const setPublicGameState = (game:PublicClientGameState) => {
     console.log("setting game state")
     dispatch({type: 'set_game_state', data: {game}})
   }
@@ -86,7 +86,7 @@ export const createGameActions = (
 
   return {
     setTiles,
-    setGameState,
+    setPublicGameState,
     updateGameState,
     endTurn
   }

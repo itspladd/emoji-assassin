@@ -234,7 +234,11 @@ export default class Room {
     }
 
     this._game.initNewGame(this._players)
-    this._io.to(this.id).emit("gameStart", this._game.clientGameState)
+    this.playerArray.forEach(player => {
+      console.log("sending game data to player after starting")
+      console.log(this._game.gameStateForPlayer(player.id))
+      this._io.to(player.id).emit("gameStateChange", this._game.gameStateForPlayer(player.id))
+    })
     return [true, null]
   }
 }

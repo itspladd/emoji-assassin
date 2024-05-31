@@ -41,4 +41,4 @@ export interface ClientSelfInfo extends ClientPlayerInfo {
   role: PlayerRole
 }
 
-export type ClientPlayerList = Record<string, ClientPlayerInfo>
+export type ClientPlayerList = Record<string, ClientPlayerInfo | ClientSelfInfo>

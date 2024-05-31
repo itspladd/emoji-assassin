@@ -1,3 +1,5 @@
+import { PlayerRole } from "./players"
+
 export type GameStatus = 
   "notStarted"
   | "running"
@@ -10,15 +12,23 @@ export interface GameTile {
   column: number
 }
 
-export interface ClientGameState {
+// Client-side game knowledge that all players have
+export interface PublicClientGameState {
   tiles: GameTile[],
   status: GameStatus,
-  currentPlayer: string
+  currentPlayer: string,
 }
+
+// Client-side game knowledge that only the local player has
+export interface LocalClientGameState {
+  myRole: PlayerRole
+}
+
+export type ClientGameState = PublicClientGameState & LocalClientGameState
 
 export interface ClientGameStateActions {
   setTiles: (tiles: GameTile[]) => void,
-  setGameState: (game:ClientGameState) => void,
+  setPublicGameState: (game:PublicClientGameState) => void,
   updateGameState: (game:Partial<ClientGameState>) => void,
   endTurn: () => void
 }

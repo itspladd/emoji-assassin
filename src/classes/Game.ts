@@ -1,4 +1,4 @@
-import type { ClientGameState, GameStatus, GameTile } from "@customTypes/game"
+import type { ClientGameState, GameStatus, GameTile, LocalClientGameState, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
 
@@ -41,11 +41,19 @@ export default class Game {
     this._turnOrder = []
   }
 
-  get clientGameState():ClientGameState {
+  get publicClientGameState():PublicClientGameState {
     return {
       tiles: this.tiles,
       status: this.status,
       currentPlayer: this.currentPlayerId
+    }
+  }
+
+  localClientGameState(playerId: string):LocalClientGameState {
+    console.log(playerId)
+    console.log(this._players[playerId])
+    return {
+      myRole: this._players[playerId]?.role 
     }
   }
 
@@ -55,6 +63,16 @@ export default class Game {
 
   get currentPlayer():Player {
     return this._players[this.currentPlayerId]
+  }
+
+  gameStateForPlayer(playerId:string):ClientGameState {
+    const publicState = this.publicClientGameState
+    const privateState = this.localClientGameState(playerId)
+
+    return {
+      ...publicState,
+      ...privateState
+    }
   }
 
   /**
@@ -87,7 +105,7 @@ export default class Game {
     const assassinId = getRandomFromArray(Object.keys(this._players))
     Object.values(this._players).forEach(player => {
       const playerIsAssassin = player.id === assassinId
-      const role:PlayerRole = playerIsAssassin ? "innocent" : "assassin"
+      const role:PlayerRole = playerIsAssassin ? "assassin" : "innocent"
 
       player.role = role
     })

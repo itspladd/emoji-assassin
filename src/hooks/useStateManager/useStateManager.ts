@@ -23,7 +23,8 @@ const initialState:AppState = {
   game: {
     tiles: [],
     status: "notStarted",
-    currentPlayer: ""
+    currentPlayer: "",
+    myRole: null
   }
 }
 
@@ -47,7 +48,6 @@ export default function useStateManager():StateManagerReturn {
   const accessors = {
     roomId: () => state.room.roomId,
     allPlayers: () => state.room.playersInRoom,
-    localPlayer: () => state.room.playersInRoom[state.socket.socketInstance.id || ""],
     player: (id: string) => state.room.playersInRoom[id] ?? null,
     socketConnected: () => state.socket.connected,
     socket: () => state.socket.socketInstance,
@@ -55,7 +55,8 @@ export default function useStateManager():StateManagerReturn {
     tiles: () => state.game.tiles,
     gameStarted: () => state.game.status !== "notStarted",
     gameStatus: () => state.game.status,
-    currentPlayer: () => state.room.playersInRoom[state.game.currentPlayer] ?? null
+    currentPlayer: () => state.room.playersInRoom[state.game.currentPlayer] ?? null,
+    myRole: () => state.game.myRole
   }
 
   return {

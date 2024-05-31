@@ -3,7 +3,7 @@ import type { RoomActions, RoomState, RoomStateDispatchType } from "./rooms"
 import type { EventLogActions, EventLogItem, EventLogStateDispatchType } from "./events"
 import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType } from "./game"
 import type { DebugActions } from "./debug"
-import { ClientPlayerInfo } from "./players"
+import type { ClientPlayerInfo } from "./players"
 
 /** All types here should be client-side only. */
 export type ReducerDispatchType = 
@@ -38,17 +38,17 @@ export interface StateActions {
 }
 
 export interface StateAccessors {
+  socket: () => SocketState['socketInstance'];
+  socketConnected: () => SocketState['connected'];
   roomId: () => RoomState['roomId'];
   allPlayers: () => RoomState['playersInRoom'];
-  localPlayer: () => RoomState['playersInRoom'][string]
   player: (id: string) => ClientPlayerInfo | null;
-  socketConnected: () => SocketState['connected'];
-  socket: () => SocketState['socketInstance'];
+  currentPlayer: () => ClientPlayerInfo | null;
   eventLog: () => AppState['eventLog'];
   tiles: () => ClientGameState['tiles'];
   gameStarted: () => boolean;
   gameStatus: () => ClientGameState['status'];
-  currentPlayer: () => RoomState['playersInRoom'][string] | null;
+  myRole: () => ClientGameState['myRole']
 }
 
 export type StateManagerReturn = {

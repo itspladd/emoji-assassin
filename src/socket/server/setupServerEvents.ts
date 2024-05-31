@@ -44,7 +44,7 @@ export default function setupServerEvents(socket:CustomServerSocket, io:CustomSe
     socket.to(room.id).emit("playerJoined", player.clientState)
 
     // Tell the joining player to update their client state
-    io.to(socket.id).emit("syncRoomAndGameState", room.clientRoomState, room._game.clientGameState)
+    io.to(socket.id).emit("syncRoomAndGameState", room.clientRoomState, room._game.gameStateForPlayer(socket.id))
 
     console.debug(`Created Player ${player._id} in room ${room._id} with name ${playerNameString(player.name)}`)
   }

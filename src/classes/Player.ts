@@ -62,6 +62,10 @@ export default class Player {
     return this._role !== "assassin"
   }
 
+  get role() {
+    return this._role
+  }
+
   set role(newRole:PlayerRole) {
     this._role = newRole
   }

@@ -57,14 +57,15 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
     function onSyncRoomAndGameState(room:RoomState, game:ClientGameState) {
       log(`Syncing room and game state...`)
       actions.room.setRoomState(room)
-      actions.game.setGameState(game)
+      actions.game.setPublicGameState(game)
     }
 
     function onGameStart(game:ClientGameState) {
-      actions.game.setGameState(game)
+      actions.game.setPublicGameState(game)
     }
 
     function onGameStateChange(game:Partial<ClientGameState>) {
+      console.log("ongamestatechange", game)
       actions.game.updateGameState(game)
     }
 
