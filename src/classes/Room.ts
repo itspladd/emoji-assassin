@@ -6,6 +6,7 @@ import { RoomState } from "@customTypes/rooms";
 import { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
 import { playerColors } from "../constants/colors"
 import Game from "./Game";
+import { ResolvedResult } from "vite/runtime";
 
 /**
  * Room Class
@@ -113,6 +114,10 @@ export default class Room {
     return Object.values(this._players).map(p => p.name)
   }
 
+  get playerArray():Player[] {
+    return Object.values(this._players)
+  }
+
   // Returns an available player color key and removes it from the list of available keys.
   get randomAvailableColor():PlayerColorKey {
     if (!Object.values(this._availableColors).length) {
@@ -188,6 +193,8 @@ export default class Room {
     while(!this.playerNameIsUnique(player.id)) {
       player.setRandomName()
     }
+
+    this._io.to(this.id).emit("playerChangedName", player._id, player.name)
   }
 
   initNewPlayer(socket:CustomServerSocket):Player {
@@ -211,5 +218,24 @@ export default class Room {
 
     this.makeColorAvailable(player.color)
     delete this._players[player.id]
+  }
+
+  afterPlayerReady(playerId:string) {
+    // Notify the room about this player's new ready status
+    this._io.to(this.id).emit("playerToggledReady", playerId, this._players[playerId].isReady)
+
+    // Try to start the game
+    this.startGame()
+  }
+
+  startGame():[result:boolean, reason: string | null] {
+    // Check if game should start or not
+    if(!this._game.gameCanBegin(this._players)) {
+      return [false, "Game cannot start"]
+    }
+
+    this._game.initNewGame(this._players)
+    this._io.to(this.id).emit("gameStart", this._game.clientGameState)
+    return [true, null]
   }
 }

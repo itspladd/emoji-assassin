@@ -80,6 +80,7 @@ export function App() {
       )}
 
       {roomId && <GameRoom
+        id={roomId}
         actions={actions}
         accessors={accessors}
       />}

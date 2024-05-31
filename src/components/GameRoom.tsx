@@ -7,17 +7,18 @@ import PlayerControls from "./PlayerControls";
 import styles from './GameRoom.module.css'
 
 interface GameRoomProps {
+  id:string,
   actions:StateActions,
   accessors:StateAccessors
 }
 
 export default function GameRoom({
+  id,
   actions,
   accessors
 } : GameRoomProps) {
   console.log("rendering GameRoom")
 
-  const roomId = accessors.roomId()
   const allPlayers = accessors.allPlayers()
   const localPlayer = accessors.localPlayer()
   const tiles = accessors.tiles()
@@ -65,23 +66,26 @@ export default function GameRoom({
   return (
     <main id={styles["game-room-wrapper"]}>
       <header>
-        <h2>Room ID: {roomId}</h2>
+        <h2>Room ID: {id}</h2>
         <span>{connectionString}</span>
       </header>
       <section id={styles["info-section"]}>
 
         <div>
-          <h3>Players</h3>
+          <div>
+            <h3>Players</h3>
+            <button onClick={() => actions.debug.readyAll(id)}>Ready all players</button>
+          </div>
           <ul id={styles["player-list"]}>{playerNames}</ul>
         </div>
 
-        <p>{gameStarted ? "Game Running" : "Waiting for everyone to be ready..."}</p>
 
         <PlayerControls
           changeName={actions.room.changeName}
           toggleReady={actions.room.toggleReady}
-        />
+          />
 
+        <p>{gameStarted ? "Game Running" : "Waiting for everyone to be ready..."}</p>
       </section>
 
       <section id={styles["game-board-section"]}>

@@ -2,6 +2,7 @@ import type { SocketStateActions, SocketState, SocketStateDispatchType } from ".
 import type { RoomActions, RoomState, RoomStateDispatchType } from "./rooms"
 import type { EventLogActions, EventLogItem, EventLogStateDispatchType } from "./events"
 import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType } from "./game"
+import type { DebugActions } from "./debug"
 import { ClientPlayerInfo } from "./players"
 
 /** All types here should be client-side only. */
@@ -29,6 +30,7 @@ export interface ReducerActionPayload {
 }
 
 export interface StateActions {
+  debug: DebugActions,
   room: RoomActions,
   eventLog: EventLogActions,
   socket: SocketStateActions,
