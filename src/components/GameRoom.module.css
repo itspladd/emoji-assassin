@@ -77,6 +77,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  .current-player {
+    font-weight: bold;
+  }
 }
 
 .red {

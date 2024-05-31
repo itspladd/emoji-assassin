@@ -24,7 +24,8 @@ export interface ServerToClientEvents {
   playerChangedName: (playerId:string, name:PlayerName) => void;
   syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void;
   playerToggledReady: (playerId: string, readyState: boolean) => void;
-  gameStart: (game:ClientGameState) => void
+  gameStart: (game:ClientGameState) => void,
+  gameStateChange: (game:Partial<ClientGameState>) => void
 }
 
 export type CustomServer = Server<ClientToServerEvents, ServerToClientEvents>

@@ -46,7 +46,9 @@ export interface StateAccessors {
   socket: () => SocketState['socketInstance'];
   eventLog: () => AppState['eventLog'];
   tiles: () => ClientGameState['tiles'];
-  gameStarted: () => boolean
+  gameStarted: () => boolean;
+  gameStatus: () => ClientGameState['status'];
+  currentPlayer: () => ClientGameState['currentPlayer'];
 }
 
 export type StateManagerReturn = {

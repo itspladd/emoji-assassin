@@ -32,10 +32,31 @@ const set_game_state = (state: AppState, data?: { game?: ClientGameState }) => {
   }
 }
 
+/**
+ * Very similar to set_game_state, but does not overwrite fields that aren't specified in the input data.
+ * @param state 
+ * @param data 
+ * @returns 
+ */
+const update_game_state = (state: AppState, data?: { game?: Partial<ClientGameState> }) => {
+  if (!data?.game) {
+    return stateChangeError("Attempted to update game state with invalid game data.", state, data)
+  }
+
+  return {
+    ...state,
+    game: {
+      ...state.game,
+      ...data.game
+    }
+  }
+}
+
 // These functions actually go into the reducer.
 export const GameStateDispatchFunctions:ReducerDispatchFunctionList<ClientGameStateDispatchType> = {
   set_tiles,
-  set_game_state
+  set_game_state,
+  update_game_state
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
@@ -53,9 +74,15 @@ export const createGameActions = (
     dispatch({type: 'set_game_state', data: {game}})
   }
 
+  const updateGameState = (game:Partial<ClientGameState>) => {
+    console.log("Updating game state with:", game)
+    dispatch({type: 'update_game_state', data: {game}})
+  }
+
   return {
     setTiles,
-    setGameState
+    setGameState,
+    updateGameState
   }
 }
 

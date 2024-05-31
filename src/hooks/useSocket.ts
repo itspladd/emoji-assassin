@@ -64,6 +64,10 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.game.setGameState(game)
     }
 
+    function onGameStateChange(game:Partial<ClientGameState>) {
+      actions.game.updateGameState(game)
+    }
+
 
     const eventHandlerMap:ServerToClientEvents = {
       connect: onConnect,
@@ -73,7 +77,8 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerChangedName: onPlayerNameChange,
       syncRoomAndGameState: onSyncRoomAndGameState,
       playerToggledReady: onPlayerToggledReady,
-      gameStart: onGameStart
+      gameStart: onGameStart,
+      gameStateChange: onGameStateChange
     }
 
     // Init event listeners

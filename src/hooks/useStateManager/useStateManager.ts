@@ -22,7 +22,8 @@ const initialState:AppState = {
   eventLog: [],
   game: {
     tiles: [],
-    status: "notStarted"
+    status: "notStarted",
+    currentPlayer: ""
   }
 }
 
@@ -52,7 +53,9 @@ export default function useStateManager():StateManagerReturn {
     socket: () => state.socket.socketInstance,
     eventLog: () => state.eventLog,
     tiles: () => state.game.tiles,
-    gameStarted: () => state.game.status !== "notStarted"
+    gameStarted: () => state.game.status !== "notStarted",
+    gameStatus: () => state.game.status,
+    currentPlayer: () => state.game.currentPlayer
   }
 
   return {

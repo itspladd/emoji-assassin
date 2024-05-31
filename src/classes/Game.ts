@@ -44,7 +44,8 @@ export default class Game {
   get clientGameState():ClientGameState {
     return {
       tiles: this.tiles,
-      status: this.status
+      status: this.status,
+      currentPlayer: this.currentPlayerId
     }
   }
 
