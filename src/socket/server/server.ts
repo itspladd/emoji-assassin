@@ -10,7 +10,7 @@ export default function setupServerSocket(io:CustomServer) {
   // When a new socket connects, populate all of the events
   io.on('connection', (socket) => {
     setupServerEvents(socket, io)
-    setupDebugEvents(socket, io)
+    setupDebugEvents(socket/* , io */)
   })
 }
 

@@ -1,10 +1,10 @@
-import type { CustomServer, CustomServerSocket } from "@customTypes/socket";
+import type { CustomServerSocket } from "@customTypes/socket";
 
 import { RoomManager } from "../../classes/RoomManager";
 
 export default function setupDebugEvents(
   socket:CustomServerSocket,
-  io:CustomServer,
+  // io:CustomServer,
   //room:Room,
   //player:Player
 ) {

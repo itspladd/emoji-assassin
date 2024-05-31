@@ -36,11 +36,11 @@ export default function useStateManager():StateManagerReturn {
   const [state, dispatch] = useReducer(reducer, initialState)
   
   const actions = {
-    debug: createDebugActions(dispatch, socket),
+    debug: createDebugActions(/* dispatch, */ socket),
     room: createRoomActions(dispatch, socket),
     socket: createSocketActions(dispatch, socket),
     eventLog: createEventLogActions(dispatch),
-    game: createGameActions(dispatch, socket),
+    game: createGameActions(dispatch, /* socket */),
   }
   
   const accessors = {

@@ -1,4 +1,4 @@
-import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
+import type { CustomServerSocket } from "@customTypes/socket"
 import type Room from "../../classes/Room"
 import type Player from "../../classes/Player"
 
@@ -11,7 +11,7 @@ import type Player from "../../classes/Player"
  */
 export default function setupRoomEvents(
   socket:CustomServerSocket,
-  io:CustomServer,
+  // io:CustomServer,
   room:Room,
   player:Player
 ) {

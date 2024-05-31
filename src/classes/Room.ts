@@ -6,7 +6,6 @@ import { RoomState } from "@customTypes/rooms";
 import { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
 import { playerColors } from "../constants/colors"
 import Game from "./Game";
-import { ResolvedResult } from "vite/runtime";
 
 /**
  * Room Class

@@ -55,6 +55,6 @@ export function playerNameStringWithArticle({
 export function playerNameString({
   adjective,
   noun
-} : PlayerName, capitalize = true):string {
+} : PlayerName):string {
   return `${adjective} ${noun}`
 }

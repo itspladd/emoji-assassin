@@ -1,10 +1,8 @@
-import { DebugActions } from "@customTypes/debug";
-import { CustomClientSocket } from "@customTypes/socket";
-import { ReducerActionPayload } from "@customTypes/stateManagement";
-import { Dispatch } from "react";
+import type { DebugActions } from "@customTypes/debug";
+import type { CustomClientSocket } from "@customTypes/socket";
 
 export function createDebugActions(
-  dispatch: Dispatch<ReducerActionPayload>,
+  // dispatch: Dispatch<ReducerActionPayload>,
   socket: CustomClientSocket
 ) : DebugActions {
   const readyAll = (roomId: string) => {
