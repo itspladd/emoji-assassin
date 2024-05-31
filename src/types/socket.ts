@@ -14,6 +14,7 @@ export interface ClientToServerEvents extends ClientToServerDebugEvents {
   joinRoom: (roomId:string) => void;
   changeName: () => void;
   toggleReady: () => void;
+  nextPlayer: () => void;
 }
 
 export interface ServerToClientEvents {

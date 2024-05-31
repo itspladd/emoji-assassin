@@ -19,7 +19,8 @@ export interface ClientGameState {
 export interface ClientGameStateActions {
   setTiles: (tiles: GameTile[]) => void,
   setGameState: (game:ClientGameState) => void,
-  updateGameState: (game:Partial<ClientGameState>) => void
+  updateGameState: (game:Partial<ClientGameState>) => void,
+  endTurn: () => void
 }
 
 export type ClientGameStateDispatchType = 

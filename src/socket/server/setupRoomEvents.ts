@@ -1,4 +1,4 @@
-import type { CustomServerSocket } from "@customTypes/socket"
+import type { CustomServer, CustomServerSocket } from "@customTypes/socket"
 import type Room from "../../classes/Room"
 import type Player from "../../classes/Player"
 
@@ -11,7 +11,7 @@ import type Player from "../../classes/Player"
  */
 export default function setupRoomEvents(
   socket:CustomServerSocket,
-  // io:CustomServer,
+  io:CustomServer,
   room:Room,
   player:Player
 ) {
@@ -31,5 +31,16 @@ export default function setupRoomEvents(
     player.toggleReady()
     
     room.afterPlayerReady(player.id)
+  })
+
+  /**
+   * Event fired when a player's turn is over
+   */
+  socket.on("nextPlayer", () => {
+    console.debug(`${player.id} ended their turn`)
+    const newCurrentPlayerId = room._game.nextPlayer()
+    console.debug(`it is now ${newCurrentPlayerId}'s turn`)
+
+    io.to(room.id).emit("gameStateChange", { currentPlayer: newCurrentPlayerId })
   })
 }

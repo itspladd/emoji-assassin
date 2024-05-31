@@ -108,9 +108,11 @@ export default class Game {
   }
 
   // End the current player's turn and start the next player's turn
-  nextPlayer() {
+  nextPlayer():string {
     // Move current player ID to end of the turn order array
     const [current, ...others] = this._turnOrder
     this._turnOrder = [...others, current]
+
+    return this.currentPlayerId
   }
  }

@@ -1,8 +1,8 @@
 import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
-import { playerNameString } from "../helpers/names";
 
 import EventLog from "./EventLog";
 import PlayerControls from "./PlayerControls";
+import PlayerName from "./PlayerName";
 
 import styles from './GameRoom.module.css'
 import { GameStatus } from "@customTypes/game";
@@ -22,11 +22,12 @@ export default function GameRoom({
 
   const allPlayers = accessors.allPlayers()
   const localPlayer = accessors.localPlayer()
+  const currentPlayer = accessors.currentPlayer()
+  
   const tiles = accessors.tiles()
   const eventLog = accessors.eventLog()
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
   const gameStatus = accessors.gameStatus()
-  const currentPlayerId = accessors.currentPlayer()
 
   const gameRunning = gameStatus === "running"
 
@@ -37,23 +38,14 @@ export default function GameRoom({
   } 
 
   const playerNames = Object.values(allPlayers)
-    .map(({ name, id, color, isReady }) => {
-      const isLocalPlayer = id === localPlayer.id
-      const isCurrentPlayer = id === currentPlayerId
-      const isLocalPlayerString = isLocalPlayer ? " (me)" : ""
-      const completePlayerNameString = playerNameString(name) + isLocalPlayerString
-
-      const currentPlayerClass = isCurrentPlayer ? styles["current-player"] : ""
-
-      // TODO: show connection status here once player leave/rejoin is implemented
-      let playerIndicator = gameRunning ? "" :
-        isReady ? "Y" : "N"
-      
+    .map(player => {
       return (
-        <li key={id} className={styles["player-name"]}>
-          <span className={styles["color-square"] + " " + styles[color]}>{playerIndicator}</span>
-          <span className={styles["name"] + " " + currentPlayerClass}>{completePlayerNameString}</span>
-        </li> 
+        <PlayerName 
+          player={player}
+          isCurrentPlayer={player.id === currentPlayer?.id}
+          isLocalPlayer={player.id === localPlayer.id}
+          gameRunning={gameRunning}
+        />
       )
     })
 
@@ -97,7 +89,7 @@ export default function GameRoom({
           gameStatus={gameStatus}
           changeName={actions.room.changeName}
           toggleReady={actions.room.toggleReady}
-          />
+        />
 
       </section>
 

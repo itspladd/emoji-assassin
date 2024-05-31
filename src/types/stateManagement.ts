@@ -48,7 +48,7 @@ export interface StateAccessors {
   tiles: () => ClientGameState['tiles'];
   gameStarted: () => boolean;
   gameStatus: () => ClientGameState['status'];
-  currentPlayer: () => ClientGameState['currentPlayer'];
+  currentPlayer: () => RoomState['playersInRoom'][string] | null;
 }
 
 export type StateManagerReturn = {

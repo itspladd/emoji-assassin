@@ -35,7 +35,7 @@ export default function setupServerEvents(socket:CustomServerSocket, io:CustomSe
     }
 
     const player = room.initNewPlayer(socket)
-    setupRoomEvents(socket, /* io, */ room, player)
+    setupRoomEvents(socket, io, room, player)
 
     // Tell the socket to join the room channel
     socket.join(room.id)

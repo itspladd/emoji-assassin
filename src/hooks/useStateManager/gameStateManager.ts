@@ -1,6 +1,7 @@
 import type { Dispatch } from "react";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
 import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameTile } from "@customTypes/game";
+import type { CustomClientSocket } from "@customTypes/socket";
 
 import { stateChangeError } from "../../helpers/logging";
 
@@ -62,7 +63,7 @@ export const GameStateDispatchFunctions:ReducerDispatchFunctionList<ClientGameSt
 // User-friendly state management functions so we don't have to use dispatch in components.
 export const createGameActions = (
   dispatch: Dispatch<ReducerActionPayload>,
-  // socket: CustomClientSocket
+  socket: CustomClientSocket
 ) : ClientGameStateActions => {
 
   const setTiles = (tiles:GameTile[]) => {
@@ -79,10 +80,15 @@ export const createGameActions = (
     dispatch({type: 'update_game_state', data: {game}})
   }
 
+  const endTurn = () => {
+    socket.emit("nextPlayer")
+  }
+
   return {
     setTiles,
     setGameState,
-    updateGameState
+    updateGameState,
+    endTurn
   }
 }
 
