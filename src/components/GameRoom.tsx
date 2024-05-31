@@ -92,6 +92,7 @@ export default function GameRoom({
           toggleReady={actions.room.toggleReady}
           localPlayerRole={myRole}
           isLocalPlayerTurn={myId === currentPlayer?.id}
+          endTurn={actions.game.endTurn}
         />
 
       </section>

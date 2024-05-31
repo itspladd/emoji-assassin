@@ -4,6 +4,7 @@ import { PlayerRole } from "@customTypes/players";
 interface PlayerControlsProps {
   changeName: () => void;
   toggleReady: () => void;
+  endTurn: () => void;
   gameStatus: GameStatus;
   localPlayerRole: PlayerRole;
   isLocalPlayerTurn: boolean;
@@ -12,6 +13,7 @@ interface PlayerControlsProps {
 export default function PlayerControls({
   changeName,
   toggleReady,
+  endTurn,
   gameStatus,
   localPlayerRole,
   isLocalPlayerTurn
@@ -36,6 +38,7 @@ export default function PlayerControls({
     return (
       <div>
         <p>Your turn!</p>
+        <button onClick={endTurn}>End turn</button>
       </div>
     )
   }
