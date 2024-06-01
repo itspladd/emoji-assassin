@@ -1,0 +1,17 @@
+.tile {
+  font-size: xx-large;
+  text-align: center;
+  background-color: rgb(173, 217, 255);
+  border-radius: 1rem;
+  margin: .23em;
+}
+
+.favorite {
+  outline: .5rem solid gold;
+}
+
+.disabled {
+  background-color: blueviolet;
+  opacity: 20%;
+  display: none
+}

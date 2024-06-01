@@ -6,6 +6,7 @@ import PlayerName from "./PlayerName";
 
 import styles from './GameRoom.module.css'
 import { GameStatus } from "@customTypes/game";
+import Tile from "./Tile";
 
 interface GameRoomProps {
   id:string,
@@ -54,27 +55,19 @@ export default function GameRoom({
     })
 
   const gameTiles = tiles.map(tile => {
-    const {
-      row,
-      column,
-      image
-    } = tile
-
-    let tileClassNames = styles["tile"]
-
-    if (myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column) {
-      tileClassNames += " " + styles["favorite"]
-    }
+    const { row, column } = tile
+    const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
+    const isBomb = isFavorite && myRole === "assassin"
 
     return (
-      <span
+      <Tile
         key={`${row}${column}`}
-        id={`${row}${column}`}
-        className={tileClassNames}
+        tile={tile} 
+        isFavorite={isFavorite}
+        isBomb={isBomb}
+        isDisabled={false}
         onClick={() => actions.game.tileClick(row, column, gameStatus)}
-      >
-        {image}
-      </span>
+      />
     )
   })
 
