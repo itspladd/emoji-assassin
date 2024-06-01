@@ -99,6 +99,9 @@ export default class Room {
     }
   }
 
+  /**
+   * Retrieves the publicly-known data for all players (including the local player).
+   */
   get clientPlayerList() {
     const results:ClientPlayerList = {}
 
@@ -233,10 +236,11 @@ export default class Room {
       return [false, "Game cannot start"]
     }
 
+    // Initialize the game with the player list
     this._game.initNewGame(this._players)
+
+    // Send each player their local game state, including private info about themselves
     this.playerArray.forEach(player => {
-      console.log("sending game data to player after starting")
-      console.log(this._game.gameStateForPlayer(player.id))
       this._io.to(player.id).emit("gameStateChange", this._game.gameStateForPlayer(player.id))
     })
     return [true, null]
