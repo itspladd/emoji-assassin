@@ -30,6 +30,7 @@ export default class Game {
 
   _players: PlayerList
   _turnOrder: string[]
+  _bombLocation: [number, number] | null
   tiles: GameTile[]
   status: GameStatus
   
@@ -39,6 +40,7 @@ export default class Game {
     this.tiles = Game.makeTiles()
     this._players = {}
     this._turnOrder = []
+    this._bombLocation = null
   }
 
   get publicClientGameState():PublicClientGameState {
@@ -49,20 +51,24 @@ export default class Game {
     }
   }
 
-  localClientGameState(playerId: string):LocalClientGameState {
-    console.log(playerId)
-    console.log(this._players[playerId])
-    return {
-      myRole: this._players[playerId]?.role 
-    }
-  }
-
   get currentPlayerId():string {
     return this._turnOrder[0]
   }
 
   get currentPlayer():Player {
     return this._players[this.currentPlayerId]
+  }
+
+  get bombIsPlaced():boolean {
+    return this._bombLocation?.length === 2
+  }
+
+  localClientGameState(playerId: string):LocalClientGameState {
+    console.log(playerId)
+    console.log(this._players[playerId])
+    return {
+      myRole: this._players[playerId]?.role 
+    }
   }
 
   gameStateForPlayer(playerId:string):ClientGameState {
