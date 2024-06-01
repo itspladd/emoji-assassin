@@ -50,7 +50,7 @@
   }
 
   .favorite {
-    background-color: green;
+    outline: .5rem solid gold;
   }
 }
 
