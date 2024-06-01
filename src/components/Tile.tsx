@@ -1,7 +1,6 @@
 import type { GameTile } from "@customTypes/game"
 
 import styles from './Tile.module.css'
-import { useState } from "react"
 
 interface TileProps {
   tile: GameTile,
