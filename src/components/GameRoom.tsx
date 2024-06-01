@@ -41,7 +41,8 @@ export default function GameRoom({
   const playerNames = Object.values(allPlayers)
     .map(player => {
       return (
-        <PlayerName 
+        <PlayerName
+          key={player.id}
           player={player}
           isCurrentPlayer={player.id === currentPlayer?.id}
           isLocalPlayer={player.id === myId}
