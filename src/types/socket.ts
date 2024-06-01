@@ -15,6 +15,7 @@ export interface ClientToServerEvents extends ClientToServerDebugEvents {
   changeName: () => void;
   toggleReady: () => void;
   nextPlayer: () => void;
+  tileClick: (row:number, column: number) => void;
 }
 
 export interface ServerToClientEvents {
@@ -25,8 +26,9 @@ export interface ServerToClientEvents {
   playerChangedName: (playerId:string, name:PlayerName) => void;
   syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void;
   playerToggledReady: (playerId: string, readyState: boolean) => void;
-  gameStart: (game:ClientGameState) => void,
-  gameStateChange: (game:Partial<ClientGameState>) => void
+  gameStart: (game:ClientGameState) => void;
+  gameStateChange: (game:Partial<ClientGameState>) => void;
+  setFavoriteTile: (row:number, column: number) => void
 }
 
 export type CustomServer = Server<ClientToServerEvents, ServerToClientEvents>

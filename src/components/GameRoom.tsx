@@ -29,11 +29,13 @@ export default function GameRoom({
   const eventLog = accessors.eventLog()
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
   const gameStatus = accessors.gameStatus()
+  const myFavoriteTile = accessors.myFavoriteTile()
 
-  const gameRunning = gameStatus === "running"
+  const gameRunning = gameStatus !== "notStarted"
 
   const statusMessages:Record<GameStatus, string> = {
     notStarted: "Not started yet",
+    chooseFavoriteTiles: myRole === "assassin" ? "Place the bomb!" : "Choose your favorite emoji!",
     running: "Game running",
     gameOver: "Game ended"
   } 
@@ -58,11 +60,18 @@ export default function GameRoom({
       image
     } = tile
 
+    let tileClassNames = styles["tile"]
+
+    if (myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column) {
+      tileClassNames += " " + styles["favorite"]
+    }
+
     return (
       <span
         key={`${row}${column}`}
         id={`${row}${column}`}
-        className={styles["tile"]}
+        className={tileClassNames}
+        onClick={() => actions.game.tileClick(row, column, gameStatus)}
       >
         {image}
       </span>
@@ -81,7 +90,10 @@ export default function GameRoom({
         <div>
           <div>
             <h3>Players</h3>
-            <button onClick={() => actions.debug.readyAll(id)}>Ready all players</button>
+            { !gameRunning && (
+              <button onClick={() => actions.debug.readyAll(id)}>Ready all players</button>
+            )}
+            
           </div>
           <ul id={styles["player-list"]}>{playerNames}</ul>
         </div>
@@ -97,6 +109,8 @@ export default function GameRoom({
         />
 
       </section>
+
+      <p>{statusMessages[gameStatus]}</p>
 
       <section id={styles["game-board-section"]}>
         <div id={styles["board"]}>

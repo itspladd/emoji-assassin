@@ -47,7 +47,7 @@ export interface ClientPlayerInfo {
 export interface PrivateClientPlayerInfo {
   myRole: PlayerRole;
   myFavoriteTile: [number, number] | null;
-  myKnownSafeTiles: [number, number][] | null
+  myKnownSafeTiles: [number, number][] | null;
 }
 
 export type ClientPlayerList = Record<string, ClientPlayerInfo>

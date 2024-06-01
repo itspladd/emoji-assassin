@@ -48,6 +48,10 @@
     border-radius: 1rem;
     margin: .23em;
   }
+
+  .favorite {
+    background-color: green;
+  }
 }
 
 #info-section {

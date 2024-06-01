@@ -43,4 +43,12 @@ export default function setupRoomEvents(
 
     io.to(room.id).emit("gameStateChange", { currentPlayer: newCurrentPlayerId })
   })
+
+  /**
+   * Event fired when a player clicks a tile
+   */
+  socket.on("tileClick", (row:number, column:number) => {
+    room._game.handleTileSelect(row, column, player.id)
+    io.to(socket.id).emit("setFavoriteTile", row, column)
+  })
 }

@@ -69,6 +69,9 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.game.updateGameState(game)
     }
 
+    function onSetFavoriteTile(row:number, column:number) {
+      actions.game.setFavoriteTile(row, column)
+    }
 
     const eventHandlerMap:ServerToClientEvents = {
       connect: onConnect,
@@ -79,7 +82,8 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       syncRoomAndGameState: onSyncRoomAndGameState,
       playerToggledReady: onPlayerToggledReady,
       gameStart: onGameStart,
-      gameStateChange: onGameStateChange
+      gameStateChange: onGameStateChange,
+      setFavoriteTile: onSetFavoriteTile,
     }
 
     // Init event listeners

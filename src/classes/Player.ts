@@ -12,7 +12,7 @@ export default class Player {
   _isReady: boolean
   _role: PlayerRole
   score: number
-  favoriteTile: [number, number] | null
+  _favoriteTile: [number, number] | null
   knownSafeTiles: [number, number][] | null
 
   constructor(
@@ -26,7 +26,7 @@ export default class Player {
     this._isReady = false
     this._role = null
     this.score = 0
-    this.favoriteTile = null
+    this._favoriteTile = null
     this.knownSafeTiles = null
   }
 
@@ -72,6 +72,14 @@ export default class Player {
 
   set role(newRole:PlayerRole) {
     this._role = newRole
+  }
+
+  get favoriteTile() {
+    return this._favoriteTile
+  }
+  
+  setFavoriteTile(row:number, column:number) {
+    this._favoriteTile = [row, column]
   }
 
   toggleReady():boolean {

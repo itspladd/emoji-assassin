@@ -1,6 +1,6 @@
 import type { Dispatch } from "react";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
-import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameTile, PublicClientGameState } from "@customTypes/game";
+import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameStatus, GameTile, PublicClientGameState } from "@customTypes/game";
 import type { CustomClientSocket } from "@customTypes/socket";
 
 import { stateChangeError } from "../../helpers/logging";
@@ -53,11 +53,36 @@ const update_game_state = (state: AppState, data?: { game?: Partial<ClientGameSt
   }
 }
 
+const set_favorite_tile = (state: AppState, data?: {row?:number, column?: number}) => {
+  if (!data) {
+    return stateChangeError("Attempted to set favorite tile with bad data.", state, data)
+  }
+
+  const {row, column} = data
+  if (typeof row === "undefined" || typeof column === "undefined") {
+    return stateChangeError("Attempted to set favorite tile with bad data.", state, data)
+  }
+
+  const newFavoriteTile:[number, number] = [row, column]
+
+  return {
+    ...state,
+    game: {
+      ...state.game,
+      privateInfo: {
+        ...state.game.privateInfo,
+        myFavoriteTile: newFavoriteTile
+      }
+    }
+  }
+}
+
 // These functions actually go into the reducer.
 export const GameStateDispatchFunctions:ReducerDispatchFunctionList<ClientGameStateDispatchType> = {
   set_tiles,
   set_game_state,
-  update_game_state
+  update_game_state,
+  set_favorite_tile,
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
@@ -79,16 +104,27 @@ export const createGameActions = (
     console.log("Updating game state with:", game)
     dispatch({type: 'update_game_state', data: {game}})
   }
+  
+  const setFavoriteTile = (row:number, column:number) => {
+    dispatch({type: 'set_favorite_tile', data: {row, column}})
+  }
 
   const endTurn = () => {
     socket.emit("nextPlayer")
+  }
+
+  const tileClick = (row:number, column:number, gameStatus:GameStatus) => {
+    const canClickTiles = gameStatus === "chooseFavoriteTiles"
+    canClickTiles && socket.emit("tileClick", row, column)
   }
 
   return {
     setTiles,
     setPublicGameState,
     updateGameState,
-    endTurn
+    endTurn,
+    tileClick,
+    setFavoriteTile
   }
 }
 

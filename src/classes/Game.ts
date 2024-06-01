@@ -1,4 +1,4 @@
-import type { ClientGameState, GameStatus, GameTile, PublicClientGameState } from "@customTypes/game"
+import type { ClientGameState, GameStatus, GameStatusOrder, GameTile, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
 
@@ -10,6 +10,13 @@ export default class Game {
   static MIN_PLAYERS = 4
   static MAX_PLAYERS = 10
   static NUM_TILES = 25
+
+  static STATUS_ORDER:GameStatusOrder = {
+    "notStarted": ["chooseFavoriteTiles"],
+    "chooseFavoriteTiles": ["running"],
+    "running": ["chooseFavoriteTiles", "gameOver"],
+    "gameOver": []
+  }
 
   static makeTiles():GameTile[] {
     const emojis = getRandomTileEmojis(Game.NUM_TILES)
@@ -63,6 +70,12 @@ export default class Game {
     return this._bombLocation?.length === 2
   }
 
+  /**
+   * Pseudo-getter that retrieves the full client-side game state for a given player.
+   * Includes that player's private information.
+   * @param playerId 
+   * @returns 
+   */
   gameStateForPlayer(playerId:string):ClientGameState {
     const publicState = this.publicClientGameState
     const privateState = this._players[playerId]?.privateClientState
@@ -70,6 +83,29 @@ export default class Game {
     return {
       ...publicState,
       privateInfo: { ...privateState }
+    }
+  }
+
+  /**
+   * Top-level function for handling incoming tile selection events.
+   * @param row 
+   * @param column 
+   * @param playerId 
+   * @returns 
+   */
+  handleTileSelect(row:number, column:number, playerId:string):void {
+    if (this.status === "notStarted") {
+      console.error("ERROR: Game.handleTileSelect called during bad status:", this.status)
+      return
+    }
+
+    const player = this._players[playerId]
+
+    if (this.status === "chooseFavoriteTiles") {
+      player.isAssassin && this.placeBomb(row, column)
+
+      // The assassin's "favorite tile" is the bomb tile.
+      player.setFavoriteTile(row, column)
     }
   }
 
@@ -96,7 +132,7 @@ export default class Game {
 
     this.assignPlayerRoles()
     this.setPlayerOrder()
-    this.status = "running"
+    this.status = "chooseFavoriteTiles"
   }
 
   assignPlayerRoles() {
@@ -130,5 +166,13 @@ export default class Game {
     this._turnOrder = [...others, current]
 
     return this.currentPlayerId
+  }
+
+  placeBomb(row:number, column:number) {
+    this._bombLocation = [row, column]
+  }
+
+  clearBomb() {
+    this._bombLocation = null
   }
  }
