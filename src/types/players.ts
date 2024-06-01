@@ -30,6 +30,10 @@ export type PlayerRole = "innocent" | "assassin" | null
 export type PlayerList = Record<string, Player>
 
 /** Client-side types */
+
+/**
+ * Publicly-known information about a player.
+ */
 export interface ClientPlayerInfo {
   name: PlayerName,
   id: string,
@@ -37,8 +41,13 @@ export interface ClientPlayerInfo {
   isReady: boolean
 }
 
-export interface ClientSelfInfo extends ClientPlayerInfo {
-  role: PlayerRole
+/**
+ * Secret game knowledge for each player.
+ */
+export interface PrivateClientPlayerInfo {
+  role: PlayerRole;
+  favoriteTile: [number, number] | null;
+  knownSafeTiles: [number, number][] | null
 }
 
-export type ClientPlayerList = Record<string, ClientPlayerInfo | ClientSelfInfo>
+export type ClientPlayerList = Record<string, ClientPlayerInfo>

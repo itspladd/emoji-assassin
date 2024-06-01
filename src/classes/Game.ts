@@ -1,4 +1,4 @@
-import type { ClientGameState, GameStatus, GameTile, LocalClientGameState, PublicClientGameState } from "@customTypes/game"
+import type { ClientGameState, GameStatus, GameTile, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
 
@@ -63,17 +63,9 @@ export default class Game {
     return this._bombLocation?.length === 2
   }
 
-  localClientGameState(playerId: string):LocalClientGameState {
-    console.log(playerId)
-    console.log(this._players[playerId])
-    return {
-      myRole: this._players[playerId]?.role 
-    }
-  }
-
   gameStateForPlayer(playerId:string):ClientGameState {
     const publicState = this.publicClientGameState
-    const privateState = this.localClientGameState(playerId)
+    const privateState = this._players[playerId]?.privateClientState
 
     return {
       ...publicState,

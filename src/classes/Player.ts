@@ -1,5 +1,5 @@
 import type { CustomServerSocket } from "@customTypes/socket"
-import type { ClientPlayerInfo, PlayerColorKey, PlayerName, PlayerRole } from "@customTypes/players"
+import type { ClientPlayerInfo, PlayerColorKey, PlayerName, PlayerRole, PrivateClientPlayerInfo } from "@customTypes/players"
 import { makeRandomName } from "../helpers/names"
 
 
@@ -12,6 +12,8 @@ export default class Player {
   _isReady: boolean
   _role: PlayerRole
   score: number
+  favoriteTile: [number, number] | null
+  knownSafeTiles: [number, number][] | null
 
   constructor(
     socket:CustomServerSocket,
@@ -24,6 +26,8 @@ export default class Player {
     this._isReady = false
     this._role = null
     this.score = 0
+    this.favoriteTile = null
+    this.knownSafeTiles = null
   }
 
   get id() {
@@ -76,7 +80,7 @@ export default class Player {
   }
 
   /**
-   * Returns an object representing the client-side app state for this Player.
+   * Returns an object representing the public client-side app state for this Player.
    */
   get clientState():ClientPlayerInfo {
     return {
@@ -84,6 +88,14 @@ export default class Player {
       id: this._id,
       color: this.color,
       isReady: this.isReady
+    }
+  }
+
+  get privateClientState():PrivateClientPlayerInfo {
+    return {
+      role: this.role,
+      favoriteTile: this.favoriteTile,
+      knownSafeTiles: this.knownSafeTiles
     }
   }
 
