@@ -93,9 +93,9 @@ export default class Player {
 
   get privateClientState():PrivateClientPlayerInfo {
     return {
-      role: this.role,
-      favoriteTile: this.favoriteTile,
-      knownSafeTiles: this.knownSafeTiles
+      myRole: this.role,
+      myFavoriteTile: this.favoriteTile,
+      myKnownSafeTiles: this.knownSafeTiles
     }
   }
 

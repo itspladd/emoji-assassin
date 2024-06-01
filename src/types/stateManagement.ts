@@ -3,7 +3,7 @@ import type { RoomActions, RoomState, RoomStateDispatchType } from "./rooms"
 import type { EventLogActions, EventLogItem, EventLogStateDispatchType } from "./events"
 import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType } from "./game"
 import type { DebugActions } from "./debug"
-import type { ClientPlayerInfo } from "./players"
+import type { ClientPlayerInfo, PrivateClientPlayerInfo } from "./players"
 
 /** All types here should be client-side only. */
 export type ReducerDispatchType = 
@@ -48,7 +48,9 @@ export interface StateAccessors {
   tiles: () => ClientGameState['tiles'];
   gameStarted: () => boolean;
   gameStatus: () => ClientGameState['status'];
-  myRole: () => ClientGameState['myRole']
+  myRole: () => PrivateClientPlayerInfo['myRole'];
+  myFavoriteTile: () => PrivateClientPlayerInfo['myFavoriteTile'];
+  myKnownSafeTiles: () => PrivateClientPlayerInfo['myKnownSafeTiles'];
 }
 
 export type StateManagerReturn = {

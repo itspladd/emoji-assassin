@@ -69,7 +69,7 @@ export default class Game {
 
     return {
       ...publicState,
-      ...privateState
+      privateInfo: { ...privateState }
     }
   }
 

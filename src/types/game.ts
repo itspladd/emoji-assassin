@@ -1,4 +1,4 @@
-import { PlayerRole } from "./players"
+import { PlayerRole, PrivateClientPlayerInfo } from "./players"
 
 export type GameStatus = 
   "notStarted"
@@ -24,7 +24,9 @@ export interface LocalClientGameState {
   myRole: PlayerRole
 }
 
-export type ClientGameState = PublicClientGameState & LocalClientGameState
+export type ClientGameState = PublicClientGameState & {
+  privateInfo: PrivateClientPlayerInfo
+}
 
 export interface ClientGameStateActions {
   setTiles: (tiles: GameTile[]) => void,

@@ -45,9 +45,9 @@ export interface ClientPlayerInfo {
  * Secret game knowledge for each player.
  */
 export interface PrivateClientPlayerInfo {
-  role: PlayerRole;
-  favoriteTile: [number, number] | null;
-  knownSafeTiles: [number, number][] | null
+  myRole: PlayerRole;
+  myFavoriteTile: [number, number] | null;
+  myKnownSafeTiles: [number, number][] | null
 }
 
 export type ClientPlayerList = Record<string, ClientPlayerInfo>

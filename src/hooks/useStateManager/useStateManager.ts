@@ -24,7 +24,11 @@ const initialState:AppState = {
     tiles: [],
     status: "notStarted",
     currentPlayer: "",
-    myRole: null
+    privateInfo: {
+      myRole: null,
+      myFavoriteTile: null,
+      myKnownSafeTiles: null
+    }
   }
 }
 
@@ -56,7 +60,9 @@ export default function useStateManager():StateManagerReturn {
     gameStarted: () => state.game.status !== "notStarted",
     gameStatus: () => state.game.status,
     currentPlayer: () => state.room.playersInRoom[state.game.currentPlayer] ?? null,
-    myRole: () => state.game.myRole
+    myRole: () => state.game.privateInfo.myRole,
+    myFavoriteTile: () => state.game.privateInfo.myFavoriteTile,
+    myKnownSafeTiles: () => state.game.privateInfo.myKnownSafeTiles,
   }
 
   return {
