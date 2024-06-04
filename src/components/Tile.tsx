@@ -33,6 +33,10 @@ export default function Tile({
     tileClassNames += " " + styles["disabled"]
   }
 
+  if (isBomb) {
+    tileClassNames += " " + styles["bomb"]
+  }
+
   return (
     <span
       id={`${row}${column}`}

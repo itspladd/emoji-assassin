@@ -10,6 +10,10 @@
   outline: .5rem solid gold;
 }
 
+.bomb {
+  background-color: red;
+}
+
 .disabled {
   background-color: blueviolet;
   opacity: 20%;
