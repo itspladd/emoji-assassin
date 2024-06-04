@@ -72,13 +72,13 @@ export default function GameRoom({
   })
 
   return (
-    <main id={styles["game-room-wrapper"]}>
+    <main className={styles["game-room-wrapper"]}>
       <header>
         <h2>Room ID: {id}</h2>
         <span>{connectionString}</span>
       </header>
       
-      <section id={styles["info-section"]}>
+      <section className={styles["info-section"]}>
 
         <div>
           <div>
@@ -88,7 +88,7 @@ export default function GameRoom({
             )}
             
           </div>
-          <ul id={styles["player-list"]}>{playerNames}</ul>
+          <ul className={styles["player-list"]}>{playerNames}</ul>
         </div>
 
 
@@ -105,8 +105,8 @@ export default function GameRoom({
 
       <p>{statusMessages[gameStatus]}</p>
 
-      <section id={styles["game-board-section"]}>
-        <div id={styles["board"]}>
+      <section className={styles["game-board-section"]}>
+        <div className={styles["board"]}>
           {gameTiles}
         </div>
 

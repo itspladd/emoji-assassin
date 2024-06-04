@@ -1,4 +1,4 @@
-#game-room-wrapper {
+.game-room-wrapper {
   background-color: aliceblue;
   height: 100vh;
   display: flex;
@@ -30,11 +30,11 @@
   }
 }
 
-#game-board-section {
+.game-board-section {
 
   flex-basis: 80%;
 
-  #board {
+  .board {
     padding: 1rem;
     display:grid;
     grid-template-columns: repeat(5, 1fr);
@@ -42,11 +42,11 @@
   }
 }
 
-#info-section {
+.info-section {
   flex-basis: 20%;
 }
 
-#player-list {
+.player-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(10px, 1fr));
   grid-auto-rows: minmax(20px, auto);
