@@ -20,26 +20,37 @@ export default class Game {
 
   static makeTiles():GameTile[] {
     const emojis = getRandomTileEmojis(Game.NUM_TILES)
+    const numRowsAndCols = Math.ceil(Math.sqrt(Game.NUM_TILES))
 
     return emojis.map((emoji, i) => {
-      const row = Math.floor(i/5)
-      const column = i % 5
+      const row = Math.floor(i/numRowsAndCols)
+      const column = i % numRowsAndCols
 
       return {
         image: emoji,
         description: "tile",
         row,
-        column
+        column,
+        favoritedBy: [],
+        active: true
       }
 
     })
   }
 
+  // All of the player classes tracked for this game.
   _players: PlayerList
+  // Array of player IDs representing turn order (index 0 is the current player)
   _turnOrder: string[]
+  // Array of two numbers representing the row/column of the bomb.
   _bombLocation: [number, number] | null
+  // Tracks tiles that have been favorited, and an array of players who have favorited each
+  _favoritedTiles: Record<string, string[]>
   tiles: GameTile[]
   status: GameStatus
+
+  // Zero-indexed dimensions of the game board. A 5x5 game board would have a value of 4.
+  _boardSize: number
   
 
   constructor () {
@@ -47,7 +58,10 @@ export default class Game {
     this.tiles = Game.makeTiles()
     this._players = {}
     this._turnOrder = []
+    this._favoritedTiles = {}
     this._bombLocation = null
+
+    this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
   get publicClientGameState():PublicClientGameState {
@@ -68,6 +82,18 @@ export default class Game {
 
   get bombIsPlaced():boolean {
     return this._bombLocation?.length === 2
+  }
+
+  // Tiles are stored as a single-dimension array; use row/column to grab the correct one
+  getTileAt(row: number, col: number):GameTile {
+    if (row > this._boardSize || col > this._boardSize) {
+      throw new Error(`Attempted to get out-of-bounds tile for board of size ${this._boardSize}: [${row}, ${col}]`)
+    }
+
+    const rowIndexComponent = row * (this._boardSize + 1)
+    const colIndexComponent = col
+
+    return this.tiles[rowIndexComponent + colIndexComponent]
   }
 
   /**
@@ -99,14 +125,31 @@ export default class Game {
       return
     }
 
+    console.log(`Handling select for tile at ${row}, ${column}:`, this.getTileAt(row, column))
+
     const player = this._players[playerId]
+    const tile = this.getTileAt(row, column)
 
     if (this.status === "chooseFavoriteTiles") {
-      player.isAssassin && this.placeBomb(row, column)
-
-      // The assassin's "favorite tile" is the bomb tile.
-      player.setFavoriteTile(row, column)
+      this.favoriteTileSelect(tile, player)
     }
+
+    if (this.status === "running") {
+      if (!tile.active) {
+        throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
+      }
+
+      this.nextPlayer()
+    }
+  }
+
+  favoriteTileSelect(tile:GameTile, player:Player):void {
+    const { row, column } = tile
+    player.isAssassin ?
+      this.placeBomb(row, column) : 
+      this.getTileAt(row, column).favoritedBy.push(player.id)
+    // The assassin's "favorite tile" is the bomb tile.
+    player.setFavoriteTile(row, column)
   }
 
   /**

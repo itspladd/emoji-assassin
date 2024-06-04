@@ -12,6 +12,8 @@ export interface GameTile {
   description: string;
   row: number;
   column: number;
+  favoritedBy: string[];
+  active: boolean
 }
 
 // Client-side game knowledge that all players have

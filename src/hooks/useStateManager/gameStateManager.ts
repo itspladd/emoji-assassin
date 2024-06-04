@@ -114,7 +114,7 @@ export const createGameActions = (
   }
 
   const tileClick = (row:number, column:number, gameStatus:GameStatus) => {
-    const canClickTiles = gameStatus === "chooseFavoriteTiles"
+    const canClickTiles = gameStatus === "chooseFavoriteTiles" || gameStatus === "running"
     canClickTiles && socket.emit("tileClick", row, column)
   }
 

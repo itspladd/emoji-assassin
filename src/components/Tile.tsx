@@ -25,17 +25,17 @@ export default function Tile({
 
   let tileClassNames = styles["tile"]
 
-  if (isFavorite) {
-    tileClassNames += " " + styles["favorite"]
-  }
-
   if (isDisabled) {
     tileClassNames += " " + styles["disabled"]
   }
-
-  if (isBomb) {
+  else if (isBomb) {
     tileClassNames += " " + styles["bomb"]
   }
+  else if (isFavorite) {
+    tileClassNames += " " + styles["favorite"]
+  }
+
+
 
   return (
     <span
