@@ -1,6 +1,7 @@
 import type { GameTile } from "@customTypes/game"
 
 import styles from './Tile.module.css'
+import { memo } from "react"
 
 interface TileProps {
   tile: GameTile,
@@ -10,13 +11,14 @@ interface TileProps {
   onClick: () => void
 }
 
-export default function Tile({
+function TileComponent({
   tile,
   isFavorite,
   isBomb,
   isDisabled,
   onClick
 }: TileProps ) {
+  console.log("rendering tile", tile.row, tile.column)
   const {
     row,
     column,
@@ -47,3 +49,7 @@ export default function Tile({
     </span>
   )
 }
+
+const Tile = memo(TileComponent)
+
+export default Tile

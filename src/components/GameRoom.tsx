@@ -7,6 +7,7 @@ import PlayerName from "./PlayerName";
 import styles from './GameRoom.module.css'
 import { GameStatus } from "@customTypes/game";
 import Tile from "./Tile";
+import { useCallback } from "react";
 
 interface GameRoomProps {
   id:string,
@@ -58,6 +59,7 @@ export default function GameRoom({
     const { row, column } = tile
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
     const isBomb = isFavorite && myRole === "assassin"
+    const handleClick = useCallback(() => actions.game.tileClick(row, column, gameStatus), [gameStatus])
 
     return (
       <Tile
@@ -66,7 +68,7 @@ export default function GameRoom({
         isFavorite={isFavorite}
         isBomb={isBomb}
         isDisabled={false}
-        onClick={() => actions.game.tileClick(row, column, gameStatus)}
+        onClick={handleClick}
       />
     )
   })
