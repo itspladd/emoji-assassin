@@ -50,5 +50,8 @@ export default function setupRoomEvents(
   socket.on("tileClick", (row:number, column:number) => {
     room._game.handleTileSelect(row, column, player.id)
     io.to(socket.id).emit("setFavoriteTile", row, column)
+    if(room._game.transitionTo("running")) {
+      io.to(room.id).emit("gameStateChange", { status: "running" })
+    }
   })
 }

@@ -168,6 +168,47 @@ export default class Game {
     return this.currentPlayerId
   }
 
+  /**
+   * Attempts to transition the game from its current state to the next state.
+   * @param currentStatus 
+   * @returns {boolean} - True if the transition was successful, false otherwise.
+   */
+  transitionTo(targetStatus:GameStatus):boolean {
+    if (!targetStatus) {
+      throw new Error("Attempted a status transition with no target status.")
+    }
+
+    // If conditions are not met, don't transition
+    if (!this.canTransitionTo(targetStatus)) {
+      return false
+    }
+    
+    this.status = targetStatus
+    return true
+  }
+
+  canTransitionTo(target:GameStatus):boolean {
+    if (!target) {
+      throw new Error("Attempted a status transition with no target status.")
+    }
+
+    const current = this.status
+
+    // Make sure the specified transition is valid
+    if(!Game.STATUS_ORDER[current].includes(target)) {
+      throw new Error(`Attempted status transition from '${current}' to '${target}', but that status order is invalid`)
+    }
+
+    // If we are trying to leave the "place bomb/choose favorite" phase, make sure everyone has placed theirs
+    if(current === "chooseFavoriteTiles") {
+      const allPlayersHaveChosen = Object.values(this._players).every(p => p.favoriteTile !== null)
+      return this.bombIsPlaced && allPlayersHaveChosen
+    }
+
+    console.debug('canTransitionTo exited without finding a matching condition')
+    return false
+  }
+
   placeBomb(row:number, column:number) {
     this._bombLocation = [row, column]
   }
