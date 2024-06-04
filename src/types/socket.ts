@@ -2,7 +2,7 @@ import type { Socket as ServerSocket, Server } from "socket.io";
 import type { Socket as ClientSocket } from "socket.io-client"
 import type { ClientPlayerInfo, PlayerName } from "./players";
 import type { RoomState } from "./rooms";
-import { ClientGameState } from "./game";
+import type { ClientGameState } from "./game";
 
 /** Socket.IO event maps */
 interface ClientToServerDebugEvents {

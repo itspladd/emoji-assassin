@@ -1,10 +1,11 @@
-import type { CustomServer, CustomServerSocket } from "@customTypes/socket";
+import type { CustomServer, CustomServerSocket, } from "@customTypes/socket";
+import type { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
+import type { RoomState } from "@customTypes/rooms";
+
+import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays";
+import { playerColors } from "../constants/colors"
 
 import Player from "./Player";
-import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays";
-import { RoomState } from "@customTypes/rooms";
-import { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
-import { playerColors } from "../constants/colors"
 import Game from "./Game";
 
 /**
