@@ -57,7 +57,7 @@ export default function setupRoomEvents(
     }
 
     if (room._game.status === "running") {
-      io.to(room.id).emit("gameStateChange", { currentPlayer: room._game.currentPlayerId })
+      io.to(room.id).emit("gameStateChange", { currentPlayer: room._game.currentPlayerId, tiles: room._game.tiles })
     }
 
   })
