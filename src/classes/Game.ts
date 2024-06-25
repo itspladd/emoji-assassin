@@ -1,4 +1,4 @@
-import type { ClientGameState, GameStatus, GameStatusOrder, PublicClientGameState } from "@customTypes/game"
+import type { ClientGameState, ClientGameTileInfo, GameStatus, GameStatusOrder, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
 import type RoomEmitter from "./RoomEmitter"
@@ -73,10 +73,14 @@ export default class Game {
 
   get publicClientGameState():PublicClientGameState {
     return {
-      tiles: this.tiles,
+      tiles: this.publicClientTileInfo,
       status: this.status,
       currentPlayer: this.currentPlayerId
     }
+  }
+
+  get publicClientTileInfo():ClientGameTileInfo[] {
+    return this.tiles.map(tile => tile.clientInfo)
   }
 
   get currentPlayerId():string {
@@ -162,8 +166,9 @@ export default class Game {
         throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
       }
 
+      tile.active = false
       this.endPlayerTurn(playerId)
-      this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.tiles })
+      this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.publicClientTileInfo })
       
       return 
     }

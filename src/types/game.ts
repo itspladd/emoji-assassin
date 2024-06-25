@@ -13,8 +13,16 @@ export type TileContents =
   | "bomb"
 
 // Client-side game knowledge that all players have
+export type ClientGameTileInfo = {
+  image: string,
+  description: string,
+  row: number,
+  column: number,
+  active: boolean
+}
+
 export interface PublicClientGameState {
-  tiles: GameTile[];
+  tiles: ClientGameTileInfo[];
   status: GameStatus;
   currentPlayer: string;
 }

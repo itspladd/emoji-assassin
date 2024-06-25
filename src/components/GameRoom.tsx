@@ -58,6 +58,7 @@ export default function GameRoom({
 
   const gameTiles = tiles.map(tile => {
     const { row, column } = tile
+    const isDisabled = !tile.active
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
     const isSafe = accessors.tileIsKnownSafe(row, column)
     const isBomb = isFavorite && myRole === "assassin"
@@ -70,7 +71,7 @@ export default function GameRoom({
         isFavorite={isFavorite}
         isSafe={isSafe}
         isBomb={isBomb}
-        isDisabled={false}
+        isDisabled={isDisabled}
         onClick={handleClick}
       />
     )

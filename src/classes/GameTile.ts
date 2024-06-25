@@ -1,4 +1,4 @@
-import type { TileContents } from "@customTypes/game"
+import type { ClientGameTileInfo, TileContents } from "@customTypes/game"
 
 export default class GameTile {
 
@@ -34,5 +34,15 @@ export default class GameTile {
 
   get location():[number, number] {
     return [this.row, this.column]
+  }
+
+  get clientInfo():ClientGameTileInfo {
+    return {
+      image: this.image,
+      description: this.description,
+      row: this.row,
+      column: this.column,
+      active: this.active
+    }
   }
 }

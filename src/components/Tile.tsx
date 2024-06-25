@@ -1,11 +1,10 @@
-// Note the renamed default import here, since "Tile"
-import type GameTile from '../classes/GameTile'
+import { ClientGameTileInfo } from '@customTypes/game'
 
 import styles from './Tile.module.css'
 import { memo } from "react"
 
 interface TileProps {
-  tile: GameTile,
+  tile: ClientGameTileInfo,
   isFavorite: boolean,
   isBomb: boolean,
   isSafe: boolean,
@@ -22,6 +21,7 @@ function TileComponent({
   onClick
 }: TileProps ) {
 
+  // If the tile has been disabled, don't render anything at all.
   if (isDisabled) {
     return null
   }
