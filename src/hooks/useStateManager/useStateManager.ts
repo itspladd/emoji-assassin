@@ -62,6 +62,10 @@ export default function useStateManager():StateManagerReturn {
     currentPlayer: () => state.room.playersInRoom[state.game.currentPlayer] ?? null,
     myRole: () => state.game.privateInfo.myRole,
     myFavoriteTile: () => state.game.privateInfo.myFavoriteTile,
+    tileIsKnownSafe: (rowIn:number, colIn:number) => {
+      const myKnownSafeTiles = state.game.privateInfo.myKnownSafeTiles
+      return myKnownSafeTiles?.filter(([safeRow, safeCol]) => rowIn === safeRow && colIn === safeCol).length === 1
+    },
     myKnownSafeTiles: () => state.game.privateInfo.myKnownSafeTiles,
   }
 

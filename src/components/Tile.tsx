@@ -7,6 +7,7 @@ interface TileProps {
   tile: GameTile,
   isFavorite: boolean,
   isBomb: boolean,
+  isSafe: boolean,
   isDisabled: boolean
   onClick: () => void
 }
@@ -16,8 +17,14 @@ function TileComponent({
   isFavorite,
   isBomb,
   isDisabled,
+  isSafe,
   onClick
 }: TileProps ) {
+
+  if (isDisabled) {
+    return null
+  }
+
   const {
     row,
     column,
@@ -26,8 +33,8 @@ function TileComponent({
 
   let tileClassNames = styles["tile"]
 
-  if (isDisabled) {
-    tileClassNames += " " + styles["disabled"]
+  if (isSafe) {
+    tileClassNames += " " + styles["safe"]
   }
   else if (isBomb) {
     tileClassNames += " " + styles["bomb"]

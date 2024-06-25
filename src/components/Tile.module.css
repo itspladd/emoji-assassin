@@ -10,6 +10,10 @@
   outline: .5rem solid gold;
 }
 
+.safe {
+  outline: .5rem solid green;
+}
+
 .bomb {
   background-color: red;
 }

@@ -32,6 +32,7 @@ export default function GameRoom({
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
   const gameStatus = accessors.gameStatus()
   const myFavoriteTile = accessors.myFavoriteTile()
+  const myKnownSafeTiles = accessors.myKnownSafeTiles()
 
   const gameRunning = gameStatus !== "notStarted"
 
@@ -58,6 +59,8 @@ export default function GameRoom({
   const gameTiles = tiles.map(tile => {
     const { row, column } = tile
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
+    const isSafe = accessors.tileIsKnownSafe(row, column)
+    console.log(isSafe)
     const isBomb = isFavorite && myRole === "assassin"
     const handleClick = useCallback(() => actions.game.tileClick(row, column, gameStatus), [gameStatus])
 
@@ -66,6 +69,7 @@ export default function GameRoom({
         key={`${row}${column}`}
         tile={tile} 
         isFavorite={isFavorite}
+        isSafe={isSafe}
         isBomb={isBomb}
         isDisabled={false}
         onClick={handleClick}
