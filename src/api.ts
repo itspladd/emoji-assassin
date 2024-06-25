@@ -53,12 +53,13 @@ export default function setupApi(app:Express, io:CustomServer) {
     const { id } = req.params
     
     // Check if room exists
-    if (!RoomManager.roomExists(id)) {
+    const room = RoomManager.getRoom(id)
+    if (!room) {
       return res.send({ roomIdValid: false, reason: `Room with id ${id} not found`})
     }
 
     // TODO: Check if players can currently join that room
-    const [canJoin, reason] = RoomManager.getRoom(id).acceptingNewPlayers
+    const [canJoin, reason] = room.acceptingNewPlayers
 
     if(!canJoin) {
       return res.send({ roomIdValid: false, reason})

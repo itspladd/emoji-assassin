@@ -1,13 +1,13 @@
 import type { CustomServer } from "@customTypes/socket";
+import type { RoomId } from "@customTypes/rooms";
 import Room from "./Room";
 
-type RoomList = Record<string, Room>
+type RoomList = Record<Exclude<RoomId, null>, Room>
 
 interface RoomManagerInterface {
   addRoom: (room:Room) => void,
-  removeRoom: (id:string) => void,
-  roomExists: (id:string) => boolean,
-  getRoom: (id:string) => Room,
+  removeRoom: (id:RoomId) => void,
+  getRoom: (id:RoomId) => Room | null,
   makeUniqueRoom: (io:CustomServer) => Room,
   getAllActiveRooms: () => RoomList,
   resetAllActiveRooms: () => void
@@ -112,8 +112,8 @@ const RoomManagerFactory = function ():RoomManagerInterface {
   /**
    * Removes the Room with the given ID from the list of active rooms, if it is tracked.
    */
-  function removeRoom(id:string) {
-    if (!_activeRooms[id]) {
+  function removeRoom(id:RoomId) {
+    if (!id || !_activeRooms[id]) {
       console.debug(`RoomManager.removeRoom tried to remove room '${id}', but that room wasn't in the list.`)
       return
     }
@@ -128,19 +128,15 @@ const RoomManagerFactory = function ():RoomManagerInterface {
     }
   }
 
-  function getRoom(id:string) {
+  function getRoom(id:RoomId): Room | null {
+    if (id === null) return id
     return _activeRooms[id]
-  }
-
-  function roomExists(id:string):boolean {
-    return !!_activeRooms[id]
   }
 
   return {
     addRoom,
     removeRoom,
     getRoom,
-    roomExists,
     makeUniqueRoom,
     getAllActiveRooms,
     resetAllActiveRooms,

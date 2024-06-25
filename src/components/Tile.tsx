@@ -18,7 +18,6 @@ function TileComponent({
   isDisabled,
   onClick
 }: TileProps ) {
-  console.log("rendering tile", tile.row, tile.column)
   const {
     row,
     column,
