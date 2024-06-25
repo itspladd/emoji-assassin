@@ -2,7 +2,6 @@ import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
 
 import { RoomManager } from "../../classes/RoomManager"
 import { playerNameString } from "../../helpers/names"
-import setupRoomEvents from "./setupRoomEvents"
 import { RoomId } from "@customTypes/rooms"
 
 /**
