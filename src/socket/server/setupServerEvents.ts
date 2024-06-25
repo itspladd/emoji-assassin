@@ -3,6 +3,7 @@ import type { CustomServerSocket, CustomServer } from "@customTypes/socket"
 import { RoomManager } from "../../classes/RoomManager"
 import { playerNameString } from "../../helpers/names"
 import setupRoomEvents from "./setupRoomEvents"
+import { RoomId } from "@customTypes/rooms"
 
 /**
  * Configures the basic server-side listeners for a given socket.
@@ -26,30 +27,28 @@ export default function setupServerEvents(socket:CustomServerSocket, io:CustomSe
     console.log("user disconnected:", socket.id)
   }
 
-  function onJoinRoom(roomId: string) {
+  // Event emitted when a player attempts to join a game room.
+  function onJoinRoom(roomId: RoomId) {
+    if (!roomId) {
+      return console.debug(`Player ${socket.id} attempted to use a falsy roomId ('${roomId}')to join a room`)
+    }
+
     const room = RoomManager.getRoom(roomId)
 
+    if (!room) {
+      return console.debug(`Player ${socket.id} attempted to join nonexistent room using ID ${roomId}`)
+    }
+
     if (room.hasPlayer(socket.id)) {
-      console.debug(`Prevented player ${socket.id} from joining room ${room.id} twice`)
-      return
+      return console.debug(`Prevented player ${socket.id} from joining room ${room.id} twice`)
     }
 
     const player = room.initNewPlayer(socket)
-    setupRoomEvents(socket, io, room, player)
 
-    // Tell the socket to join the room channel
-    socket.join(room.id)
-
-    // Tell everyone else in the room that this player joined
-    socket.to(room.id).emit("playerJoined", player.clientState)
-
-    // Tell the joining player to update their client state
-    io.to(socket.id).emit("syncRoomAndGameState", room.clientRoomState, room._game.gameStateForPlayer(socket.id))
-
-    console.debug(`Created Player ${player._id} in room ${room._id} with name ${playerNameString(player.name)}`)
+    console.debug(`Created Player ${player.id} in room ${room._id} with name ${playerNameString(player.name)}`)
   }
 
   socket.on('disconnecting', onDisconnecting)
   socket.on('disconnect', onDisconnect)
-  socket.on("joinRoom", onJoinRoom)
+  socket.on('joinRoom', onJoinRoom)
 }

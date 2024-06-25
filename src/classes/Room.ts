@@ -1,12 +1,14 @@
 import type { CustomServer, CustomServerSocket, } from "@customTypes/socket";
 import type { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
-import type { RoomState } from "@customTypes/rooms";
+import type { RoomId, RoomState } from "@customTypes/rooms";
 
 import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays";
 import { playerColors } from "../constants/colors"
 
 import Player from "./Player";
 import Game from "./Game";
+import RoomEmitter from "./RoomEmitter";
+import setupRoomEvents from "../socket/server/setupRoomEvents";
 
 /**
  * Room Class
@@ -57,7 +59,7 @@ export default class Room {
 
   /**
    * Returns a randomized valid room ID.
-   * @returns id: A six-character alphanumeric string
+   * @returns roomId: A six-character alphanumeric string
    */
   static makeId() {
     let newId = ""
@@ -71,20 +73,29 @@ export default class Room {
   
   /******** Instance properties and methods ********/
   _createdAt: Date;
-  _id: string;
-  _io: CustomServer;
+  _id: Exclude<RoomId, null>;
   _players: Record<string, Player>
   _game: Game;
   _availableColors: PlayerColorKey[];
+  emitter: RoomEmitter;
+  tellAllPlayers: RoomEmitter['emitToRoom'];
+  tellPlayer: RoomEmitter['emitToPlayer'];
 
-  constructor(id:string, io:CustomServer) {
+  constructor(id:RoomId, io:CustomServer) {
+    if (!id) {
+      throw new Error(`Attempted to create a RoomEmitter with no room ID.
+        roomId parameter: ${id}
+        `)
+    }
+    this.emitter = new RoomEmitter(io, id)
+    this.tellAllPlayers = this.emitter.emitToRoom
+    this.tellPlayer = this.emitter.emitToPlayer
     this._createdAt = new Date()
     this._id = id
-    this._io = io
     this._players = {}
     this._availableColors = [ ...Object.keys(playerColors) as Array<keyof typeof playerColors> ]
 
-    this._game = new Game()
+    this._game = new Game(this.tellAllPlayers, this.tellPlayer)
   }
 
   get id() {
@@ -169,6 +180,14 @@ export default class Room {
     this.makeColorAvailable(oldColor)
   }
 
+  changePlayerName(playerId: string) {
+    const player = this._players[playerId]
+
+    this.setUniquePlayerName(playerId, true)
+
+    this.tellAllPlayers("playerChangedName", player.id, player.name)
+  }
+
   /**
    * Given a player ID, checks to make sure that player's name is unique in this room.
    * @param id 
@@ -196,16 +215,26 @@ export default class Room {
     while(!this.playerNameIsUnique(player.id)) {
       player.setRandomName()
     }
-
-    this._io.to(this.id).emit("playerChangedName", player._id, player.name)
   }
 
   initNewPlayer(socket:CustomServerSocket):Player {
     // Instantiate the player and add it to the room's tracker
-    const newPlayer = new Player(socket, this.randomAvailableColor)
+    const newPlayer = new Player(
+      socket,
+      this.emitter.emitToOtherPlayersFactory(socket),
+      this.randomAvailableColor
+    )
     this._players[socket.id] = newPlayer
-
     this.setUniquePlayerName(newPlayer.id)
+
+    // Set up the listeners for the player socket
+    setupRoomEvents(socket, this, newPlayer)
+    
+    // Tell the player's socket to join this room
+    newPlayer.joinRoom(this.id)
+
+    // Tell the joining player to update their client state
+    this.tellPlayer(newPlayer.id, "syncRoomAndGameState", this.clientRoomState, this._game.gameStateForPlayer(socket.id))
 
     return newPlayer
   }
@@ -225,7 +254,7 @@ export default class Room {
 
   afterPlayerReady(playerId:string) {
     // Notify the room about this player's new ready status
-    this._io.to(this.id).emit("playerToggledReady", playerId, this._players[playerId].isReady)
+    this.tellAllPlayers("playerToggledReady", playerId, this._players[playerId].isReady)
 
     // Try to start the game
     this.startGame()
@@ -242,7 +271,7 @@ export default class Room {
 
     // Send each player their local game state, including private info about themselves
     this.playerArray.forEach(player => {
-      this._io.to(player.id).emit("gameStateChange", this._game.gameStateForPlayer(player.id))
+      this.tellPlayer(player.id, "gameStateChange", this._game.gameStateForPlayer(player.id))
     })
     return [true, null]
   }

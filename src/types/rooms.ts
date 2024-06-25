@@ -1,8 +1,11 @@
 import type { ClientPlayerInfo, ClientPlayerList } from "./players";
 
+/** Shared types */
+export type RoomId = string | null
+
 /** Client-side state management types */
 export interface RoomState {
-  roomId: string | null,
+  roomId: RoomId,
   playersInRoom: ClientPlayerList,
 }
 
@@ -15,7 +18,7 @@ export type RoomStateDispatchType =
 
 export interface RoomActions {
   leaveRoom: () => void,
-  joinRoom: (id:string) => void,
+  joinRoom: (id:RoomId) => void,
   addPlayer: (player:ClientPlayerInfo) => void,
   removePlayer: (id:string) => void,
   editPlayer: (id:string, newData:Partial<ClientPlayerInfo>) => void,
@@ -24,5 +27,3 @@ export interface RoomActions {
   setRoomState: (room:RoomState) => void
 }
 /** Server-side types */
-
-/** Shared types */

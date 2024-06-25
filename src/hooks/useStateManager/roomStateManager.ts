@@ -1,5 +1,5 @@
 import type { ClientPlayerInfo } from "@customTypes/players";
-import type { RoomActions, RoomState, RoomStateDispatchType } from "@customTypes/rooms";
+import type { RoomActions, RoomId, RoomState, RoomStateDispatchType } from "@customTypes/rooms";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
 import type { Dispatch } from "react";
 
@@ -123,7 +123,7 @@ export const createRoomActions = (
    * Occurs after the server has confirmed that the player can join (via API req)
    * Sets the local state and tells the room to add this socket to its player list
    */
-  const joinRoom = (roomId: string) => {
+  const joinRoom = (roomId: RoomId) => {
     if (!socket.connected) socket.connect()
     socket.emit("joinRoom", roomId)
   }

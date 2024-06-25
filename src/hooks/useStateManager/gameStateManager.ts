@@ -110,7 +110,7 @@ export const createGameActions = (
   }
 
   const endTurn = () => {
-    socket.emit("nextPlayer")
+    socket.emit("endTurn")
   }
 
   const tileClick = (row:number, column:number, gameStatus:GameStatus) => {

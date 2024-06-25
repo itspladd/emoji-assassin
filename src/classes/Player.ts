@@ -1,13 +1,14 @@
-import type { CustomServerSocket } from "@customTypes/socket"
 import type { ClientPlayerInfo, PlayerColorKey, PlayerName, PlayerRole, PrivateClientPlayerInfo } from "@customTypes/players"
 import { makeRandomName } from "../helpers/names"
+import RoomEmitter from "./RoomEmitter"
+import { CustomServerSocket } from "@customTypes/socket"
+import { RoomId } from "@customTypes/rooms"
 
 
 export default class Player {
 
-  _id: string
+  private _id: string
   _name: PlayerName
-  _socket: CustomServerSocket
   _color: PlayerColorKey
   _isReady: boolean
   _role: PlayerRole
@@ -16,11 +17,11 @@ export default class Player {
   knownSafeTiles: [number, number][] | null
 
   constructor(
-    socket:CustomServerSocket,
+    private socket: CustomServerSocket,
+    private tellOtherPlayers:ReturnType<RoomEmitter['emitToOtherPlayersFactory']>,
     colorKey: PlayerColorKey
   ) {
     this._id = socket.id
-    this._socket = socket
     this._name = makeRandomName()
     this._color = colorKey
     this._isReady = false
@@ -76,6 +77,11 @@ export default class Player {
 
   get favoriteTile() {
     return this._favoriteTile
+  }
+
+  joinRoom(id:Exclude<RoomId, null>) {
+    this.socket.join(id)
+    this.tellOtherPlayers("playerJoined", this.clientState)
   }
   
   setFavoriteTile(row:number, column:number) {

@@ -1,6 +1,7 @@
 import type { ClientGameState, GameStatus, GameStatusOrder, GameTile, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
+import type RoomEmitter from "./RoomEmitter"
 
 import { getRandomTileEmojis } from "../helpers/emojis"
 import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays"
@@ -38,7 +39,7 @@ export default class Game {
     })
   }
 
-  // All of the player classes tracked for this game.
+  // All of the players tracked for this game.
   _players: PlayerList
   // Array of player IDs representing turn order (index 0 is the current player)
   _turnOrder: string[]
@@ -46,21 +47,26 @@ export default class Game {
   _bombLocation: [number, number] | null
   // Tracks tiles that have been favorited, and an array of players who have favorited each
   _favoritedTiles: Record<string, string[]>
+  // The list of tiles in the game
   tiles: GameTile[]
+  // String indicating the current state of the game flow
   status: GameStatus
 
   // Zero-indexed dimensions of the game board. A 5x5 game board would have a value of 4.
   _boardSize: number
   
+  
 
-  constructor () {
+  constructor (
+    private tellAllPlayers:RoomEmitter['emitToRoom'],
+    private tellPlayer:RoomEmitter['emitToPlayer']
+  ) {
     this.status = "notStarted"
     this.tiles = Game.makeTiles()
     this._players = {}
     this._turnOrder = []
     this._favoritedTiles = {}
     this._bombLocation = null
-
     this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
@@ -119,7 +125,7 @@ export default class Game {
    * @param playerId 
    * @returns 
    */
-  handleTileSelect(row:number, column:number, playerId:string):void {
+  handleTileSelect(row:number, column:number, playerId:string) {
     if (this.status === "notStarted") {
       console.error("ERROR: Game.handleTileSelect called during bad status:", this.status)
       return
@@ -132,6 +138,9 @@ export default class Game {
 
     if (this.status === "chooseFavoriteTiles") {
       this.favoriteTileSelect(tile, player)
+      this.attemptStateTransition("running")
+
+      return
     }
 
     if (this.status === "running") {
@@ -139,7 +148,10 @@ export default class Game {
         throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
       }
 
-      this.nextPlayer()
+      this.endPlayerTurn(playerId)
+      this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.tiles })
+      
+      return 
     }
   }
 
@@ -150,6 +162,9 @@ export default class Game {
       this.getTileAt(row, column).favoritedBy.push(player.id)
     // The assassin's "favorite tile" is the bomb tile.
     player.setFavoriteTile(row, column)
+
+    // Notify the player that their tile is selected.
+    this.tellPlayer(player.id, "setFavoriteTile", row, column)
   }
 
   /**
@@ -203,12 +218,21 @@ export default class Game {
   }
 
   // End the current player's turn and start the next player's turn
-  nextPlayer():string {
+  // Returns true if successful, false otherwise
+  endPlayerTurn(playerId:string):boolean {
+    console.debug(`${playerId} ended their turn`)
+    if (this.currentPlayerId !== playerId) {
+      console.error(`${playerId} attempted to end their turn, but it is not their turn. It is currently ${this.currentPlayerId}'s turn`)
+      return false
+    }
+
     // Move current player ID to end of the turn order array
     const [current, ...others] = this._turnOrder
     this._turnOrder = [...others, current]
+    console.debug(`it is now ${this.currentPlayerId}'s turn`)
 
-    return this.currentPlayerId
+    this.tellAllPlayers("gameStateChange", { currentPlayer: this._turnOrder[0] })
+    return true
   }
 
   /**
@@ -216,7 +240,7 @@ export default class Game {
    * @param currentStatus 
    * @returns {boolean} - True if the transition was successful, false otherwise.
    */
-  transitionTo(targetStatus:GameStatus):boolean {
+  attemptStateTransition(targetStatus:GameStatus):boolean {
     if (!targetStatus) {
       throw new Error("Attempted a status transition with no target status.")
     }
@@ -226,7 +250,9 @@ export default class Game {
       return false
     }
     
+    // If conditions are met, transition and notify everyone in the room.
     this.status = targetStatus
+    this.tellAllPlayers("gameStateChange", { status: targetStatus })
     return true
   }
 
