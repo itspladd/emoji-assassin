@@ -1,4 +1,5 @@
 import type { PrivateClientPlayerInfo } from "./players"
+import type GameTile from "../classes/GameTile";
 
 /** Shared types */
 export type GameStatus = 
@@ -7,14 +8,9 @@ export type GameStatus =
   | "running"
   | "gameOver"
 
-export interface GameTile {
-  image: string;
-  description: string;
-  row: number;
-  column: number;
-  favoritedBy: string[];
-  active: boolean
-}
+export type TileContents = 
+  "empty"
+  | "bomb"
 
 // Client-side game knowledge that all players have
 export interface PublicClientGameState {

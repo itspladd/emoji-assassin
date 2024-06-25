@@ -60,7 +60,6 @@ export default function GameRoom({
     const { row, column } = tile
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
     const isSafe = accessors.tileIsKnownSafe(row, column)
-    console.log(isSafe)
     const isBomb = isFavorite && myRole === "assassin"
     const handleClick = useCallback(() => actions.game.tileClick(row, column, gameStatus), [gameStatus])
 

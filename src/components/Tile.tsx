@@ -1,4 +1,5 @@
-import type { GameTile } from "@customTypes/game"
+// Note the renamed default import here, since "Tile"
+import type GameTile from '../classes/GameTile'
 
 import styles from './Tile.module.css'
 import { memo } from "react"

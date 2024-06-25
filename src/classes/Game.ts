@@ -1,7 +1,8 @@
-import type { ClientGameState, GameStatus, GameStatusOrder, GameTile, PublicClientGameState } from "@customTypes/game"
+import type { ClientGameState, GameStatus, GameStatusOrder, PublicClientGameState } from "@customTypes/game"
 import type { PlayerList, PlayerRole } from "@customTypes/players"
 import type Player from "./Player"
 import type RoomEmitter from "./RoomEmitter"
+import GameTile from "./GameTile"
 
 import { getRandomTileEmojis } from "../helpers/emojis"
 import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays"
@@ -26,16 +27,13 @@ export default class Game {
     return emojis.map((emoji, i) => {
       const row = Math.floor(i/numRowsAndCols)
       const column = i % numRowsAndCols
-
-      return {
-        image: emoji,
-        description: "tile",
+      const tile = new GameTile(
+        emoji,
+        "default tile description",
         row,
-        column,
-        favoritedBy: [],
-        active: true
-      }
-
+        column
+      )
+      return tile
     })
   }
 
@@ -47,6 +45,8 @@ export default class Game {
   _bombLocation: [number, number] | null
   // Tracks tiles that have been favorited, and an array of players who have favorited each
   _favoritedTiles: Record<string, string[]>
+  // The maximum number of known safe tiles each player can have
+  _maxKnownSafeTilesPerPlayer: number
   // The list of tiles in the game
   tiles: GameTile[]
   // String indicating the current state of the game flow
@@ -67,6 +67,7 @@ export default class Game {
     this._turnOrder = []
     this._favoritedTiles = {}
     this._bombLocation = null
+    this._maxKnownSafeTilesPerPlayer = 2
     this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
@@ -86,8 +87,20 @@ export default class Game {
     return this._players[this.currentPlayerId]
   }
 
+  get innocentPlayers():Player[] {
+    return Object.values(this._players).filter(player => player.isInnocent)
+  }
+
+  get safeTiles():GameTile[] {
+    return this.tiles.filter(tile => tile.isSafe)
+  }
+
   get bombIsPlaced():boolean {
     return this._bombLocation?.length === 2
+  }
+
+  get activeTiles():GameTile[] {
+    return this.tiles.filter(tile => tile.active)
   }
 
   // Tiles are stored as a single-dimension array; use row/column to grab the correct one
@@ -165,6 +178,22 @@ export default class Game {
 
     // Notify the player that their tile is selected.
     this.tellPlayer(player.id, "setFavoriteTile", row, column)
+  }
+
+  /**
+   * Tell each innocent player tiles that they know are safe to click.
+   */
+  assignKnownSafeTiles():void {
+    const activeTiles = this.activeTiles
+    const totalSafeTiles = activeTiles.length - 1
+    const innocentPlayers = this.innocentPlayers
+    const safeTilesPerPlayer = Math.floor(totalSafeTiles / innocentPlayers.length)
+    const safeTilesToAssign = Math.min(safeTilesPerPlayer, this._maxKnownSafeTilesPerPlayer)
+    console.log(`Could assign ${safeTilesPerPlayer} known safe tiles for each player, will actually assign ${safeTilesToAssign}.`)
+
+    innocentPlayers.forEach(player => {
+
+    })
   }
 
   /**
@@ -252,8 +281,14 @@ export default class Game {
     
     // If conditions are met, transition and notify everyone in the room.
     this.status = targetStatus
+    targetStatus === "running" && this.transitionToRunningState()
+
     this.tellAllPlayers("gameStateChange", { status: targetStatus })
     return true
+  }
+
+  transitionToRunningState() {
+    this.assignKnownSafeTiles()
   }
 
   canTransitionTo(target:GameStatus):boolean {

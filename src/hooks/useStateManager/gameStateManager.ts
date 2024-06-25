@@ -1,7 +1,8 @@
 import type { Dispatch } from "react";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
-import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameStatus, GameTile, PublicClientGameState } from "@customTypes/game";
+import type { ClientGameState, ClientGameStateActions, ClientGameStateDispatchType, GameStatus, PublicClientGameState } from "@customTypes/game";
 import type { CustomClientSocket } from "@customTypes/socket";
+import type GameTile from "../../classes/GameTile";
 
 import { stateChangeError } from "../../helpers/logging";
 
