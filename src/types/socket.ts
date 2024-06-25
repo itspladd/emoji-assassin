@@ -28,7 +28,8 @@ export interface ServerToClientEvents {
   playerToggledReady: (playerId: string, readyState: boolean) => void;
   gameStart: (game:ClientGameState) => void;
   gameStateChange: (game:Partial<ClientGameState>) => void;
-  setFavoriteTile: (row:number, column: number) => void
+  setFavoriteTile: (row:number, column: number) => void;
+  knownSafeTilesUpdate: (locations: [number, number][]) => void;
 }
 
 export type CustomServer = Server<ClientToServerEvents, ServerToClientEvents>

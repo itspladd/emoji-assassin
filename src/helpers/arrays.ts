@@ -37,3 +37,34 @@ export const pullRandomFromArray = <T>(arr:Array<T>):[T, Array<T>] => {
 
   return [pulledItem, newArr]
 }
+
+/**
+ * "Yanks" any number of items from an input array without mutating the input array.
+ * Returns an array containing the yanked items and a copy of the initial array with the items removed.
+ * @param arr 
+ * @returns 
+ */
+export const pullRandomSetFromArray = <T>(arr:Array<T>, size:number = 1):[Array<T>, Array<T>] => {
+  if (size < 1) {
+    throw new Error(`Cannot pull a random set of size ${size} from an array (size must be at least 1)`)
+  }
+  if (size > arr.length) {
+    throw new Error(`Attempted to pull a random set larger than the input array. Size: ${size}, array length: ${arr.length}`)
+  }
+
+  // Shallow copy of input array to avoid mutation
+  let itemPool = [...arr]
+
+  // Init empty return array
+  const returnArr = []
+
+  for (let i = 0; i < size; i++) {
+    const [pulledItem, remainingItems] = pullRandomFromArray(itemPool)
+
+    // Add pulled item to return array and update item pool
+    returnArr.push(pulledItem)
+    itemPool = remainingItems
+  }
+
+  return [returnArr, itemPool]
+}

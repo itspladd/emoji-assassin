@@ -32,7 +32,8 @@ export interface ClientGameStateActions {
   setTiles: (tiles: GameTile[]) => void;
   setPublicGameState: (game:PublicClientGameState) => void;
   updateGameState: (game:Partial<ClientGameState>) => void;
-  setFavoriteTile: (row:number, column:number) => void
+  setFavoriteTile: (row:number, column:number) => void;
+  setKnownSafeTiles: (locations: [number, number][]) => void;
   endTurn: () => void;
   tileClick: (row:number, column: number, gameStatus:GameStatus) => void;
 }
@@ -42,3 +43,4 @@ export type ClientGameStateDispatchType =
   | "set_game_state"
   | "update_game_state"
   | "set_favorite_tile"
+  | "set_known_safe_tiles"

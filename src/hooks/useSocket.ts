@@ -73,6 +73,10 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.game.setFavoriteTile(row, column)
     }
 
+    function onKnownSafeTileUpdate(locations: [number, number][]) {
+      actions.game.setKnownSafeTiles(locations)
+    }
+
     const eventHandlerMap:ServerToClientEvents = {
       connect: onConnect,
       disconnect: onDisconnect,
@@ -84,6 +88,7 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       gameStart: onGameStart,
       gameStateChange: onGameStateChange,
       setFavoriteTile: onSetFavoriteTile,
+      knownSafeTilesUpdate: onKnownSafeTileUpdate,
     }
 
     // Init event listeners

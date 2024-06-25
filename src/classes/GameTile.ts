@@ -31,4 +31,8 @@ export default class GameTile {
   get isSafe() {
     return this.contents !== "bomb"
   }
+
+  get location():[number, number] {
+    return [this.row, this.column]
+  }
 }

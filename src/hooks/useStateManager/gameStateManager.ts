@@ -78,12 +78,36 @@ const set_favorite_tile = (state: AppState, data?: {row?:number, column?: number
   }
 }
 
+const set_known_safe_tiles = (state: AppState, data?: {locations?:[number,number][]}) => {
+  if (!data) {
+    return stateChangeError("Attempted to set known safe tiles with bad data.", state, data)
+  }
+  const { locations } = data 
+  const locationValid = (loc:unknown) => Array.isArray(loc) && loc.length === 2 && typeof loc[0] === "number" && typeof loc[1] === "number" 
+  if (!Array.isArray(locations) || !locations.every(locationValid)) {
+    return stateChangeError("Attempted to set known safe tiles with bad data.", state, data)
+  }
+
+
+  return {
+    ...state,
+    game: {
+      ...state.game,
+      privateInfo: {
+        ...state.game.privateInfo,
+        myKnownSafeTiles: [...locations]
+      }
+    }
+  }
+}
+
 // These functions actually go into the reducer.
 export const GameStateDispatchFunctions:ReducerDispatchFunctionList<ClientGameStateDispatchType> = {
   set_tiles,
   set_game_state,
   update_game_state,
   set_favorite_tile,
+  set_known_safe_tiles,
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
@@ -110,6 +134,10 @@ export const createGameActions = (
     dispatch({type: 'set_favorite_tile', data: {row, column}})
   }
 
+  const setKnownSafeTiles = (locations: [number, number][]) => {
+    dispatch({type: 'set_known_safe_tiles', data: {locations}})
+  }
+
   const endTurn = () => {
     socket.emit("endTurn")
   }
@@ -125,7 +153,8 @@ export const createGameActions = (
     updateGameState,
     endTurn,
     tileClick,
-    setFavoriteTile
+    setFavoriteTile,
+    setKnownSafeTiles,
   }
 }
 

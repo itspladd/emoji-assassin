@@ -5,7 +5,7 @@ import type RoomEmitter from "./RoomEmitter"
 import GameTile from "./GameTile"
 
 import { getRandomTileEmojis } from "../helpers/emojis"
-import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays"
+import { getRandomFromArray, pullRandomFromArray, pullRandomSetFromArray } from "../helpers/arrays"
 
 export default class Game {
 
@@ -67,7 +67,7 @@ export default class Game {
     this._turnOrder = []
     this._favoritedTiles = {}
     this._bombLocation = null
-    this._maxKnownSafeTilesPerPlayer = 2
+    this._maxKnownSafeTilesPerPlayer = 4
     this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
@@ -91,12 +91,13 @@ export default class Game {
     return Object.values(this._players).filter(player => player.isInnocent)
   }
 
-  get safeTiles():GameTile[] {
-    return this.tiles.filter(tile => tile.isSafe)
-  }
-
   get bombIsPlaced():boolean {
     return this._bombLocation?.length === 2
+  }
+
+  // Safe tiles that are eligible to be clicked (e.g. still active)
+  get safeTiles():GameTile[] {
+    return this.activeTiles.filter(tile => tile.isSafe)
   }
 
   get activeTiles():GameTile[] {
@@ -184,15 +185,27 @@ export default class Game {
    * Tell each innocent player tiles that they know are safe to click.
    */
   assignKnownSafeTiles():void {
-    const activeTiles = this.activeTiles
-    const totalSafeTiles = activeTiles.length - 1
-    const innocentPlayers = this.innocentPlayers
-    const safeTilesPerPlayer = Math.floor(totalSafeTiles / innocentPlayers.length)
-    const safeTilesToAssign = Math.min(safeTilesPerPlayer, this._maxKnownSafeTilesPerPlayer)
-    console.log(`Could assign ${safeTilesPerPlayer} known safe tiles for each player, will actually assign ${safeTilesToAssign}.`)
+    const totalSafeTiles = this.safeTiles.length
 
-    innocentPlayers.forEach(player => {
+    // Find out how many safe tiles could be given to each player (e.g. 24 safe tiles / 3 innocent players = 8 tiles available for each)
+    const availableSafeTilesPerPlayer = Math.floor(totalSafeTiles / this.innocentPlayers.length)
 
+    // Coerce the number of known safe tiles per player to the max allowed by the game rules
+    const actualSafeTilesPerPlayer = Math.min(availableSafeTilesPerPlayer, this._maxKnownSafeTilesPerPlayer)
+    console.log(`Could assign ${availableSafeTilesPerPlayer} known safe tiles for each player, will actually assign ${actualSafeTilesPerPlayer}.`)
+
+    // Pull different sets of known safe tiles for each innocent player
+    let knownSafeTilePool = this.safeTiles
+    this.innocentPlayers.forEach(player => {
+      // Get this player's tiles from the pool
+      const [knownSafeTilesForPlayer, remainingInPool] = pullRandomSetFromArray(knownSafeTilePool, actualSafeTilesPerPlayer)
+
+      // Extract the locations from the tiles, set the player data, and notify the client
+      player.knownSafeTiles = knownSafeTilesForPlayer.map(tile => tile.location)
+      this.tellPlayer(player.id, "knownSafeTilesUpdate", player.knownSafeTiles)
+
+      // Update the pool of safe tiles
+      knownSafeTilePool = remainingInPool
     })
   }
 
@@ -315,6 +328,7 @@ export default class Game {
 
   placeBomb(row:number, column:number) {
     this._bombLocation = [row, column]
+    this.getTileAt(row, column).contents = "bomb"
   }
 
   clearBomb() {
