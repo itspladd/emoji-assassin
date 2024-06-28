@@ -7,7 +7,7 @@ import PlayerName from "./PlayerName";
 import styles from './GameRoom.module.css'
 import { GameStatus } from "@customTypes/game";
 import Tile from "./Tile";
-import { useCallback } from "react";
+import { MouseEvent, useCallback } from "react";
 
 interface GameRoomProps {
   id:string,
@@ -55,28 +55,46 @@ export default function GameRoom({
       )
     })
 
+  // Click handler, callbackified so it doesn't change every render
+  const handleClick = useCallback((event) => {
+    event.preventDefault()
+    const id = event.target.id
+    console.log(event)
+    if (!id) {
+      return;
+    }
+    const [tileIdentifier, rowColumn] = id.split("_")
+    if (tileIdentifier !== "tile") {
+      return;
+    }
+
+    const [row, column] = Array.from(rowColumn).map(num => Number(num))
+    console.log(row, column)
+    actions.game.tileClick(row, column, gameStatus)
+  }, [gameStatus])
+
   // Create the list of tiles for display
   const gameTiles = tiles.map(tile => {
     const { row, column } = tile
 
+    const rowColString = `${row}${column}`
+    const tileId = `tile_${rowColString}`
     // Boolean values for modifying how the tile is displayed
     const isDisabled = !tile.active
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
     const isSafe = accessors.tileIsKnownSafe(row, column)
     const isBomb = isFavorite && myRole === "assassin"
 
-    // Click handler, callbackified so it doesn't change every render
-    const handleClick = useCallback(() => actions.game.tileClick(row, column, gameStatus), [gameStatus])
 
     return (
       <Tile
         key={`${row}${column}`}
+        id={tileId}
         tile={tile} 
         isFavorite={isFavorite}
         isSafe={isSafe}
         isBomb={isBomb}
         isDisabled={isDisabled}
-        onClick={handleClick}
       />
     )
   })
@@ -116,7 +134,8 @@ export default function GameRoom({
       <p>{statusMessages[gameStatus]}</p>
 
       <section className={styles["game-board-section"]}>
-        <div className={styles["board"]}>
+        <div className={styles["board"]}
+        onClick={handleClick}>
           {gameTiles}
         </div>
 

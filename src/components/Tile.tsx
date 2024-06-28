@@ -5,20 +5,20 @@ import { memo } from "react"
 
 interface TileProps {
   tile: ClientGameTileInfo,
+  id: string,
   isFavorite: boolean,
   isBomb: boolean,
   isSafe: boolean,
   isDisabled: boolean
-  onClick: () => void
 }
 
 function TileComponent({
   tile,
+  id,
   isFavorite,
   isBomb,
   isDisabled,
   isSafe,
-  onClick
 }: TileProps ) {
 
   // If the tile has been disabled, don't render anything at all.
@@ -26,11 +26,7 @@ function TileComponent({
     return null
   }
 
-  const {
-    row,
-    column,
-    image
-  } = tile
+  const { image } = tile
 
   let tileClassNames = styles["tile"]
 
@@ -44,13 +40,13 @@ function TileComponent({
     tileClassNames += " " + styles["favorite"]
   }
 
-
-
   return (
     <span
-      id={`${row}${column}`}
+      id={id}
       className={tileClassNames}
-      onClick={onClick}
+      //onClick={onClick}
+      onTouchStart={() => console.log("touchstart")}
+      onTouchEnd={() => console.log("touchend")}
     >
       {image}
     </span>
