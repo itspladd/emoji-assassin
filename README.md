@@ -1,30 +1,21 @@
-# React + TypeScript + Vite
+# 💣🕵️ Emoji Assassin 🕵️💣
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Emoji Assassin (working title) is a multiplayer hidden-role guessing game built with React, Node, Socket.io, Express, and Vite.
 
-Currently, two official plugins are available:
+## Local Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To run Emoji Assassin locally, you'll need `yarn` or `npm`. The server and the client both run through Vite, so you only need to run a single command to start the app.
 
-## Expanding the ESLint configuration
+1. Clone this repo and navigate into the repo folder.
+2. Set up development env variables in a a `.env.development` file using the `.env.development.sample` file as a template.
+3. Install dependencies with `yarn` or `npm install`.
+4. Run the `dev` script with `yarn dev` or `npm run dev`.
+5. In your browser, navigate to `localhost:3000`.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+That's it!
 
-- Configure the top-level `parserOptions` property like this:
+## Auto-Joining in Development Mode
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+When run locally in development mode (the default), the server will automatically create a "debug" room. You can configure the client to automatically join this room when on startup by setting the `VITE_AUTO_JOIN_DEBUG_ROOM` environment variable to `true`.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+(Make sure to restart the server afterwards!)
