@@ -32,7 +32,6 @@ export default function GameRoom({
   const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
   const gameStatus = accessors.gameStatus()
   const myFavoriteTile = accessors.myFavoriteTile()
-  const myKnownSafeTiles = accessors.myKnownSafeTiles()
 
   const gameRunning = gameStatus !== "notStarted"
 
@@ -56,12 +55,17 @@ export default function GameRoom({
       )
     })
 
+  // Create the list of tiles for display
   const gameTiles = tiles.map(tile => {
     const { row, column } = tile
+
+    // Boolean values for modifying how the tile is displayed
     const isDisabled = !tile.active
     const isFavorite = myFavoriteTile?.[0] === row && myFavoriteTile?.[1] === column
     const isSafe = accessors.tileIsKnownSafe(row, column)
     const isBomb = isFavorite && myRole === "assassin"
+
+    // Click handler, callbackified so it doesn't change every render
     const handleClick = useCallback(() => actions.game.tileClick(row, column, gameStatus), [gameStatus])
 
     return (
