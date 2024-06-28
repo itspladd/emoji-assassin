@@ -67,7 +67,7 @@ export default class Game {
     this._turnOrder = []
     this._favoritedTiles = {}
     this._bombLocation = null
-    this._maxKnownSafeTilesPerPlayer = 4
+    this._maxKnownSafeTilesPerPlayer = 2
     this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
@@ -99,13 +99,14 @@ export default class Game {
     return this._bombLocation?.length === 2
   }
 
-  // Safe tiles that are eligible to be clicked (e.g. still active)
-  get safeTiles():GameTile[] {
-    return this.activeTiles.filter(tile => tile.isSafe)
-  }
-
+  // Tiles that are eligible to be clicked
   get activeTiles():GameTile[] {
     return this.tiles.filter(tile => tile.active)
+  }
+
+  // Safe (non-bomb) tiles that are eligible to be clicked
+  get safeTiles():GameTile[] {
+    return this.activeTiles.filter(tile => tile.isSafe)
   }
 
   // Tiles are stored as a single-dimension array; use row/column to grab the correct one
@@ -151,11 +152,12 @@ export default class Game {
 
     console.log(`Handling select for tile at ${row}, ${column}:`, this.getTileAt(row, column))
 
-    const player = this._players[playerId]
+    const actingPlayer = this._players[playerId]
+    const actingPlayerIsCurrentPlayer = actingPlayer.id === this.currentPlayerId
     const tile = this.getTileAt(row, column)
 
     if (this.status === "chooseFavoriteTiles") {
-      this.favoriteTileSelect(tile, player)
+      this.favoriteTileSelect(tile, actingPlayer)
       this.attemptStateTransition("running")
 
       return
@@ -166,9 +168,12 @@ export default class Game {
         throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
       }
 
-      tile.active = false
-      this.endPlayerTurn(playerId)
-      this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.publicClientTileInfo })
+      if (actingPlayerIsCurrentPlayer) {
+        tile.active = false
+        this.endPlayerTurn(playerId)
+        this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.publicClientTileInfo })
+      }
+
       
       return 
     }
@@ -179,7 +184,8 @@ export default class Game {
     player.isAssassin ?
       this.placeBomb(row, column) : 
       this.getTileAt(row, column).favoritedBy.push(player.id)
-    // The assassin's "favorite tile" is the bomb tile.
+
+    // Regardless of player role, set the player's favorite tile (the assassin's "favorite tile" is the bomb tile).
     player.setFavoriteTile(row, column)
 
     // Notify the player that their tile is selected.
