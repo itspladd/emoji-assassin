@@ -8,12 +8,14 @@ import setupServerSocket from "./src/socket/server/server.js";
 import setupApi from "./src/api.js";
 import setupDebugApi from "./src/debugApi.js";
 
-const PORT = 3000
-const HOST = 'localhost'
+const PORT = process.env.PORT
+const HOST = process.env.HOST
+const environment = process.env.NODE_ENV
 
 const app = express();
 const server = createServer(app)
 const io = new Server(server)
+
 
 // Logging middleware
 app.use((req, _, next) => {
@@ -25,13 +27,14 @@ app.use((req, _, next) => {
   next()
 })
 
-setupDebugApi(app,io)
+
+environment === "development" && setupDebugApi(app,io)
 
 setupApi(app, io)
 
 setupServerSocket(io)
 
-server.listen(3000, () => {
+server.listen(PORT, () => {
   console.log(`--- 🥷🧨 Emoji Assassin server up and running at ${HOST}:${PORT} 🥷🧨--- `)
 })
 

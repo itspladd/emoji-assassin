@@ -18,9 +18,8 @@ import DebugAutoJoiner from './components/DebugAutoJoiner';
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
 
-// Debug/dev flag to turn off auto-join of the debug room.
-// Debug room is active in dev mode, but auto-joining is optional.
-const autoJoinDebugRoom = true;
+// Use env flag to auto-join debug room or stay on home screen when app starts
+const autoJoinDebugRoom = import.meta.env.VITE_AUTO_JOIN_DEBUG_ROOM === "true"
 
 export function App() {
   console.log("rendering App")

@@ -4,6 +4,8 @@ import type { CustomServer } from "@customTypes/socket";
 import { RoomManager } from "./classes/RoomManager"
 
 export default function setupDebugApi(app:Express, io:CustomServer) {
+  console.debug("Setting up debug API routes...")
+  
   /***************************************
    * GET /rooms/debug
    * Returns the ID of the debugging room
