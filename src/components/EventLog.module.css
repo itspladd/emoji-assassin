@@ -1,0 +1,39 @@
+.event-log-wrapper {
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+}
+
+.event-log-header {
+  background-color: #CCCCFF;
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+  padding-left: .5rem;
+}
+
+.expand-collapse {
+  font-size: smaller;
+  color: #666666;
+}
+
+.event-log-items {
+  background-color: #EEEEFF;
+  overflow-y: scroll;
+  height: 0;
+
+  li {
+    font-size: smaller;
+
+    display: flex;
+
+    .timestamp {
+      color: grey;
+    }
+
+    border-bottom: 2px solid #0000FF30;
+  }
+}
+
+.open {
+  height: 20vh;
+}
