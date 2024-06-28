@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 
 import setupServerSocket from "./src/socket/server/server.js";
 import setupApi from "./src/api.js";
+import setupDebugApi from "./src/debugApi.js";
 
 const PORT = 3000
 const HOST = 'localhost'
@@ -23,6 +24,8 @@ app.use((req, _, next) => {
   
   next()
 })
+
+setupDebugApi(app,io)
 
 setupApi(app, io)
 

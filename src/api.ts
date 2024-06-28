@@ -31,21 +31,6 @@ export default function setupApi(app:Express, io:CustomServer) {
     res.json({newRoomId: newRoom.id})
   })
 
-  /***************************************
-   * GET /rooms/debug
-   * Returns the ID of the debugging room
-   */
-  // Init the debug room
-  const debugRoom = RoomManager.makeUniqueRoom(io)
-  RoomManager.addRoom(debugRoom)
-  console.debug(`Created debug room with ID: ${debugRoom.id}`)
-
-  // Define route
-  app.get("/rooms/debug", (_, res) => {
-    res.send({ debugRoomId: debugRoom.id })
-  })
-  /****************************************/
-
   /** GET /rooms/:id 
    * Returns whether that room exists on the server or not
   */

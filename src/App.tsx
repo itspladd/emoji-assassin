@@ -1,5 +1,5 @@
 
-import { MouseEventHandler, useEffect } from 'react';
+import { MouseEventHandler } from 'react';
 import axios from 'axios';
 import { getRandomFromArray } from './helpers/arrays';
 
@@ -13,9 +13,14 @@ import './App.css'
 import useStateManager from './hooks/useStateManager';
 import JoinRoomInput from './components/JoinRoomInput';
 import useSocket from './hooks/useSocket';
+import DebugAutoJoiner from './components/DebugAutoJoiner';
 
 const bombEmojiHeader = getRandomFromArray(BOMB_EMOJIS);
 const assassinEmojiHeader = getRandomFromArray(ASSASSIN_EMOJIS);
+
+// Debug/dev flag to turn off auto-join of the debug room.
+// Debug room is active in dev mode, but auto-joining is optional.
+const autoJoinDebugRoom = true;
 
 export function App() {
   console.log("rendering App")
@@ -35,32 +40,9 @@ export function App() {
     actions.room.joinRoom(roomId)
   }
 
-  /** DEV LOGIC ONLY *****************************************/
-  /** Auto-join a debug game room when the component renders */
-  const joinDebugRoom = async () => {
-    console.log("Joining debug room")
-    const response:{data: {debugRoomId:string}} = await axios.get('/rooms/debug')
-    const debugRoomId = response?.data?.debugRoomId
-
-    if (!debugRoomId) {
-      return console.error("Error: no debug room ID received. Response object: ", response)
-    }
-
-    actions.room.joinRoom(debugRoomId)
-  }
-
-  useEffect(() => {
-    // This will fire twice in dev mode due to the strict mode setting,
-    // but the server prevents the same socket from joining a room multiple times
-    if (import.meta.env.DEV) {
-      joinDebugRoom()
-    }
-
-  }, [])
-  /** END ***************************************************/
-
   return (
     <div>
+      { autoJoinDebugRoom && <DebugAutoJoiner /> }
       {!roomId && (
         <div className="home-screen">
           <h1>Emoji Assassin</h1>
@@ -71,7 +53,7 @@ export function App() {
             Start a new game
           </button>
 
-          <button onClick={joinDebugRoom}>
+          <button onClick={actions.debug.joinDebugRoom}>
             Join debug room
           </button>
 
