@@ -11,7 +11,6 @@
 }
 
 .event-log-header {
-
   padding-left: .5rem;
 }
 
@@ -30,9 +29,12 @@
     padding-left: .5rem;
     font-size: smaller;
     display: flex;
+    column-gap: 1rem;
 
     .timestamp {
       color: grey;
+      flex-shrink: 0;
+      flex: 0 0 max-content;
     }
 
     border-bottom: 2px solid #0000FF30;

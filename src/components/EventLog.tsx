@@ -1,6 +1,8 @@
 import { EventLogItem } from "@customTypes/events";
-import styles from "./EventLog.module.css"
 import { useState } from "react";
+
+import styles from "./EventLog.module.css"
+
 interface EventLogProps {
   events: EventLogItem[]
 }
@@ -9,11 +11,11 @@ export default function EventLog({ events }:EventLogProps) {
 
   const [open, setOpen] = useState(false)
 
-  const eventLogItems = events.map(({ message, timestamp }) => {
+  const eventLogItems = events.map(({ message, timestampRaw, readableTimestamp }) => {
     return (
-      <li key={timestamp}>
-        <span className={styles["timestamp"]}>{timestamp}</span>
-        <span className={styles["message"]}>{message}</span>
+      <li key={timestampRaw} >
+        <span className={styles["timestamp"]}>{readableTimestamp}</span>
+        <span>{message}</span>
       </li>
     )
   })

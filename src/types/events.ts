@@ -1,7 +1,8 @@
 /** Shared types */
 export interface EventLogItem {
   message: string,
-  timestamp: string
+  timestampRaw: number,
+  readableTimestamp: string,
 }
 
 
