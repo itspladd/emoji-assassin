@@ -32,6 +32,7 @@ export default function LabeledInput({
       >{label}</label>
       <input
         type="text"
+        id={inputName}
         name={inputName}
         placeholder={placeholder}
         onKeyUp={handleKeyUp}
