@@ -23,7 +23,8 @@
 
     /* Paths */
     "paths": {
-      "@customTypes/*": ["./src/types/*"]
+      "@customTypes/*": ["./src/types/*"],
+      "@helpers/*": ["./src/helpers/*"],
     }
   },
   "include": ["src", "vite.config.ts", "server.ts"],
