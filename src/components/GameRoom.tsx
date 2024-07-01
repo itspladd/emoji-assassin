@@ -55,21 +55,27 @@ export default function GameRoom({
       )
     })
 
-  // Click handler, callbackified so it doesn't change every render
-  const handleClick = useCallback((event) => {
+  // Click handler for tiles, callbackified so it doesn't change every render
+  // Note that this function detects which tile was clicked; that way, we don't have a separate listener on every tile
+  const handleClick = useCallback((event:MouseEvent<HTMLElement>) => {
     event.preventDefault()
-    const id = event.target.id
-    console.log(event)
-    if (!id) {
+
+    // Cast EventTarget to HTMLElement so TS knows the id attribute exists
+    const target = event.target as HTMLElement
+
+    // Exit immediately if there's no ID
+    if (!target?.id) {
       return;
     }
-    const [tileIdentifier, rowColumn] = id.split("_")
+
+    // Make sure the ID identifies this element as a tile; if not, exit.
+    const [tileIdentifier, rowColumn] = target.id.split("_")
     if (tileIdentifier !== "tile") {
       return;
     }
 
+    // Extract row/column of the clicked tile and execute the tileClick action
     const [row, column] = Array.from(rowColumn).map(num => Number(num))
-    console.log(row, column)
     actions.game.tileClick(row, column, gameStatus)
   }, [gameStatus])
 
