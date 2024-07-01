@@ -1,5 +1,7 @@
 import type { GameStatus } from "@customTypes/game";
-import { PlayerRole } from "@customTypes/players";
+import type { PlayerRole } from "@customTypes/players";
+
+import { getPlayerInstructions } from "@helpers/instructions";
 
 interface PlayerControlsProps {
   changeName: () => void;
@@ -19,7 +21,10 @@ export default function PlayerControls({
   isLocalPlayerTurn
 } : PlayerControlsProps) {
 
-  const gameStarted = gameStatus === "running"
+  const gameStarted = gameStatus !== "notStarted"
+
+  // Don't show turn order messages in the opening phase
+  const showTurns = gameStarted && gameStatus !== "chooseFavoriteTiles"
 
   const PreGameControls = () => {
     return (
@@ -55,8 +60,9 @@ export default function PlayerControls({
     <>
       {gameStatus === "notStarted" && <PreGameControls />}
       {gameStarted && <p>Your role: {localPlayerRole}!</p>}
-      {gameStarted && isLocalPlayerTurn && <LocalPlayerTurnControls />}
-      {gameStarted && !isLocalPlayerTurn && <OtherPlayerTurnControls />}
+      <p>{getPlayerInstructions(gameStatus, localPlayerRole, isLocalPlayerTurn)}</p>
+      {showTurns && isLocalPlayerTurn && <LocalPlayerTurnControls />}
+      {showTurns && !isLocalPlayerTurn && <OtherPlayerTurnControls />}
     </>
   )
 }

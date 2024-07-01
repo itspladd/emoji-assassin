@@ -35,12 +35,7 @@ export default function GameRoom({
 
   const gameRunning = gameStatus !== "notStarted"
 
-  const statusMessages:Record<GameStatus, string> = {
-    notStarted: "Not started yet",
-    chooseFavoriteTiles: myRole === "assassin" ? "Place the bomb!" : "Choose your favorite emoji!",
-    running: "Game running",
-    gameOver: "Game ended"
-  } 
+
 
   const playerNames = Object.values(allPlayers)
     .map(player => {
@@ -136,8 +131,6 @@ export default function GameRoom({
         />
 
       </section>
-
-      <p>{statusMessages[gameStatus]}</p>
 
       <section className={styles["game-board-section"]}>
         <div className={styles["board"]}
