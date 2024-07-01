@@ -2,6 +2,8 @@
 
 Emoji Assassin (working title) is a multiplayer hidden-role guessing game built with React, Node, Socket.io, Express, and Vite.
 
+One Assassin player has hidden a bomb among the emojis on the board. The other players have to figure out who the Assassin is while trying to avoid hitting the bomb!
+
 ## Local Setup
 
 To run Emoji Assassin locally, you'll need `yarn` or `npm`. The server and the client both run through Vite, so you only need to run a single command to start the app.
