@@ -14,7 +14,7 @@ export default function setupDebugEvents(
     try {
       const room = RoomManager.getRoom(roomId)
       if (!room) {
-        throw new Error(`onDebugReadyAll atte`)
+        throw new Error(`onDebugReadyAll attempted to ready all players in a nonexistent room (ID ${roomId})`)
       }
       room.playerArray.forEach(player => player._isReady = true)
 

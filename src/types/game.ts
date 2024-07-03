@@ -24,7 +24,7 @@ export type ClientGameTileInfo = {
 export interface PublicClientGameState {
   tiles: ClientGameTileInfo[];
   status: GameStatus;
-  currentPlayer: string;
+  currentPlayerId: string;
 }
 
 // Full client-side game state, including public and private info

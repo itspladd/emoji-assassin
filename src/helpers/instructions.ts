@@ -2,7 +2,8 @@ import type { GameStatus } from "@customTypes/game";
 import type { PlayerRole } from "@customTypes/players";
 
 const instructionMessages = {
-  notStarted: "Waiting for all players to be ready...",
+  readyUp: "Hit the Ready button when you're ready to play!",
+  readiedAndWaiting: "",
   placeBomb: "Place the bomb!",
   chooseFavorite: "Choose a favorite emoji!",
   assassinTurn: "Pick a tile. Try to keep the Innocent players from getting suspicious!",
@@ -11,10 +12,24 @@ const instructionMessages = {
   gameOver: "Game ended"
 } 
 
-export function getPlayerInstructions(gameStatus:GameStatus, playerRole:PlayerRole, isPlayerTurn:boolean):string {
+interface PlayerInstructionsPayload {
+  gameStatus: GameStatus,
+  playerRole: PlayerRole,
+  isPlayerTurn: boolean,
+  isPlayerReady: boolean
+}
+
+export function getPlayerInstructions({
+  gameStatus,
+  playerRole,
+  isPlayerTurn,
+  isPlayerReady,
+} : PlayerInstructionsPayload):string {
   
   if (gameStatus === "notStarted") {
-    return instructionMessages.notStarted
+    return isPlayerReady 
+      ? instructionMessages.readiedAndWaiting
+      : instructionMessages.readyUp
   }
 
   if (gameStatus === "chooseFavoriteTiles") {

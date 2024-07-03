@@ -41,9 +41,11 @@ export interface StateAccessors {
   socket: () => SocketState['socketInstance'];
   socketConnected: () => SocketState['connected'];
   roomId: () => RoomState['roomId'];
+  roomStatus: () => RoomState['status'];
   allPlayers: () => RoomState['playersInRoom'];
-  player: (id: string) => ClientPlayerInfo | null;
+  getPlayer: (id: string) => ClientPlayerInfo | null;
   currentPlayer: () => ClientPlayerInfo | null;
+  playerInstructions: () => string;
   eventLog: () => AppState['eventLog'];
   tiles: () => ClientGameState['tiles'];
   gameStarted: () => boolean;

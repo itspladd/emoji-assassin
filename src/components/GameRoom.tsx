@@ -5,9 +5,9 @@ import PlayerControls from "./PlayerControls";
 import PlayerName from "./PlayerName";
 
 import styles from './GameRoom.module.css'
-import { GameStatus } from "@customTypes/game";
 import Tile from "./Tile";
 import { MouseEvent, useCallback } from "react";
+import RoomStatusIndicator from "./RoomStatusIndicator";
 
 interface GameRoomProps {
   id:string,
@@ -120,7 +120,6 @@ export default function GameRoom({
           <ul className={styles["player-list"]}>{playerNames}</ul>
         </div>
 
-
         <PlayerControls
           gameStatus={gameStatus}
           changeName={actions.room.changeName}
@@ -128,8 +127,10 @@ export default function GameRoom({
           localPlayerRole={myRole}
           isLocalPlayerTurn={myId === currentPlayer?.id}
           endTurn={actions.game.endTurn}
+          playerInstructions={accessors.playerInstructions()}
         />
 
+        <RoomStatusIndicator status={accessors.roomStatus()} />
       </section>
 
       <section className={styles["game-board-section"]}>

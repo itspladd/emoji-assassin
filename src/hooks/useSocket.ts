@@ -4,7 +4,7 @@ import type { StateActions } from '@customTypes/stateManagement';
 import type { ClientPlayerInfo, PlayerName } from '@customTypes/players';
 import { useEffect } from 'react';
 import { playerNameString } from '../helpers/names';
-import { RoomState } from '@customTypes/rooms';
+import { RoomState, RoomStatus } from '@customTypes/rooms';
 import { ClientGameState } from '@customTypes/game';
 
 /**
@@ -60,12 +60,15 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.game.setPublicGameState(game)
     }
 
+    function onRoomStatusChange(message:RoomStatus) {
+      actions.room.changeRoomStatus(message)
+    }
+
     function onGameStart(game:ClientGameState) {
       actions.game.setPublicGameState(game)
     }
 
     function onGameStateChange(game:Partial<ClientGameState>) {
-      console.log("ongamestatechange", game)
       actions.game.updateGameState(game)
     }
 
@@ -84,6 +87,7 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerLeft: onPlayerLeft,
       playerChangedName: onPlayerNameChange,
       syncRoomAndGameState: onSyncRoomAndGameState,
+      roomStatusChange: onRoomStatusChange,
       playerToggledReady: onPlayerToggledReady,
       gameStart: onGameStart,
       gameStateChange: onGameStateChange,

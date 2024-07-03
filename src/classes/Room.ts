@@ -1,6 +1,6 @@
 import type { CustomServer, CustomServerSocket, } from "@customTypes/socket";
 import type { ClientPlayerList, PlayerColorKey, PlayerName } from "@customTypes/players";
-import type { RoomId, RoomState } from "@customTypes/rooms";
+import type { RoomId, RoomState, RoomStatus } from "@customTypes/rooms";
 
 import { getRandomFromArray, pullRandomFromArray } from "../helpers/arrays";
 import { playerColors } from "../constants/colors"
@@ -77,6 +77,7 @@ export default class Room {
   _players: Record<string, Player>
   _game: Game;
   _availableColors: PlayerColorKey[];
+  _roomStatus: RoomStatus;
   emitter: RoomEmitter;
   tellAllPlayers: RoomEmitter['emitToRoom'];
   tellPlayer: RoomEmitter['emitToPlayer'];
@@ -94,8 +95,8 @@ export default class Room {
     this._id = id
     this._players = {}
     this._availableColors = [ ...Object.keys(playerColors) as Array<keyof typeof playerColors> ]
-
     this._game = new Game(this.tellAllPlayers, this.tellPlayer)
+    this._roomStatus = "NOT_ENOUGH_PLAYERS"
   }
 
   get id() {
@@ -107,6 +108,7 @@ export default class Room {
 
     return {
       roomId: this.id,
+      status: this.roomStatus,
       playersInRoom
     }
   }
@@ -160,6 +162,54 @@ export default class Room {
    */
   get roomIsFull():boolean {
     return Object.keys(this._players).length >= Game.MAX_PLAYERS
+  }
+
+  get roomStatus():RoomStatus {
+    return this._roomStatus
+  }
+
+  // Note that when we change the room status on the server-side, we send the status to the client.
+  set roomStatus(newStatus:RoomStatus) {
+    // Don't update if the status is unchanged (don't want to send a message to the client if not necessary)
+    if (this.roomStatus === newStatus) {
+      return;
+    }
+
+    this._roomStatus = newStatus
+    this.tellAllPlayers("roomStatusChange", newStatus)
+  }
+
+  // Simple wrapper function that calls the room status setter with calculated results. 
+  updateRoomStatus() {
+    this.roomStatus = this.calculateRoomStatus()
+  }
+
+  // Determine the room's status and return it
+  calculateRoomStatus():RoomStatus {
+    const numPlayers = this.playerArray.length
+    const enoughPlayers = numPlayers >= Game.MIN_PLAYERS
+    const tooManyPlayers = numPlayers > Game.MAX_PLAYERS
+
+    // Check if all players have readied up and return the result.
+    const allPlayersReady = this.playerArray.filter(player => !player.isReady).length === 0
+
+    if (this._game.gameIsRunning) {
+      return "GAME_RUNNING" 
+    }
+    
+    if (!enoughPlayers) {
+      return "NOT_ENOUGH_PLAYERS"
+    }
+
+    if (tooManyPlayers) {
+      return "TOO_MANY_PLAYERS"
+    }
+
+    if (!allPlayersReady) {
+      return "NOT_ALL_PLAYERS_READY"
+    }
+
+    return "GAME_CAN_START"
   }
 
   hasPlayer(id:string):boolean {
@@ -233,6 +283,9 @@ export default class Room {
     // Tell the player's socket to join this room
     newPlayer.joinRoom(this.id)
 
+    // Update the room's status
+    this.updateRoomStatus()
+
     // Tell the joining player to update their client state
     this.tellPlayer(newPlayer.id, "syncRoomAndGameState", this.clientRoomState, this._game.gameStateForPlayer(socket.id))
 
@@ -250,6 +303,7 @@ export default class Room {
 
     this.makeColorAvailable(player.color)
     delete this._players[player.id]
+    this.updateRoomStatus()
   }
 
   afterPlayerReady(playerId:string) {
@@ -260,19 +314,33 @@ export default class Room {
     this.startGame()
   }
 
-  startGame():[result:boolean, reason: string | null] {
+  /**
+ * Returns true if the game could begin with current state.
+ */
+  gameCanBegin():boolean {
+    return this.roomStatus === "GAME_CAN_START"
+  }
+
+  startGame():boolean {
+    // Update the room's status
+    this.updateRoomStatus()
+
     // Check if game should start or not
-    if(!this._game.gameCanBegin(this._players)) {
-      return [false, "Game cannot start"]
+    const gameCanBegin = this.gameCanBegin()
+    if(!gameCanBegin) {
+      return false
     }
 
     // Initialize the game with the player list
     this._game.initNewGame(this._players)
 
+    // Update the room's status again (since the game is now running)
+    this.updateRoomStatus()
+
     // Send each player their local game state, including private info about themselves
     this.playerArray.forEach(player => {
       this.tellPlayer(player.id, "gameStateChange", this._game.gameStateForPlayer(player.id))
     })
-    return [true, null]
+    return true
   }
 }

@@ -1,8 +1,6 @@
 import type { GameStatus } from "@customTypes/game";
 import type { PlayerRole } from "@customTypes/players";
 
-import { getPlayerInstructions } from "@helpers/instructions";
-
 interface PlayerControlsProps {
   changeName: () => void;
   toggleReady: () => void;
@@ -10,6 +8,7 @@ interface PlayerControlsProps {
   gameStatus: GameStatus;
   localPlayerRole: PlayerRole;
   isLocalPlayerTurn: boolean;
+  playerInstructions: string;
 }
 
 export default function PlayerControls({
@@ -18,7 +17,8 @@ export default function PlayerControls({
   endTurn,
   gameStatus,
   localPlayerRole,
-  isLocalPlayerTurn
+  isLocalPlayerTurn,
+  playerInstructions,
 } : PlayerControlsProps) {
 
   const gameStarted = gameStatus !== "notStarted"
@@ -60,7 +60,7 @@ export default function PlayerControls({
     <>
       {gameStatus === "notStarted" && <PreGameControls />}
       {gameStarted && <p>Your role: {localPlayerRole}!</p>}
-      <p>{getPlayerInstructions(gameStatus, localPlayerRole, isLocalPlayerTurn)}</p>
+      <p>{playerInstructions}</p>
       {showTurns && isLocalPlayerTurn && <LocalPlayerTurnControls />}
       {showTurns && !isLocalPlayerTurn && <OtherPlayerTurnControls />}
     </>

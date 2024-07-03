@@ -1,5 +1,5 @@
 import type { ClientPlayerInfo } from "@customTypes/players";
-import type { RoomActions, RoomId, RoomState, RoomStateDispatchType } from "@customTypes/rooms";
+import type { RoomActions, RoomId, RoomState, RoomStateDispatchType, RoomStatus } from "@customTypes/rooms";
 import type { AppState, ReducerDispatchFunctionList, ReducerActionPayload } from "@customTypes/stateManagement";
 import type { Dispatch } from "react";
 
@@ -15,6 +15,20 @@ const set_room_state = (state:AppState, data?: { room?:RoomState }) => {
     ...state,
     room: {
       ...data.room
+    }
+  }
+}
+
+const set_room_status = (state:AppState, data?: { status?:RoomStatus }) => {
+  if (!data?.status) {
+    return stateChangeError("Attempted to set room status with invalid value", state, data)  
+  }
+
+  return {
+    ...state,
+    room: {
+      ...state.room,
+      status: data.status
     }
   }
 }
@@ -108,7 +122,8 @@ export const RoomStateDispatchFunctions:ReducerDispatchFunctionList<RoomStateDis
   add_player,
   remove_player,
   edit_player,
-  set_room_state
+  set_room_state,
+  set_room_status,
 }
 
 // User-friendly state management functions so we don't have to use dispatch in components.
@@ -143,6 +158,10 @@ export const createRoomActions = (
     dispatch({type: 'set_room_state', data: {room}})
   }
 
+  const changeRoomStatus = (status:RoomStatus) => {
+    dispatch({type: 'set_room_status', data: {status}})
+  }
+
   const leaveRoom = () => {
     dispatch({type: 'set_room_id', data: {roomId: null}})
   }
@@ -167,7 +186,8 @@ export const createRoomActions = (
     editPlayer,
     changeName,
     setRoomState,
-    toggleReady
+    toggleReady,
+    changeRoomStatus
   }
 }
 

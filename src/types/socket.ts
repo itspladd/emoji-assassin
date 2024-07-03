@@ -1,7 +1,7 @@
 import type { Socket as ServerSocket, Server } from "socket.io";
 import type { Socket as ClientSocket } from "socket.io-client"
 import type { ClientPlayerInfo, PlayerName } from "./players";
-import type { RoomId, RoomState } from "./rooms";
+import type { RoomId, RoomState, RoomStatus } from "./rooms";
 import type { ClientGameState } from "./game";
 
 /** Socket.IO event maps */
@@ -25,6 +25,7 @@ export interface ServerToClientEvents {
   playerLeft: (playerId:string) => void;
   playerChangedName: (playerId:string, name:PlayerName) => void;
   syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void;
+  roomStatusChange: (status: RoomStatus) => void;
   playerToggledReady: (playerId: string, readyState: boolean) => void;
   gameStart: (game:ClientGameState) => void;
   gameStateChange: (game:Partial<ClientGameState>) => void;

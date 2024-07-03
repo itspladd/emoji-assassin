@@ -47,10 +47,13 @@ export default class Game {
   _favoritedTiles: Record<string, string[]>
   // The maximum number of known safe tiles each player can have
   _maxKnownSafeTilesPerPlayer: number
+
+
   // The list of tiles in the game
   tiles: GameTile[]
   // String indicating the current state of the game flow
   status: GameStatus
+
 
   // Zero-indexed dimensions of the game board. A 5x5 game board would have a value of 4.
   _boardSize: number
@@ -71,11 +74,15 @@ export default class Game {
     this._boardSize = Math.ceil(Math.sqrt(Game.NUM_TILES)) - 1
   }
 
+  get gameIsRunning() {
+    return this.status !== "notStarted"
+  }
+
   get publicClientGameState():PublicClientGameState {
     return {
       tiles: this.publicClientTileInfo,
       status: this.status,
-      currentPlayer: this.currentPlayerId
+      currentPlayerId: this.currentPlayerId,
     }
   }
 
@@ -171,7 +178,7 @@ export default class Game {
       if (actingPlayerIsCurrentPlayer) {
         tile.active = false
         this.endPlayerTurn(playerId)
-        this.tellAllPlayers("gameStateChange", { currentPlayer: this.currentPlayerId, tiles: this.publicClientTileInfo })
+        this.tellAllPlayers("gameStateChange", { currentPlayerId: this.currentPlayerId, tiles: this.publicClientTileInfo })
       }
 
       
@@ -220,24 +227,6 @@ export default class Game {
     })
   }
 
-  /**
-   * Returns true if the game could begin with the input player data.
-   */
-  gameCanBegin(players:PlayerList):boolean {
-    const playerDataArr = Object.values(players)
-
-    const enoughPlayers = playerDataArr.length >= Game.MIN_PLAYERS
-    const tooManyPlayers = playerDataArr.length > Game.MAX_PLAYERS
-    
-    if (!enoughPlayers || tooManyPlayers) {
-      return false
-    }
-
-    const allPlayersReady = playerDataArr.filter(player => !player.isReady).length === 0
-
-    return allPlayersReady
-  }
-
   initNewGame(players:PlayerList) {
     this._players = players
 
@@ -284,7 +273,7 @@ export default class Game {
     this._turnOrder = [...others, current]
     console.debug(`it is now ${this.currentPlayerId}'s turn`)
 
-    this.tellAllPlayers("gameStateChange", { currentPlayer: this._turnOrder[0] })
+    this.tellAllPlayers("gameStateChange", { currentPlayerId: this._turnOrder[0] })
     return true
   }
 
