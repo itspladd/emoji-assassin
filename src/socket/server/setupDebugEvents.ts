@@ -1,6 +1,7 @@
 import type { CustomServerSocket } from "@customTypes/socket";
 
 import { RoomManager } from "../../classes/RoomManager";
+import { RoomState } from "@customTypes/rooms";
 
 export default function setupDebugEvents(
   socket:CustomServerSocket,
@@ -10,7 +11,7 @@ export default function setupDebugEvents(
 ) {
   
   // Set all players to ready and attempt to start game
-  function onDebugReadyAll(roomId: string) {
+  function onDebugReadyAll(roomId: RoomState['roomId']) {
     try {
       const room = RoomManager.getRoom(roomId)
       if (!room) {

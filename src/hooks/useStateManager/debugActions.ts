@@ -1,4 +1,5 @@
 import type { DebugActions } from "@customTypes/debug";
+import { RoomState } from "@customTypes/rooms";
 import type { CustomClientSocket } from "@customTypes/socket";
 
 import axios from "axios";
@@ -7,7 +8,7 @@ export function createDebugActions(
   // dispatch: Dispatch<ReducerActionPayload>,
   socket: CustomClientSocket
 ) : DebugActions {
-  const readyAll = (roomId: string) => {
+  const readyAll = (roomId: RoomState['roomId']) => {
     socket.emit("debug_readyAll", roomId)
   }
 

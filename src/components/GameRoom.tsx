@@ -35,8 +35,6 @@ export default function GameRoom({
 
   const gameRunning = gameStatus !== "notStarted"
 
-
-
   const playerNames = Object.values(allPlayers)
     .map(player => {
       return (
@@ -110,24 +108,13 @@ export default function GameRoom({
       <section className={styles["info-section"]}>
 
         <div>
-          <div>
             <h3>Players</h3>
-            { !gameRunning && (
-              <button onClick={() => actions.debug.readyAll(id)}>Ready all players</button>
-            )}
-            
-          </div>
           <ul className={styles["player-list"]}>{playerNames}</ul>
         </div>
 
         <PlayerControls
-          gameStatus={gameStatus}
-          changeName={actions.room.changeName}
-          toggleReady={actions.room.toggleReady}
-          localPlayerRole={myRole}
-          isLocalPlayerTurn={myId === currentPlayer?.id}
-          endTurn={actions.game.endTurn}
-          playerInstructions={accessors.playerInstructions()}
+          actions={actions}
+          accessors={accessors}
         />
 
         <RoomStatusIndicator status={accessors.roomStatus()} />

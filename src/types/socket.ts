@@ -6,7 +6,7 @@ import type { ClientGameState } from "./game";
 
 /** Socket.IO event maps */
 interface ClientToServerDebugEvents {
-  debug_readyAll: (roomId: string) => void;
+  debug_readyAll: (roomId: RoomState['roomId']) => void;
 }
 
 export interface ClientToServerEvents extends ClientToServerDebugEvents {

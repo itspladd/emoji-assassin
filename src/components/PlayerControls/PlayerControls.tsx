@@ -1,27 +1,32 @@
-import type { GameStatus } from "@customTypes/game";
-import type { PlayerRole } from "@customTypes/players";
+import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
+
+import { DebugReadyAllPlayers } from '../DebugControls'
 
 interface PlayerControlsProps {
-  changeName: () => void;
-  toggleReady: () => void;
-  endTurn: () => void;
-  gameStatus: GameStatus;
-  localPlayerRole: PlayerRole;
-  isLocalPlayerTurn: boolean;
-  playerInstructions: string;
+  actions: StateActions;
+  accessors: StateAccessors;
 }
 
 export default function PlayerControls({
-  changeName,
-  toggleReady,
-  endTurn,
-  gameStatus,
-  localPlayerRole,
-  isLocalPlayerTurn,
-  playerInstructions,
+  actions,
+  accessors
 } : PlayerControlsProps) {
 
-  const gameStarted = gameStatus !== "notStarted"
+  const gameStarted = accessors.gameStarted()
+  const gameStatus = accessors.gameStatus()
+  const localPlayerRole = accessors.myRole()
+  const isLocalPlayerTurn = accessors.localPlayerTurn()
+  const playerInstructions = accessors.playerInstructions()
+  const roomId = accessors.roomId()
+
+  const {
+    changeName,
+    toggleReady,
+  } = actions.room
+
+  const {
+    endTurn
+  } = actions.game
 
   // Don't show turn order messages in the opening phase
   const showTurns = gameStarted && gameStatus !== "chooseFavoriteTiles"
@@ -29,6 +34,7 @@ export default function PlayerControls({
   const PreGameControls = () => {
     return (
       <div>
+        <DebugReadyAllPlayers readyAll={() => actions.debug.readyAll(roomId)} />
         <button onClick={changeName}>
           Change my name
         </button>
