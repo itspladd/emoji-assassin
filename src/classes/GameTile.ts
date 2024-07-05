@@ -4,7 +4,7 @@ export default class GameTile {
 
   _favoritedBy: string[]
   active: boolean
-  contents: TileContents
+  _contents: TileContents
 
   constructor(
     readonly image: string,
@@ -14,7 +14,7 @@ export default class GameTile {
   ) {
     this._favoritedBy = []
     this.active = true
-    this.contents = "empty"
+    this._contents = "empty"
   }
 
   addFavorite(playerId:string) {
@@ -24,12 +24,24 @@ export default class GameTile {
     this._favoritedBy.push(playerId)
   }
 
+  clearContents() {
+    this._contents = "empty"
+  }
+
+  setBomb() {
+    this._contents = "bomb"
+  }
+
   get favoritedBy() {
     return [...this._favoritedBy]
   }
 
   get isSafe() {
-    return this.contents !== "bomb"
+    return this._contents !== "bomb"
+  }
+
+  get isBomb() {
+    return this._contents === "bomb"
   }
 
   get location():[number, number] {

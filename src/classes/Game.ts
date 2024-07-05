@@ -175,8 +175,12 @@ export default class Game {
         throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
       }
 
+      // If the current active player clicked, we process their turn.
       if (actingPlayerIsCurrentPlayer) {
         tile.active = false
+        if (tile.isBomb) {
+          // Player is removed from round
+        }
         this.endPlayerTurn(playerId)
         this.tellAllPlayers("gameStateChange", { currentPlayerId: this.currentPlayerId, tiles: this.publicClientTileInfo })
       }
@@ -300,10 +304,18 @@ export default class Game {
     return true
   }
 
+  /**
+   * Contains all of the actions to perform when transitioning into the "running" game state.
+   */
   transitionToRunningState() {
     this.assignKnownSafeTiles()
   }
 
+  /**
+   * Returns true if the game can transition into the target state from the current state, given the current game data.
+   * @param target 
+   * @returns 
+   */
   canTransitionTo(target:GameStatus):boolean {
     if (!target) {
       throw new Error("Attempted a status transition with no target status.")
@@ -316,7 +328,7 @@ export default class Game {
       throw new Error(`Attempted status transition from '${current}' to '${target}', but that status order is invalid`)
     }
 
-    // If we are trying to leave the "place bomb/choose favorite" phase, make sure everyone has placed theirs
+    // If we are trying to leave the "place bomb/choose favorite" phase, make sure everyone has selected a tile.
     if(current === "chooseFavoriteTiles") {
       const allPlayersHaveChosen = Object.values(this._players).every(p => p.favoriteTile !== null)
       return this.bombIsPlaced && allPlayersHaveChosen
@@ -328,10 +340,21 @@ export default class Game {
 
   placeBomb(row:number, column:number) {
     this._bombLocation = [row, column]
-    this.getTileAt(row, column).contents = "bomb"
+    this.getTileAt(row, column).setBomb()
   }
 
   clearBomb() {
+    // If there's no bomb, do nothing.
+    if (!this._bombLocation) {
+      return
+    }
+
+    // Clear the current bomb tile and location information.
+    const [
+      currentBombRow,
+      currentBombCol
+    ] = this._bombLocation
+    this.getTileAt(currentBombRow, currentBombCol).clearContents()
     this._bombLocation = null
   }
  }
