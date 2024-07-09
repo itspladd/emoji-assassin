@@ -98,8 +98,20 @@ export default class Game {
     return this._players[this.currentPlayerId]
   }
 
-  get innocentPlayers():Player[] {
-    return Object.values(this._players).filter(player => player.isInnocent)
+  get playerArr():Player[] {
+    return Object.values(this._players)
+  }
+
+  get activePlayers():Player[] {
+    return this.playerArr.filter(player => player.active)
+  }
+
+  get activeAssassinPlayers():Player[] {
+    return this.activePlayers.filter(player => !player.isInnocent)
+  }
+
+  get activeInnocentPlayers():Player[] {
+    return this.activePlayers.filter(player => player.isInnocent)
   }
 
   get bombIsPlaced():boolean {
@@ -114,6 +126,18 @@ export default class Game {
   // Safe (non-bomb) tiles that are eligible to be clicked
   get safeTiles():GameTile[] {
     return this.activeTiles.filter(tile => tile.isSafe)
+  }
+
+  get assassinsWin():boolean {
+    return this.activeInnocentPlayers.length <= this.activeAssassinPlayers.length
+  }
+
+  get innocentsWin():boolean {
+    return this.activeAssassinPlayers.length === 0
+  }
+
+  get winnerExists():boolean {
+    return this.assassinsWin || this.innocentsWin
   }
 
   // Tiles are stored as a single-dimension array; use row/column to grab the correct one
@@ -163,34 +187,56 @@ export default class Game {
     const actingPlayerIsCurrentPlayer = actingPlayer.id === this.currentPlayerId
     const tile = this.getTileAt(row, column)
 
+    // Inactive players can't do anything!
+    if (!actingPlayer.active) {
+      return
+    }
+
+    // Can't click on an inactive tile!
+    if (!tile.active) {
+      throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
+    }
+
     if (this.status === "chooseFavoriteTiles") {
-      this.favoriteTileSelect(tile, actingPlayer)
+      this.handleFavoriteTileSelect(tile, actingPlayer)
       this.attemptStateTransition("running")
 
       return
     }
 
     if (this.status === "running") {
-      if (!tile.active) {
-        throw new Error(`Attempted to handle selection of inactive tile at [${row}, ${column}] by ${playerId}. Tile found: ${tile}`)
-      }
+      // If the current active player clicked on a valid tile, we process their turn.
+      actingPlayerIsCurrentPlayer && this.processPlayerTurn(actingPlayer, tile)
 
-      // If the current active player clicked, we process their turn.
-      if (actingPlayerIsCurrentPlayer) {
-        tile.active = false
-        if (tile.isBomb) {
-          // Player is removed from round
-        }
-        this.endPlayerTurn(playerId)
-        this.tellAllPlayers("gameStateChange", { currentPlayerId: this.currentPlayerId, tiles: this.publicClientTileInfo })
-      }
 
-      
-      return 
     }
   }
 
-  favoriteTileSelect(tile:GameTile, player:Player):void {
+  processPlayerTurn(player:Player, tile:GameTile) {
+    // Deactivate the clicked tile
+    tile.active = false
+
+    // Player's turn ends regardless of tile contents
+    this.endPlayerTurn(player.id)
+    this.tellAllPlayers("gameStateChange", { currentPlayerId: this.currentPlayerId, tiles: this.publicClientTileInfo })
+
+    // If the tile was a bomb, eliminate that player and check for end of game
+    if (tile.isBomb) {
+      // Player is removed from round
+      player.deactivate()
+      this.tellAllPlayers("playerHitBomb", player.id, this._bombLocation)
+
+      // If the bomb click resulted in one team winning, transition to the game over state.
+      if (this.winnerExists) {
+        return this.attemptStateTransition("gameOver")
+      }
+      
+      // Otherwise, return to the tile selection state.
+      return this.attemptStateTransition("chooseFavoriteTiles")
+    }
+  }
+
+  handleFavoriteTileSelect(tile:GameTile, player:Player):void {
     const { row, column } = tile
     player.isAssassin ?
       this.placeBomb(row, column) : 
@@ -204,13 +250,13 @@ export default class Game {
   }
 
   /**
-   * Tell each innocent player tiles that they know are safe to click.
+   * Send each innocent player the loation of tiles that they know are safe to click.
    */
   assignKnownSafeTiles():void {
     const totalSafeTiles = this.safeTiles.length
 
     // Find out how many safe tiles could be given to each player (e.g. 24 safe tiles / 3 innocent players = 8 tiles available for each)
-    const availableSafeTilesPerPlayer = Math.floor(totalSafeTiles / this.innocentPlayers.length)
+    const availableSafeTilesPerPlayer = Math.floor(totalSafeTiles / this.activeInnocentPlayers.length)
 
     // Coerce the number of known safe tiles per player to the max allowed by the game rules
     const actualSafeTilesPerPlayer = Math.min(availableSafeTilesPerPlayer, this._maxKnownSafeTilesPerPlayer)
@@ -218,7 +264,7 @@ export default class Game {
 
     // Pull different sets of known safe tiles for each innocent player
     let knownSafeTilePool = this.safeTiles
-    this.innocentPlayers.forEach(player => {
+    this.activeInnocentPlayers.forEach(player => {
       // Get this player's tiles from the pool
       const [knownSafeTilesForPlayer, remainingInPool] = pullRandomSetFromArray(knownSafeTilePool, actualSafeTilesPerPlayer)
 
@@ -287,21 +333,35 @@ export default class Game {
    * @returns {boolean} - True if the transition was successful, false otherwise.
    */
   attemptStateTransition(targetStatus:GameStatus):boolean {
+    console.debug(`Game: Attempting to transition to '${targetStatus}' state...`)
     if (!targetStatus) {
       throw new Error("Attempted a status transition with no target status.")
     }
 
     // If conditions are not met, don't transition
     if (!this.canTransitionTo(targetStatus)) {
+      console.debug(`Game: Can't transition to ${targetStatus} state, exiting...`)
       return false
     }
     
-    // If conditions are met, transition and notify everyone in the room.
+    // If conditions are met, run the state transition steps.
     this.status = targetStatus
+    targetStatus === "chooseFavoriteTiles" && this.transitionToSelectTilesState()
     targetStatus === "running" && this.transitionToRunningState()
+    targetStatus === "gameOver" && this.transitionToGameOverState()
 
-    this.tellAllPlayers("gameStateChange", { status: targetStatus })
+    // Finally, update all the players on the new state of the game.
+    this.playerArr.forEach(player => this.tellPlayer(player.id, "gameStateChange", this.gameStateForPlayer(player.id)))
+    console.debug(`Game: finished transitioning to ${targetStatus} state.`)
     return true
+  }
+
+  /**
+   * Contains all of the actions to perform when transitioning into the "select tiles" game state.
+   */
+  transitionToSelectTilesState() {
+    Object.values(this._players).forEach(player => player.prepareForSelect())
+    this.tiles.forEach(tile => tile.prepareForSelect())
   }
 
   /**
@@ -309,6 +369,10 @@ export default class Game {
    */
   transitionToRunningState() {
     this.assignKnownSafeTiles()
+  }
+
+  transitionToGameOverState() {
+    console.log("game over!")
   }
 
   /**
@@ -328,10 +392,21 @@ export default class Game {
       throw new Error(`Attempted status transition from '${current}' to '${target}', but that status order is invalid`)
     }
 
-    // If we are trying to leave the "place bomb/choose favorite" phase, make sure everyone has selected a tile.
+    // If we are trying to leave the "place bomb/choose favorite" phase, make sure every active player has selected a tile.
     if(current === "chooseFavoriteTiles") {
-      const allPlayersHaveChosen = Object.values(this._players).every(p => p.favoriteTile !== null)
+      const allPlayersHaveChosen = this.activePlayers.every(p => p.favoriteTile !== null)
       return this.bombIsPlaced && allPlayersHaveChosen
+    }
+
+    // If we're returning to the "chooseFavoriteTiles" state, make sure the game's not over.
+    if (current === "running" && target === "chooseFavoriteTiles") {
+      return !this.winnerExists
+    }
+
+    // If we are trying to end the game, make sure there's a winner.
+    // (This is a duplicate check at the moment, but it seems like a good sanity check to have.)
+    if (target === "gameOver") {
+      return this.winnerExists
     }
 
     console.debug('canTransitionTo exited without finding a matching condition')

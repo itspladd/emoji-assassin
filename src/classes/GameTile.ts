@@ -32,6 +32,12 @@ export default class GameTile {
     this._contents = "bomb"
   }
 
+  // Clears the contents and favorites of a tile, but doesn't reactivate it.
+  prepareForSelect() {
+    this.clearContents()
+    this._favoritedBy = []
+  }
+
   get favoritedBy() {
     return [...this._favoritedBy]
   }
