@@ -24,6 +24,7 @@ export interface ServerToClientEvents {
   playerJoined: (player:ClientPlayerInfo) => void;
   playerLeft: (playerId:string) => void;
   playerChangedName: (playerId:string, name:PlayerName) => void;
+  playerHitBomb: (playerId:string, location:[number, number] | null) => void;
   syncRoomAndGameState: (room:RoomState, game:ClientGameState) => void;
   roomStatusChange: (status: RoomStatus) => void;
   playerToggledReady: (playerId: string, readyState: boolean) => void;

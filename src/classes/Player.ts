@@ -12,6 +12,7 @@ export default class Player {
   _color: PlayerColorKey
   _isReady: boolean
   _role: PlayerRole
+  active: boolean
   score: number
   _favoriteTile: [number, number] | null
   knownSafeTiles: [number, number][] | null
@@ -29,6 +30,7 @@ export default class Player {
     this.score = 0
     this._favoriteTile = null
     this.knownSafeTiles = null
+    this.active = true
   }
 
   get id() {
@@ -93,6 +95,15 @@ export default class Player {
     return this._isReady
   }
 
+  deactivate() {
+    this.active = false
+  }
+
+  prepareForSelect() {
+    this.knownSafeTiles = null
+    this._favoriteTile = null
+  }
+
   /**
    * Returns an object representing the public client-side app state for this Player.
    */
@@ -101,7 +112,8 @@ export default class Player {
       name: this.name,
       id: this._id,
       color: this.color,
-      isReady: this.isReady
+      isReady: this.isReady,
+      active: this.active
     }
   }
 

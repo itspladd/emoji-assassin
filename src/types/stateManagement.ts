@@ -53,6 +53,7 @@ export interface StateAccessors {
   myRole: () => PrivateClientPlayerInfo['myRole'];
   myFavoriteTile: () => PrivateClientPlayerInfo['myFavoriteTile'];
   localPlayerTurn: () => boolean;
+  localPlayerActive: () => boolean;
   tileIsKnownSafe: (rowIn:number, colIn:number) => boolean;
   myKnownSafeTiles: () => PrivateClientPlayerInfo['myKnownSafeTiles'];
 }

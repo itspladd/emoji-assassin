@@ -74,7 +74,8 @@ export default function useStateManager():StateManagerReturn {
   // Local player state data
   function localPlayerId() { return state.socket.socketInstance.id || ""}
   function localPlayerTurn() { return localPlayerId() === currentPlayerId() }
-  function localPlayerReady() { return getPlayer(localPlayerId()).isReady}
+  function localPlayerReady() { return getPlayer(localPlayerId()).isReady }
+  function localPlayerActive() { return getPlayer(localPlayerId()).active }
   function myRole() { return state.game.privateInfo.myRole }
   function myFavoriteTile() { return state.game.privateInfo.myFavoriteTile }
   function myKnownSafeTiles() { return state.game.privateInfo.myKnownSafeTiles }
@@ -87,7 +88,8 @@ export default function useStateManager():StateManagerReturn {
       gameStatus: gameStatus(),
       playerRole: myRole(),
       isPlayerTurn: localPlayerTurn(),
-      isPlayerReady: localPlayerReady()
+      isPlayerReady: localPlayerReady(),
+      isPlayerActive: localPlayerActive(),
     })
   }
 
@@ -98,6 +100,7 @@ export default function useStateManager():StateManagerReturn {
     getPlayer,
     localPlayerId,
     localPlayerTurn,
+    localPlayerActive,
     socketConnected,
     socket: getSocket,
     eventLog,

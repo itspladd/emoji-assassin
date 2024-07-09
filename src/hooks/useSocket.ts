@@ -54,6 +54,10 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       actions.room.editPlayer(id, { isReady })
     }
 
+    function onPlayerHitBomb(id:string) {
+      actions.room.editPlayer(id, { active: false })
+    }
+
     function onSyncRoomAndGameState(room:RoomState, game:ClientGameState) {
       log(`Syncing room and game state...`)
       actions.room.setRoomState(room)
@@ -86,6 +90,7 @@ export default function useSocket(socket: CustomClientSocket, actions:StateActio
       playerJoined: onPlayerJoined,
       playerLeft: onPlayerLeft,
       playerChangedName: onPlayerNameChange,
+      playerHitBomb: onPlayerHitBomb,
       syncRoomAndGameState: onSyncRoomAndGameState,
       roomStatusChange: onRoomStatusChange,
       playerToggledReady: onPlayerToggledReady,

@@ -38,7 +38,8 @@ export interface ClientPlayerInfo {
   name: PlayerName,
   id: string,
   color: string,
-  isReady: boolean
+  isReady: boolean,
+  active: boolean
 }
 
 /**

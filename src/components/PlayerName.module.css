@@ -21,6 +21,10 @@
   }
 }
 
+.inactive {
+  filter: opacity(.5);
+}
+
 .red {
   background-color: #FF0000;
 } 
