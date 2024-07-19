@@ -1,3 +1,10 @@
-.debug-button {
-  background-color: #FF6666;
+.debug-controls {
+
+  button {
+    background-color: #FF6666;
+
+    :disabled {
+      background-color: grey;
+    }
+  }
 }

@@ -1,13 +1,18 @@
 import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
 
+import { MouseEvent, useCallback } from "react";
+
 import EventLog from "./EventLog";
 import PlayerControls from "./PlayerControls";
 import PlayerName from "./PlayerName";
+import Tile from "./Tile";
+import RoomStatusIndicator from "./RoomStatusIndicator";
+import DebugControls from "./DebugControls/DebugControls";
+
+import DisconnectIcon from "../assets/DisconnectIcon.svg"
+import ConnectIcon from "../assets/ConnectIcon.svg"
 
 import styles from './GameRoom.module.css'
-import Tile from "./Tile";
-import { MouseEvent, useCallback } from "react";
-import RoomStatusIndicator from "./RoomStatusIndicator";
 
 interface GameRoomProps {
   id:string,
@@ -29,7 +34,6 @@ export default function GameRoom({
   
   const tiles = accessors.tiles()
   const eventLog = accessors.eventLog()
-  const connectionString = accessors.socketConnected() ? "Connected" : "Disconnected"
   const gameStatus = accessors.gameStatus()
   const myFavoriteTile = accessors.myFavoriteTile()
 
@@ -102,13 +106,14 @@ export default function GameRoom({
     <main className={styles["game-room-wrapper"]}>
       <header>
         <h2>Room ID: {id}</h2>
-        <span>{connectionString}</span>
+        
+        <img className="test" src={accessors.socketConnected() ? ConnectIcon : DisconnectIcon} />
       </header>
       
       <section className={styles["info-section"]}>
 
         <div>
-            <h3>Players</h3>
+          <h3>Players</h3>
           <ul className={styles["player-list"]}>{playerNames}</ul>
         </div>
 
@@ -121,13 +126,19 @@ export default function GameRoom({
       </section>
 
       <section className={styles["game-board-section"]}>
-        <div className={styles["board"]}
-        onClick={handleClick}>
+        <div
+          className={styles["board"]}
+          onClick={handleClick}
+        >
           {gameTiles}
         </div>
 
       </section>
 
+      <DebugControls 
+        actions={actions}
+        accessors={accessors}
+      />
       <EventLog events={eventLog} />
     </main>
   )

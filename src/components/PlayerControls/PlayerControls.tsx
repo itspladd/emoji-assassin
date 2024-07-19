@@ -1,7 +1,5 @@
 import type { StateAccessors, StateActions } from "@customTypes/stateManagement";
 
-import { DebugReadyAllPlayers } from '../DebugControls'
-
 interface PlayerControlsProps {
   actions: StateActions;
   accessors: StateAccessors;
@@ -17,7 +15,6 @@ export default function PlayerControls({
   const localPlayerRole = accessors.myRole()
   const isLocalPlayerTurn = accessors.localPlayerTurn()
   const playerInstructions = accessors.playerInstructions()
-  const roomId = accessors.roomId()
 
   const {
     changeName,
@@ -34,7 +31,6 @@ export default function PlayerControls({
   const PreGameControls = () => {
     return (
       <div>
-        <DebugReadyAllPlayers readyAll={() => actions.debug.readyAll(roomId)} />
         <button onClick={changeName}>
           Change my name
         </button>
